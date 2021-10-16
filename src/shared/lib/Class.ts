@@ -10,7 +10,7 @@ class Class {
 }
 Object.assign(Class.prototype, {
   _className: 'Class',
-  _showDebug: false,
+  _showDebug: true,
 });
 
 export default Class;

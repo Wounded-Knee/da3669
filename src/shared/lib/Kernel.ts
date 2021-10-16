@@ -17,7 +17,7 @@ class Kernel extends Class {
 }
 Object.assign(Kernel.prototype, {
   _className: 'Kernel',
-  _showDebug: false,
+  _showDebug: true,
 });
 
 export default Kernel;

@@ -74,6 +74,7 @@
     "express": "^4.17.1",
     "find-up": "^5.0.0",
     "middleware-io": "^2.8.0",
+    "rpc-websockets": "^7.4.15",
     "styled-components": "^5.2.1",
     "tslib": "^2.1.0"
   },
