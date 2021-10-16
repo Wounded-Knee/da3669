@@ -10,6 +10,10 @@ import { LazyLoadingExample } from './components/LazyLoadingExample';
 import { RouterExample } from './components/RouterExample';
 import { StyledComponentsExample } from './components/StyledComponentsExample';
 import { UsersList } from './components/UsersList';
+import features from '../shared/lib/features';
+import Kernel from '../shared/lib/Kernel';
+
+console.log(features, Kernel);
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
