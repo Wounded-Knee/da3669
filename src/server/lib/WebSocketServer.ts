@@ -6,6 +6,7 @@ import { server, rpc } from '../../shared/lib/features';
 const store = new ServerStore({ db: './db.json' });
 
 const command = (request, ...args) => {
+  // @ts-ignore
   const context = new Context(request);
   const mixins = (server || []).map((mixin) => mixin.bind(context));
   // @ts-ignore

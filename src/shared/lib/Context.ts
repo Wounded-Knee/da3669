@@ -1,8 +1,10 @@
 class Context {
+  request = {};
+  payload = {};
+  store = {};
+
   constructor(request, callback) {
     this.request = request;
-    this.payload = {};
-    this.store = store;
   }
 
   reply(obj) {

@@ -1,7 +1,12 @@
 const featureList = ['silly'];
 
 const { rpc, server, client, features } = featureList
-  .map((featureName) => require(`./features/${featureName}`))
+  .map((featureName) => ({
+    rpc: [],
+    server: [],
+    client: [],
+    ...require(`./features/${featureName}`),
+  }))
   .reduce(
     (exports, { rpc, client, server }) => ({
       rpc: [...(exports.rpc || []), ...rpc],

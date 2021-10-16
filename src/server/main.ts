@@ -1,7 +1,9 @@
 import HTTPServer from './httpServer';
-import wsServer from './wsServer';
+import WebSocketServer from './lib/WebSocketServer';
 
 const httpServer = new HTTPServer();
+const wsServer = new WebSocketServer();
+
 httpServer.initialize().then(() => {
   console.log('HTTP Server Running');
 });

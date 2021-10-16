@@ -3,6 +3,7 @@ import Class from './Class';
 class Kernel extends Class {
   _initPromises = [];
   log(...args) {
+    // @ts-ignore
     return super.log(...args);
   }
 
