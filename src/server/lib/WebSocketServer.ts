@@ -17,10 +17,12 @@ class WebSocketServer extends Server {
   }
 
   command(request, ...args) {
+    const [props, code] = args;
     return new Promise((resolve) => {
-      const context = new Context(this.core, request);
+      const context = new Context(this.core, request, ...props);
+      context.code = code;
       const features = (server || []).map((feature) => feature.bind(context));
-      this.log('Composing with features ', features[0], request, args);
+      this.log('Composing with features ', features[0], request, code, props);
       // @ts-ignore
       return compose(features)(context, ({ payload }, next) => {
         this.log('Payload: ' + payload);

@@ -6,6 +6,7 @@ import { Header } from './components/Header';
 import { SideMenu } from './components/SideMenu';
 import { Home } from './components/Home';
 import { Test } from './components/Test';
+import { Test2 } from './components/Test2';
 import { Usage } from './components/Usage';
 import { LazyLoadingExample } from './components/LazyLoadingExample';
 import { RouterExample } from './components/RouterExample';
@@ -42,6 +43,7 @@ export const App = () => {
           <Switch>
             <Route exact path='/' component={Home} />
             <Route exact path='/test' render={() => <Test wsClient={wsClient} />} />
+            <Route exact path='/test2' render={() => <Test2 wsClient={wsClient} />} />
             <Route exact path='/usage' component={Usage} />
             <Route path='/fetch-example' component={UsersList} />
             <Route path='/lazy-example' component={LazyLoadingExample} />

@@ -2,9 +2,12 @@ class Context {
   request = {};
   payload = {};
   core = {};
+  args = {};
+  code = '';
 
-  constructor(core, request) {
+  constructor(core, request, ...args) {
     this.request = request;
+    this.args = args;
     this.core = core;
   }
 
