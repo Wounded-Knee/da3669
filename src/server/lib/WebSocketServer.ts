@@ -19,6 +19,7 @@ class WebSocketServer extends Server {
   command(request, ...args) {
     const context = new Context(this.core, request);
     const features = (server || []).map((feature) => feature.bind(context));
+    this.log('Composing with features ', features[0], request, args);
     // @ts-ignore
     return compose(features)(context, ...args);
   }
@@ -34,10 +35,9 @@ class WebSocketServer extends Server {
           this.log('Listening');
           resolve(void 0);
         });
-        const command = this.command.bind(this);
         rpc.forEach((rpcMethod) => {
           this.log('Registering ' + rpcMethod);
-          this.webSocketServer.register(rpcMethod, command);
+          this.webSocketServer.register(rpcMethod, (...args) => this.command(rpcMethod, ...args));
         });
       }),
     );
