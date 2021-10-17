@@ -22,11 +22,11 @@ class WebSocketServer extends Server {
       const features = (server || []).map((feature) => feature.bind(context));
       this.log('Composing with features ', features[0], request, args);
       // @ts-ignore
-      return compose(features, (context, next) => {
-        resolve(context.payload);
+      return compose(features)(context, ({ payload }, next) => {
+        this.log('Payload: ' + payload);
+        resolve(payload);
         next();
-        // @ts-ignore
-      })(context, ...args);
+      });
     });
   }
 
