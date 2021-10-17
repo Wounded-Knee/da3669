@@ -21,6 +21,7 @@ class Client extends Kernel {
   }
 
   call(method, ...args) {
+    this.log('call', method, args);
     return this.rpcClient.call(method, ...args);
   }
 }

@@ -17,11 +17,17 @@ class WebSocketServer extends Server {
   }
 
   command(request, ...args) {
-    const context = new Context(this.core, request);
-    const features = (server || []).map((feature) => feature.bind(context));
-    this.log('Composing with features ', features[0], request, args);
-    // @ts-ignore
-    return compose(features)(context, ...args);
+    return new Promise((resolve) => {
+      const context = new Context(this.core, request);
+      const features = (server || []).map((feature) => feature.bind(context));
+      this.log('Composing with features ', features[0], request, args);
+      // @ts-ignore
+      return compose(features, (context, next) => {
+        resolve(context.payload);
+        next();
+        // @ts-ignore
+      })(context, ...args);
+    });
   }
 
   listen() {
