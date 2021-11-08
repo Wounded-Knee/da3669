@@ -1,10 +1,11 @@
 {
-  "name": "fullstack-typescript",
+  "name": "DA3669",
   "version": "1.1.1",
   "description": "",
   "main": "index.js",
   "engines": {
-    "node": "12.16.1"
+    "node": "15.4.0",
+    "npm": "7.9.0"
   },
   "scripts": {
     "test": "jest",
@@ -32,10 +33,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/gilamran/fullstack-typescript.git"
+    "url": "https://github.com/WAKlNYAN/da3669"
   },
   "license": "MIT",
-  "author": "Gil Amran",
+  "author": "Heyoka",
   "jest": {
     "roots": [
       "<rootDir>/src"
@@ -74,6 +75,7 @@
     "express": "^4.17.1",
     "find-up": "^5.0.0",
     "middleware-io": "^2.8.0",
+    "mui-treasury": "*",
     "rpc-websockets": "^7.4.15",
     "styled-components": "^5.2.1",
     "tslib": "^2.1.0"
@@ -88,7 +90,7 @@
     "@babel/preset-env": "^7.12.11",
     "@babel/preset-react": "^7.12.10",
     "@babel/preset-typescript": "^7.12.7",
-    "@material-ui/core": "^4.11.3",
+    "@material-ui/core": "^4.12.3",
     "@types/cssnano": "^4.0.0",
     "@types/enzyme": "^3.10.8",
     "@types/express": "^4.17.11",

@@ -6,8 +6,12 @@ import RouterIcon from '@material-ui/icons/Storage';
 import FetchIcon from '@material-ui/icons/CloudDownload';
 import StyledIcon from '@material-ui/icons/Style';
 import LazyIcon from '@material-ui/icons/SystemUpdateAlt';
+import DefaultIcon from '@material-ui/icons/BugReportSharp';
 import React from 'react';
 import { NavLink } from 'react-router-dom';
+
+import data from '../wireframes/mockdata';
+const { routes } = data;
 
 class NavLinkMui extends React.Component<any> {
   render() {
@@ -59,6 +63,15 @@ export const SideMenu: React.FunctionComponent = () => {
           </ListItemIcon>
           <ListItemText primary='Usage' />
         </ListItem>
+
+        {routes.map(({ menu, route }, index) => (
+          <ListItem key={index} button component={NavLinkMui} to={`/${route}`}>
+            <ListItemIcon>
+              <DefaultIcon />
+            </ListItemIcon>
+            <ListItemText primary={menu} />
+          </ListItem>
+        ))}
       </List>
       <Divider />
       <List>

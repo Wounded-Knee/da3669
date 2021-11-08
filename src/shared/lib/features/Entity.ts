@@ -1,20 +1,42 @@
 const RPC_GET_ENTITY = 'getEntityById';
 const RPC_ADD_ENTITY = 'addEntity';
-const rpc = [RPC_ADD_ENTITY, RPC_GET_ENTITY];
 
-const server = async function (context, next) {
-  const { core, request, args } = this;
-  switch (request) {
-    case RPC_GET_ENTITY:
-      this.reply(core.getEntityById(...args));
-      break;
-    case RPC_ADD_ENTITY:
-      this.reply(core.addEntity(...args));
-      break;
-  }
-  await next();
+const feature = {
+  [RPC_ADD_ENTITY]: {
+    args: [
+      {
+        name: 'entityData',
+        type: 'json',
+        pack: (data) => JSON.parse(data),
+        unpack: (data) => JSON.stringify(data),
+      },
+    ],
+    middleware: function () {
+      const {
+        core: { store },
+        request,
+        args,
+      } = this;
+      this.reply(store.addEntity(...args));
+    },
+  },
+  [RPC_GET_ENTITY]: {
+    args: [
+      {
+        name: 'entityId',
+        type: 'number',
+        validator: (num) => num < Infinity && num >= 0,
+      },
+    ],
+    middleware: function () {
+      const {
+        core: { store },
+        request,
+        args,
+      } = this;
+      this.reply(store.getEntityById(...args));
+    },
+  },
 };
 
-const client = undefined;
-
-export { rpc, server, client };
+export default feature;

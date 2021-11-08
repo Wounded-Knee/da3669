@@ -1,14 +1,17 @@
-const rpc = ['beSilly'];
+import Feature from '../Feature';
 
-const server = async function (context, next) {
-  const { request, args } = this;
-  if (request === rpc[0]) {
-    this.reply({ silly: args });
-    console.log(this);
-  }
-  await next();
-};
+const RPC_BE_SILLY = 'beSilly';
 
-const client = undefined;
+class Silly extends Feature {
+  rpc = { [RPC_BE_SILLY]: {} };
+  server = async function (context, next) {
+    const { request, args } = this;
+    if (request === RPC_BE_SILLY) {
+      this.reply({ silly: args });
+      console.log(this);
+    }
+    await next();
+  };
+}
 
-export { rpc, server, client };
+export default Silly;

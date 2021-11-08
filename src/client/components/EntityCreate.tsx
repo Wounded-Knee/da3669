@@ -9,13 +9,25 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button';
 import { rpc } from '../../shared/lib/features';
 
-const EntityCreate: React.FunctionComponent = ({ wsClient }) => {
+const getRPCByMethodName = (methodName) => {
+  const featureName = Object.keys(rpc).find((featureName) => {
+    if (!rpc || !rpc[featureName] || !rpc[featureName].args) return false;
+    return rpc[featureName] ? rpc[featureName].args.find(({ name }) => name === methodName) : false;
+  });
+  if (!rpc[featureName]) return false;
+  console.log(rpc[featureName].args, 'MethodName', methodName);
+  return rpc[featureName].args.find(({ name }) => name === methodName);
+};
+
+const EntityCreate: React.FunctionComponent = ({ wsClient, onSubmit }) => {
+  const rpcNames = Object.keys(rpc);
   const defaultValues = {
-    methodName: rpc[0],
+    methodName: rpcNames[0],
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    //const { pack, unpack } = getRPCByMethodName(name) || { pack: (x) => x, unpack: (x) => x };
     setFormValues({
       ...formValues,
       [name]: value,
@@ -24,10 +36,11 @@ const EntityCreate: React.FunctionComponent = ({ wsClient }) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log(formValues);
+    onSubmit(formValues);
   };
 
   const [formValues, setFormValues] = useState(defaultValues);
+  const { methodName } = formValues;
 
   return (
     <form onSubmit={handleSubmit}>
@@ -35,13 +48,55 @@ const EntityCreate: React.FunctionComponent = ({ wsClient }) => {
         <Grid item>
           <FormControl>
             <Select name='methodName' value={formValues.methodName} onChange={handleInputChange}>
-              {rpc.map((method) => (
+              {rpcNames.map((method) => (
                 <MenuItem key={method} value={method}>
                   {method}
                 </MenuItem>
               ))}
             </Select>
           </FormControl>
+        </Grid>
+        {methodName
+          ? (() => {
+              const { args } = rpc[methodName];
+              return args
+                ? args.map(({ name, type }) => (
+                    <Grid item key={name}>
+                      {type === 'json' ? (
+                        <TextField
+                          id='outlined-multiline-flexible'
+                          name={name}
+                          label={name}
+                          multiline
+                          maxrows={8}
+                          value={formValues[name]}
+                          onChange={handleInputChange}
+                        />
+                      ) : (
+                        ''
+                      )}
+
+                      {type === 'number' ? (
+                        <TextField
+                          id='outlined-number'
+                          label={name}
+                          name={name}
+                          value={formValues[name]}
+                          onChange={handleInputChange}
+                          type='number'
+                          InputLabelProps={{
+                            shrink: true,
+                          }}
+                        />
+                      ) : (
+                        ''
+                      )}
+                    </Grid>
+                  ))
+                : '';
+            })()
+          : ''}
+        <Grid item>
           <Button variant='contained' color='primary' type='submit'>
             Submit
           </Button>

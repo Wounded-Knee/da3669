@@ -2,17 +2,17 @@ import Server from './Server';
 import Context from '../../shared/lib/Context';
 import { Server as RPCServer } from 'rpc-websockets';
 import { compose } from 'middleware-io';
-import { server, rpc } from '../../shared/lib/features';
+//import { server, rpc } from '../../shared/lib/features';
 import { WS_SERVER_HOST, WS_SERVER_PORT } from '../config';
 
 class WebSocketServer extends Server {
   webSocketServer;
   core;
 
-  constructor(...args) {
+  constructor(core) {
     // @ts-ignore
-    super(...args);
-    this.core = args[0];
+    super(core);
+    this.core = core;
     this.listen();
   }
 
@@ -21,6 +21,7 @@ class WebSocketServer extends Server {
     return new Promise((resolve) => {
       const context = new Context(this.core, request, ...props);
       context.code = code;
+      /*
       const features = (server || []).map((feature) => feature.bind(context));
       this.log('Composing with features ', features[0], request, code, props);
       // @ts-ignore
@@ -29,6 +30,7 @@ class WebSocketServer extends Server {
         resolve(payload);
         next();
       });
+      */
     });
   }
 
@@ -43,10 +45,12 @@ class WebSocketServer extends Server {
           this.log('Listening');
           resolve(void 0);
         });
-        rpc.forEach((rpcMethod) => {
+        /*
+        Object.keys(rpc).forEach((rpcMethod) => {
           this.log('Registering ' + rpcMethod);
           this.webSocketServer.register(rpcMethod, (...args) => this.command(rpcMethod, ...args));
         });
+        */
       }),
     );
   }

@@ -15,7 +15,7 @@ export const Header: React.FunctionComponent = () => {
     <AppBar position='fixed' className={classes.appBar}>
       <Toolbar>
         <Typography variant='h6' noWrap>
-          Fullstack TypeScript
+          DA3669 Prototype
         </Typography>
       </Toolbar>
     </AppBar>

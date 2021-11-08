@@ -8,10 +8,14 @@ export const Test: React.FunctionComponent = ({ wsClient }) => {
     wsClient.call('beSilly').then(setResult).catch(wsClient.log);
   }
 
+  const onSubmit = (data) => {
+    console.log('Data: ', data);
+  };
+
   return (
     <>
       {result ? <p>silly = {result.silly}</p> : <p>Loading</p>}
-      <EntityCreate />
+      <EntityCreate wsClient={wsClient} onSubmit={onSubmit} />
     </>
   );
 };
