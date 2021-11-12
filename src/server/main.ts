@@ -1,13 +1,12 @@
-import ServerStore from './lib/ServerStore';
 import HTTPServer from './httpServer';
-import WebSocketServer from './lib/WebSocketServer';
-import { STORE_DB_FILE } from './config';
+//import { store as entityStore } from '../shared/wireframes/entities';
+import { actions } from './lib/ReduxStore';
+import { Entity, Text, Classification, Avatar } from '../shared/lib/Entities';
+import { wsServer } from './wsServer';
+// @ts-ignore
+const { newEntity } = actions;
 
-const store = new ServerStore({ db: STORE_DB_FILE });
 const httpServer = new HTTPServer();
-const wsServer = new WebSocketServer({
-  store,
-});
 
 Promise.all([
   httpServer.initialize().then(() => {
@@ -19,4 +18,5 @@ Promise.all([
   }),
 ]).then(() => {
   console.log('Ready');
+  newEntity(Entity('Blah'));
 });

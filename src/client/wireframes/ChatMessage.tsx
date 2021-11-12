@@ -3,7 +3,7 @@ import { List, ListItem, ListItemText } from '@material-ui/core';
 const { useState } = React;
 
 export const ChatMessage: React.FunctionComponent = ({ messages, author }) => {
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState(null);
   return (
     <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
       {messages.map((message, index) => (
@@ -12,7 +12,7 @@ export const ChatMessage: React.FunctionComponent = ({ messages, author }) => {
           selected={selectedIndex === index}
           key={index}
           alignItems='flex-start'
-          onClick={() => setSelectedIndex(index)}
+          onClick={() => setSelectedIndex(index === selectedIndex ? null : index)}
         >
           <ListItemText primary={message} />
         </ListItem>

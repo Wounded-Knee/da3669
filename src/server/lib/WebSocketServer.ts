@@ -4,23 +4,46 @@ import { Server as RPCServer } from 'rpc-websockets';
 import { compose } from 'middleware-io';
 //import { server, rpc } from '../../shared/lib/features';
 import { WS_SERVER_HOST, WS_SERVER_PORT } from '../config';
+import { actions } from '../lib/ReduxStore';
+import { Entity, Text, Classification, Avatar } from '../../shared/lib/Entities';
+// @ts-ignore
+const { newEntity } = actions;
+
+const rpc = {
+  speak: 0,
+};
 
 class WebSocketServer extends Server {
   webSocketServer;
-  core;
 
-  constructor(core) {
-    // @ts-ignore
-    super(core);
-    this.core = core;
+  constructor() {
+    super();
     this.listen();
+    this.webSocketServer.event('newEntity');
+
+    console.log('Events', this.webSocketServer.eventList());
+  }
+
+  emit(...args) {
+    console.log('Emit ', args);
+    this.webSocketServer.emit(...args);
   }
 
   command(request, ...args) {
     const [props, code] = args;
     return new Promise((resolve) => {
-      const context = new Context(this.core, request, ...props);
-      context.code = code;
+      //const context = new Context(this.core, request, ...props);
+      //context.code = code;
+
+      switch (request) {
+        case 'speak':
+          const [[text]] = args;
+          resolve(newEntity(Text(text)));
+          break;
+        default:
+          console.log('Un-handled Command ', request, args);
+          break;
+      }
       /*
       const features = (server || []).map((feature) => feature.bind(context));
       this.log('Composing with features ', features[0], request, code, props);
@@ -45,12 +68,10 @@ class WebSocketServer extends Server {
           this.log('Listening');
           resolve(void 0);
         });
-        /*
         Object.keys(rpc).forEach((rpcMethod) => {
           this.log('Registering ' + rpcMethod);
           this.webSocketServer.register(rpcMethod, (...args) => this.command(rpcMethod, ...args));
         });
-        */
       }),
     );
   }
