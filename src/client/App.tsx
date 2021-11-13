@@ -29,6 +29,7 @@ import { Navigator } from './wireframes/simple2/navigator';
 import { View } from './wireframes/simple3/view';
 import { Core } from './wireframes/simple3/core';
 import { data as initialData } from './wireframes/simple3/data';
+import { DataView } from './components/DataView';
 
 declare module '@material-ui/core/styles' {
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -71,6 +72,7 @@ export const App = () => {
   const classes = useStyles({});
   const [data, setData] = useState(initialData);
   const [user, setUser] = useState('');
+  const drawerState = useState(false);
 
   const core = new Core(data, setData, user, setUser);
 
@@ -80,8 +82,9 @@ export const App = () => {
         <ThemeProvider theme={theme}>
           <div className={classes.root}>
             <CssBaseline />
-            <Header />
+            <Header drawerState={drawerState} />
             <SideMenu core={core} />
+            <DataView state={drawerState} core={core} />
             <main className={classes.main}>
               <div className={classes.toolbar} />
               <Switch>

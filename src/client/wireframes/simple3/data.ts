@@ -3,6 +3,7 @@ export const TYPE_USER = 'USER';
 export const TYPE_MESSAGE = 'MESSAGE';
 export const TYPE_ANSWER = 'ANSWER';
 export const TYPE_VOTE = 'VOTE';
+export const RELATION_GENERIC = 'RELATION';
 
 const users = [
   {

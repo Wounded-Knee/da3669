@@ -3,6 +3,7 @@ export const TYPE_MESSAGE = 'MESSAGE';
 export const TYPE_ANSWER = 'ANSWER';
 export const TYPE_VOTE = 'VOTE';
 export const TYPE_RELATIONAL = 'RELATIONAL';
+export const REL = 'QA';
 
 class Relations {
   referenceEntity;
@@ -14,7 +15,6 @@ class Relations {
   }
 
   get relationalEntities() {
-    console.log(`Seeking relational entities for ${this.referenceEntity.id}`);
     return this.core.filter(
       ({ type, entities }) => type === TYPE_RELATIONAL && entities.indexOf(this.referenceEntity.id) > -1,
     );
@@ -66,6 +66,17 @@ class Entity {
   }
   get messages() {
     return this.children.filter(({ type }) => type === TYPE_MESSAGE);
+  }
+
+  relateTo({ id }, relationshipType) {
+    this.core.createEntity(
+      {
+        entities: [this.id, id],
+        relationshipType,
+      },
+      this.id,
+      TYPE_RELATIONAL,
+    );
   }
 }
 
@@ -243,5 +254,18 @@ export class Core {
   // eslint-disable-next-line @typescript-eslint/adjacent-overload-signatures
   set user(userId) {
     this.userId = userId;
+  }
+
+  createEntity(data, mother, type) {
+    this.setData([
+      ...this.data,
+      {
+        id: this.getNextId(),
+        mother: mother,
+        type,
+        creatress: this.userId,
+        ...data,
+      },
+    ]);
   }
 }

@@ -78,6 +78,7 @@
     "middleware-io": "^2.8.0",
     "mui-treasury": "*",
     "rpc-websockets": "^7.4.15",
+    "searchable-react-json-view": "^0.0.8",
     "styled-components": "^5.2.1",
     "tslib": "^2.1.0"
   },
