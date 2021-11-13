@@ -15,17 +15,23 @@ export const Message = ({ message }) => {
 
   let Messages = '',
     Answers = '',
+    AnswerInput = '',
     ChosenAnswer = '';
   if (type === TYPE_MESSAGE) {
     const { answers, answerVotedByCreatress } = message;
 
     if (answerVotedByCreatress) {
       console.log('answer', answerVotedByCreatress.data);
-      const ChosenAnswer =
-        typeof answerVotedByCreatress !== 'undefined' ? <Message message={answerVotedByCreatress} /> : 'ChosenAnswer';
+      ChosenAnswer = <Message message={answerVotedByCreatress} />;
     }
 
     Messages = messages.map((message, index) => <Message key={index} message={message} />);
+
+    AnswerInput = (
+      <p title={text}>
+        <TextField onSubmit={(text) => message.answerText(text)} />
+      </p>
+    );
 
     Answers =
       typeof answers !== 'undefined'
@@ -40,13 +46,14 @@ export const Message = ({ message }) => {
     </dl>
   );
 
+  const AnswerText = console.log('Message ', message);
+
   return (
     <>
       {MainMessage}
       {Messages}
-      {ChosenAnswer}
-      {Answers}
-      <TextField onSubmit={(text) => message.answerText(text)} />
+      {typeof answerChosenByCreatress === 'undefined' ? ChosenAnswer : Answers}
+      {AnswerInput}
     </>
   );
 };
