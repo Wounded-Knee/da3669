@@ -1,20 +1,36 @@
 import React, { useState } from 'react';
-import { Drawer, makeStyles, Typography, Toolbar } from '@material-ui/core';
+import {
+  List,
+  ListItemText,
+  ListItem,
+  ListItemIcon,
+  Button,
+  Grid,
+  Drawer,
+  makeStyles,
+  Typography,
+  Toolbar,
+} from '@material-ui/core';
+import StorageIcon from '@material-ui/icons/Storage';
+import EqualizerIcon from '@material-ui/icons/Equalizer';
+import CloseIcon from '@material-ui/icons/Close';
 import { createStyles, Theme } from '@material-ui/core/styles';
 import ReactJson from 'searchable-react-json-view';
 
-const drawerWidth = 650;
+const drawerWidth = 450;
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    drawer: {
-      width: drawerWidth,
-      flexShrink: 0,
-    },
     drawerPaper: {
       width: drawerWidth,
     },
-    toolbar: theme.mixins.toolbar,
+    closeButton: {
+      textAlign: 'right',
+    },
+    toolbar: {
+      ...theme.mixins.toolbar,
+      backgroundColor: 'red',
+    },
   }),
 );
 
@@ -24,20 +40,24 @@ export const DataView: React.FunctionComponent = ({ state, core }) => {
   return (
     <Drawer
       anchor='right'
+      variant='persistent'
       open={drawerState}
       onClose={() => setDrawerState(false)}
-      className={classes.drawer}
       classes={{
         paper: classes.drawerPaper,
       }}
     >
-      <div className={classes.toolbar}>
-        <Toolbar>
-          <Typography variant='h6' noWrap onClick={() => setDrawerState(!drawerState)}>
-            D3 Data
-          </Typography>
-        </Toolbar>
-      </div>
+      <div className={classes.toolbar}></div>
+
+      <List>
+        <ListItem>
+          <ListItemIcon>
+            <StorageIcon />
+          </ListItemIcon>
+          <ListItemText primary='D³ata Inspector' secondary={`${core.data.length} entities`} />
+        </ListItem>
+      </List>
+
       <ReactJson
         displayObjectSize={false}
         displayDataTypes={false}

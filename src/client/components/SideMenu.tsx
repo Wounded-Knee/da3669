@@ -12,8 +12,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 
 import data from '../wireframes/mockdata';
-import { UserSelect } from '../wireframes/simple3/userselect';
-import { TYPE_USER, TYPE_MESSAGE } from '../wireframes/simple3/core';
+import { TYPE_MESSAGE } from '../wireframes/simple3/core';
 import { QuestionAnswer } from '@material-ui/icons';
 
 const { routes } = data;
@@ -42,9 +41,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export const SideMenu: React.FunctionComponent = ({ core }) => {
   const classes = useStyles({});
-  const users = core.getByType(TYPE_USER);
   const options = core.getByType(TYPE_MESSAGE).filter(({ mother }) => mother === undefined);
-  const currentUser = core.user;
   return (
     <Drawer
       className={classes.drawer}
@@ -55,10 +52,6 @@ export const SideMenu: React.FunctionComponent = ({ core }) => {
     >
       <div className={classes.toolbar} />
       <List>
-        <ListItem>
-          <UserSelect users={users} currentUser={currentUser} onSubmit={(userID) => (core.user = userID)} />
-        </ListItem>
-
         {options.map(({ id, text }, index) => (
           <ListItem key={index} button component={NavLinkMui} to={`/message/${id}`}>
             <ListItemIcon>

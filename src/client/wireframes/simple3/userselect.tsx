@@ -12,7 +12,6 @@ export const UserSelect = ({ users, onSubmit }) => {
 
   return (
     <FormControl fullWidth>
-      <InputLabel id='demo-simple-select-label'>User</InputLabel>
       <Select labelId='demo-simple-select-label' id='demo-simple-select' value={user} label='User' onChange={onChange}>
         {users.map(({ id, name }, index) => (
           <MenuItem key={index} value={id}>

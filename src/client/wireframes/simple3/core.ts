@@ -254,6 +254,7 @@ export class Core {
   // eslint-disable-next-line @typescript-eslint/adjacent-overload-signatures
   set user(userId) {
     this.userId = userId;
+    this.setUser(userId);
   }
 
   createEntity(data, mother, type) {
