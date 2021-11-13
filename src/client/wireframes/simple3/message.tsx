@@ -25,13 +25,7 @@ export const Message = ({ message }) => {
         typeof answerVotedByCreatress !== 'undefined' ? <Message message={answerVotedByCreatress} /> : 'ChosenAnswer';
     }
 
-    Messages = (
-      <>
-        {messages.map((message, index) => (
-          <Message key={index} message={message} />
-        ))}
-      </>
-    );
+    Messages = messages.map((message, index) => <Message key={index} message={message} />);
 
     Answers =
       typeof answers !== 'undefined'
@@ -39,12 +33,16 @@ export const Message = ({ message }) => {
         : 'Answers';
   }
 
+  const MainMessage = (
+    <dl onClick={() => console.log(message.data)}>
+      <dt>{name}</dt>
+      <dd>{text}</dd>
+    </dl>
+  );
+
   return (
     <>
-      <dl onClick={() => console.log(message.data)}>
-        <dt>{name}</dt>
-        <dd>{text}</dd>
-      </dl>
+      {MainMessage}
       {Messages}
       {ChosenAnswer}
       {Answers}

@@ -76,10 +76,8 @@ class MessageEntity extends Entity {
     const answers = this.answers.filter((answer) => {
       const { votes } = answer;
       const creatressVotes = votes.filter(({ voter }) => {
-        console.log(voter.id, this.mother.creatressId);
-        return voter.id === this.mother.creatressId;
+        return voter ? voter.id === this.mother.creatressId : false;
       });
-      console.log(this.creatressId, answer.text, votes, creatressVotes);
       return creatressVotes.length;
     });
     return answers !== undefined ? answers[0] : [];
@@ -201,38 +199,5 @@ export class Core {
   // eslint-disable-next-line @typescript-eslint/adjacent-overload-signatures
   set user(userId) {
     this.userId = userId;
-  }
-
-  voteForAnswer(mother) {
-    const nextId = this.getNextId();
-    this.setData([
-      ...this.data,
-      {
-        id: nextId + 0,
-        mother,
-        type: TYPE_VOTE,
-        creatress: this.user,
-      },
-    ]);
-  }
-
-  provideFreeformAnswer(mother, text) {
-    const nextId = this.getNextId();
-    this.setData([
-      ...this.data,
-      {
-        id: nextId + 0,
-        mother,
-        type: TYPE_ANSWER,
-        creatress: this.user,
-        text,
-      },
-      {
-        id: nextId + 1,
-        mother: nextId + 0,
-        type: TYPE_VOTE,
-        creatress: this.user,
-      },
-    ]);
   }
 }
