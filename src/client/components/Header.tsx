@@ -22,7 +22,7 @@ export const Header: React.FunctionComponent = ({ drawerState: state }) => {
         <Grid container>
           <Grid item xs={8}>
             <Typography variant='h6' noWrap>
-              DA3669 Prototype
+              🙃 DA3669 Prototype
             </Typography>
           </Grid>
           <Grid item xs={4} className={classes.dataButton}>
