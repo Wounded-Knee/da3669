@@ -1,37 +1,17 @@
-# FAST FullStack React with TypeScript starter kit.
+# DA3669: D3 Full-Stack Experiment
 
-<img src="https://github.com/gilamran/fullstack-typescript/raw/master/assets/images/logo.png" width="150">
+<img src="https://github.com/WAKlNYAN/da3669/raw/master/assets/d3.gif" width="150">
 
 ---
 
-## Quick Start
+## Development
 
-Just clone this repository into your own project folder. and start working
-
-```bash
-git clone https://github.com/gilamran/fullstack-typescript.git <MyProjectName>
-cd <MyProjectName>
-npm install
-npm run dev
-```
-
-If you want to detach from this repository into your own repository do this:
-
-```bash
-git remote remove origin
-git remote add origin YOUR_REPO_URL
-git push -u origin master
-```
-
-## Why
-
-- **Simple** to jump into, **Fast** because it is simple.
 - Separate `tsconfig.json` for client and server.
 - Client and server can share code (And types). For example: [IUserDTO.d.ts](https://github.com/gilamran/fullstack-typescript/blob/master/src/shared/IUserDTO.d.ts)
 - The client is bundled using [Webpack](https://webpack.github.io/) because it goes to the browser.
 - The server is emitted by [TypeScript](https://github.com/Microsoft/TypeScript) because node now supports es6.
 
-<p align="center"> 
+<p align="center">
 <img src="https://github.com/gilamran/fullstack-typescript/raw/master/assets/images/flow.png" width="500">
 </p>
 
@@ -63,14 +43,13 @@ git push -u origin master
 ├── README.md                         # This file
 ```
 
-### What's included
+### Built On
 
 - [React v16](https://facebook.github.io/react/)
 - [React router v4](https://github.com/ReactTraining/react-router)
 - [Material-ui](https://github.com/mui-org/material-ui)
 - [Jest](https://github.com/facebook/jest)
 - [Styled Components](https://github.com/styled-components/styled-components)
-- [Axios](https://github.com/mzabriskie/axios) (For Client/Server communication)
 
 ### Usage
 
@@ -87,13 +66,11 @@ All applications require a config mechanism, for example, `SLACK_API_TOKEN`. Thi
 
 ---
 
-#### What's not included
-
-- Universal (Server side rendering)
-- Redux/MobX (State management)
-
----
-
 #### Licence
 
-This code is released as is, under MIT licence. Feel free to use it for free for both commercial and private projects. No warranty provided.
+No license is offered.
+
+Copyright (C) ɐʞoʎǝH - All Rights Reserved
+Unauthorized copying of data in this project, via any medium, is strictly prohibited
+Proprietary and confidential
+Written by ɐʞoʎǝH <*@heyoka.us>, November 2021
