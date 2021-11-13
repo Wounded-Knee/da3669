@@ -1,14 +1,7 @@
 import { QuasiBoolean } from '../../shared/lib/Entities';
 
 export default {
-  routes: [
-    { menu: 'Votes', route: 'votes' },
-    { menu: 'Rubric', route: 'rubric' },
-    { menu: 'Screen 1', route: 'screen1' },
-    { menu: 'Chat', route: 'chat' },
-    { menu: 'Simple', route: 'simple' },
-    { menu: 'Simple 2', route: 'simple2' },
-  ],
+  routes: [{ menu: 'DA3000', route: 'simple3/0' }],
   entities: {
     simple2: [
       {

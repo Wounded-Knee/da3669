@@ -1,0 +1,25 @@
+import React, { useState } from 'react';
+import { FormControl, InputLabel, Select, MenuItem } from '@material-ui/core';
+import { TYPE_USER } from './data';
+
+export const UserSelect = ({ users, onSubmit }) => {
+  const [user, selectUser] = useState('');
+
+  const onChange = ({ target: { value } }) => {
+    selectUser(value);
+    onSubmit(value);
+  };
+
+  return (
+    <FormControl fullWidth>
+      <InputLabel id='demo-simple-select-label'>User</InputLabel>
+      <Select labelId='demo-simple-select-label' id='demo-simple-select' value={user} label='User' onChange={onChange}>
+        {users.map(({ id, name }, index) => (
+          <MenuItem key={index} value={id}>
+            {name}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+  );
+};

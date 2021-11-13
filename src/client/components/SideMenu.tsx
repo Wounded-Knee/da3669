@@ -6,11 +6,16 @@ import RouterIcon from '@material-ui/icons/Storage';
 import FetchIcon from '@material-ui/icons/CloudDownload';
 import StyledIcon from '@material-ui/icons/Style';
 import LazyIcon from '@material-ui/icons/SystemUpdateAlt';
-import DefaultIcon from '@material-ui/icons/BugReportSharp';
+import DefaultIcon from '@material-ui/icons/Accessibility';
+import QuestionIcon from '@material-ui/icons/QuestionAnswer';
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 
 import data from '../wireframes/mockdata';
+import { UserSelect } from '../wireframes/simple3/userselect';
+import { TYPE_USER, TYPE_MESSAGE } from '../wireframes/simple3/core';
+import { QuestionAnswer } from '@material-ui/icons';
+
 const { routes } = data;
 
 class NavLinkMui extends React.Component<any> {
@@ -35,8 +40,11 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-export const SideMenu: React.FunctionComponent = () => {
+export const SideMenu: React.FunctionComponent = ({ core }) => {
   const classes = useStyles({});
+  const users = core.getByType(TYPE_USER);
+  const options = core.getByType(TYPE_MESSAGE).filter(({ mother }) => mother === undefined);
+  const currentUser = core.user;
   return (
     <Drawer
       className={classes.drawer}
@@ -47,23 +55,23 @@ export const SideMenu: React.FunctionComponent = () => {
     >
       <div className={classes.toolbar} />
       <List>
-        <ListItem button component={NavLinkMui} to='/'>
-          <ListItemIcon>
-            <HomeIcon />
-          </ListItemIcon>
-          <ListItemText primary='Home' />
-        </ListItem>
-        <ListItem button component={NavLinkMui} to='/test'>
-          <ListItemIcon>Test</ListItemIcon>
-          <ListItemText primary='Test' />
-        </ListItem>
-        <ListItem button component={NavLinkMui} to='/usage'>
-          <ListItemIcon>
-            <UsageIcon />
-          </ListItemIcon>
-          <ListItemText primary='Usage' />
+        <ListItem>
+          <UserSelect users={users} currentUser={currentUser} onSubmit={(userID) => (core.user = userID)} />
         </ListItem>
 
+        {options.map(({ id, text }, index) => (
+          <ListItem key={index} button component={NavLinkMui} to={`/simple3/${id}`}>
+            <ListItemIcon>
+              <QuestionAnswer />
+            </ListItemIcon>
+            <ListItemText primary={text} />
+          </ListItem>
+        ))}
+      </List>
+
+      <Divider />
+
+      <List>
         {routes.map(({ menu, route }, index) => (
           <ListItem key={index} button component={NavLinkMui} to={`/${route}`}>
             <ListItemIcon>
@@ -72,9 +80,7 @@ export const SideMenu: React.FunctionComponent = () => {
             <ListItemText primary={menu} />
           </ListItem>
         ))}
-      </List>
-      <Divider />
-      <List>
+        {/*
         <ListItem button component={NavLinkMui} to='/fetch-example'>
           <ListItemIcon>
             <FetchIcon />
@@ -99,6 +105,7 @@ export const SideMenu: React.FunctionComponent = () => {
           </ListItemIcon>
           <ListItemText primary='React-Router' />
         </ListItem>
+        */}
       </List>
     </Drawer>
   );

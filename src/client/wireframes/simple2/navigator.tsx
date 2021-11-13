@@ -6,5 +6,5 @@ export const Navigator = () => {
 
   const onSubmit = (...args) => console.log(args);
 
-  return entities.length ? <Form entity={entities[0]} onSubmit={onSubmit} /> : '';
+  return entities.length ? <Form entity={entities[0]} onSubmit={onSubmit} /> : 'No entities';
 };

@@ -1,6 +1,6 @@
 import { CssBaseline, makeStyles } from '@material-ui/core';
 import { createStyles, Theme, ThemeProvider, createTheme } from '@material-ui/core/styles';
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom'; // Pages
 import { Header } from './components/Header';
 import { SideMenu } from './components/SideMenu';
@@ -26,6 +26,9 @@ import { Screen1 } from './wireframes/Screen1';
 import { Chat } from './wireframes/Chat';
 import { Display } from './wireframes/simple/display';
 import { Navigator } from './wireframes/simple2/navigator';
+import { View } from './wireframes/simple3/view';
+import { Core } from './wireframes/simple3/core';
+import { data as initialData } from './wireframes/simple3/data';
 
 declare module '@material-ui/core/styles' {
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -66,6 +69,10 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export const App = () => {
   const classes = useStyles({});
+  const [data, setData] = useState(initialData);
+  const [user, setUser] = useState('');
+
+  const core = new Core(data, setData, user, setUser);
 
   return (
     <ReduxProvider>
@@ -74,7 +81,7 @@ export const App = () => {
           <div className={classes.root}>
             <CssBaseline />
             <Header />
-            <SideMenu />
+            <SideMenu core={core} />
             <main className={classes.main}>
               <div className={classes.toolbar} />
               <Switch>
@@ -89,6 +96,14 @@ export const App = () => {
                 <Route exact path='/chat' render={() => <Chat wsClient={wsClient} />} />
                 <Route exact path='/simple' render={() => <Display {...displayProps} />} />
                 <Route exact path='/simple2' render={() => <Navigator {...displayProps} />} />
+                <Route
+                  path='/simple3/:messageID'
+                  render={({
+                    match: {
+                      params: { messageID },
+                    },
+                  }) => <View {...displayProps} core={core} messageID={parseInt(messageID)} />}
+                />
 
                 <Route exact path='/usage' component={Usage} />
                 <Route path='/fetch-example' component={UsersList} />
