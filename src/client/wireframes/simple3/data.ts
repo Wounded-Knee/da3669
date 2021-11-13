@@ -1,3 +1,4 @@
+export const TYPE_RELATIONAL = 'RELATIONAL';
 export const TYPE_USER = 'USER';
 export const TYPE_MESSAGE = 'MESSAGE';
 export const TYPE_ANSWER = 'ANSWER';
@@ -23,6 +24,27 @@ const users = [
     id: 103,
     type: TYPE_USER,
     name: 'George',
+  },
+];
+
+const relations = [
+  {
+    id: 300,
+    type: TYPE_RELATIONAL,
+    creatress: 100,
+    entities: [103, 100],
+  },
+  {
+    id: 301,
+    type: TYPE_RELATIONAL,
+    creatress: 100,
+    entities: [103, 101],
+  },
+  {
+    id: 302,
+    type: TYPE_RELATIONAL,
+    creatress: 100,
+    entities: [103, 102],
   },
 ];
 
@@ -104,4 +126,4 @@ const votes = [
   },
 ];
 
-export const data = [...users, ...messages, ...votes];
+export const data = [...users, ...messages, ...votes, ...relations];

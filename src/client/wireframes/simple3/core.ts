@@ -2,6 +2,37 @@ export const TYPE_USER = 'USER';
 export const TYPE_MESSAGE = 'MESSAGE';
 export const TYPE_ANSWER = 'ANSWER';
 export const TYPE_VOTE = 'VOTE';
+export const TYPE_RELATIONAL = 'RELATIONAL';
+
+class Relations {
+  referenceEntity;
+  core;
+
+  constructor(referenceEntity, core) {
+    this.referenceEntity = referenceEntity;
+    this.core = core;
+  }
+
+  get relationalEntities() {
+    console.log(`Seeking relational entities for ${this.referenceEntity.id}`);
+    return this.core.filter(
+      ({ type, entities }) => type === TYPE_RELATIONAL && entities.indexOf(this.referenceEntity.id) > -1,
+    );
+  }
+
+  get all() {
+    return this.relationalEntities.reduce((relations, relationalEntity) => {
+      const { id, entities, type } = relationalEntity;
+      const x = entities.reduce((entitiesReduction, id) => {
+        if (id !== this.referenceEntity.id) {
+          return [...entitiesReduction, this.core.getById(id)];
+        }
+        return entitiesReduction;
+      }, []);
+      return [...relations, ...x];
+    }, []);
+  }
+}
 
 class Entity {
   data;
@@ -38,13 +69,25 @@ class Entity {
   }
 }
 
-class UserEntity extends Entity {
+class RelationalEntity extends Entity {
+  get entities() {
+    return this.data.entities;
+  }
+}
+
+class ContentEntity extends Entity {
+  get relatives() {
+    return new Relations(this, this.core);
+  }
+}
+
+class UserEntity extends ContentEntity {
   get name() {
     return this.data.name;
   }
 }
 
-class VoteEntity extends Entity {
+class VoteEntity extends ContentEntity {
   get answer() {
     return this.mother;
   }
@@ -53,7 +96,7 @@ class VoteEntity extends Entity {
   }
 }
 
-class MessageEntity extends Entity {
+class MessageEntity extends ContentEntity {
   get text() {
     return this.data.text;
   }
@@ -105,7 +148,7 @@ class MessageEntity extends Entity {
   }
 }
 
-class AnswerEntity extends Entity {
+class AnswerEntity extends ContentEntity {
   get text() {
     return this.data.text;
   }
@@ -139,6 +182,7 @@ const Entities = {
   [TYPE_MESSAGE]: MessageEntity,
   [TYPE_USER]: UserEntity,
   [TYPE_VOTE]: VoteEntity,
+  [TYPE_RELATIONAL]: RelationalEntity,
 };
 
 export class Core {
