@@ -97,7 +97,7 @@ export const App = () => {
                 <Route exact path='/simple' render={() => <Display {...displayProps} />} />
                 <Route exact path='/simple2' render={() => <Navigator {...displayProps} />} />
                 <Route
-                  path='/simple3/:messageID'
+                  path='/message/:messageID'
                   render={({
                     match: {
                       params: { messageID },

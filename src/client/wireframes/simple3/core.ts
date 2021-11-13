@@ -119,7 +119,15 @@ class AnswerEntity extends Entity {
   }
 
   vote() {
-    console.log('Voting for ' + this.text);
+    this.core.setData([
+      ...this.core.data,
+      {
+        id: this.core.getNextId(),
+        mother: this.id,
+        type: TYPE_VOTE,
+        creatress: this.core.userId,
+      },
+    ]);
   }
 
   votedByUser(idOrEntity) {

@@ -10,7 +10,7 @@ export const Answer = ({ answer }) => {
     votes && currentUserId ? !!votes.find(({ creatressId }) => creatressId === currentUserId) : false;
 
   return (
-    <Button variant={iVotedForThis ? 'outlined' : 'text'} onClick={answer.vote}>
+    <Button variant={iVotedForThis ? 'outlined' : 'text'} onClick={() => answer.vote()}>
       {text} ({votes.length})
     </Button>
   );
