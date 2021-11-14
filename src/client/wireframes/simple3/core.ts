@@ -198,20 +198,31 @@ const Entities = {
 
 export class Core {
   currentId = 0;
+  dispatch;
   data;
   userId;
-  setData;
-  setUser;
+  state;
 
-  constructor(data, setData, userId, setUser) {
-    this.data = data;
-    this.userId = userId;
-    this.setData = setData;
-    this.setUser = setUser;
+  constructor(stateManagement) {
+    const [state, stateDispatch] = stateManagement;
+    this.data = state.entities;
+    this.userId = state.user.id;
+    this.state = state;
+    this.dispatch = stateDispatch;
     this.currentId = this.data.reduce((maxId, { id }) => Math.max(maxId, id) + 1, 0);
   }
 
   /* Getters */
+  get ui() {
+    return {
+      closeDrawer: (drawerName) => this.dispatch({ type: 'DRAWER', payload: [drawerName, false] }),
+      openDrawer: (drawerName) => this.dispatch({ type: 'DRAWER', payload: [drawerName, true] }),
+      toggleDrawer: (drawerName) =>
+        this.dispatch({ type: 'DRAWER', payload: [drawerName, !this.state.ui.drawers[drawerName]] }),
+      drawerState: (drawerName) => this.state.ui.drawers[drawerName],
+    };
+  }
+
   get user() {
     return this.getById(this.userId);
   }
@@ -254,19 +265,21 @@ export class Core {
   // eslint-disable-next-line @typescript-eslint/adjacent-overload-signatures
   set user(userId) {
     this.userId = userId;
-    this.setUser(userId);
+    this.dispatch({ type: 'SET_USERID', payload: userId });
   }
 
   createEntity(data, mother, type) {
-    this.setData([
-      ...this.data,
-      {
-        id: this.getNextId(),
-        mother: mother,
-        type,
-        creatress: this.userId,
-        ...data,
-      },
-    ]);
+    this.dispatch({
+      type: 'ADD_ENTITY',
+      payload: [
+        {
+          id: this.getNextId(),
+          mother: mother,
+          type,
+          creatress: this.userId,
+          ...data,
+        },
+      ],
+    });
   }
 }

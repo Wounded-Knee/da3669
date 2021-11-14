@@ -22,15 +22,14 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-export const InfoView: React.FunctionComponent = ({ state, core }) => {
-  const [drawerState, setDrawerState] = state;
+export const InfoView: React.FunctionComponent = ({ core }) => {
   const classes = useStyles({});
   return (
     <Drawer
       anchor='right'
       variant='persistent'
-      open={drawerState}
-      onClose={() => setDrawerState(false)}
+      open={core.ui.drawerState('info')}
+      onClose={() => core.ui.closeDrawer('info')}
       classes={{
         paper: classes.drawerPaper,
       }}

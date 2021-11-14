@@ -1,6 +1,6 @@
 import { CssBaseline, makeStyles } from '@material-ui/core';
 import { createStyles, Theme, ThemeProvider, createTheme } from '@material-ui/core/styles';
-import React, { useState } from 'react';
+import React, { useReducer } from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom'; // Pages
 import { Header } from './components/Header';
 import { SideMenu } from './components/SideMenu';
@@ -28,7 +28,7 @@ import { Display } from './wireframes/simple/display';
 import { Navigator } from './wireframes/simple2/navigator';
 import { View } from './wireframes/simple3/view';
 import { Core } from './wireframes/simple3/core';
-import { data as initialData } from './wireframes/simple3/data';
+import { data as staticEntities } from './wireframes/simple3/data';
 import { DataView } from './components/DataView';
 import { InfoView } from './components/InfoView';
 
@@ -69,15 +69,55 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
+const stateReducer = (state, { type, payload }) => {
+  switch (type) {
+    case 'ADD_ENTITY':
+      return {
+        ...state,
+        entities: [...state.entities, payload],
+      };
+      break;
+    case 'DRAWER':
+      const [drawerName, open] = payload;
+      return {
+        ...state,
+        ui: {
+          ...state.ui,
+          drawers: {
+            ...state.ui.drawers,
+            [drawerName]: open,
+          },
+        },
+      };
+      break;
+    default:
+      throw new Error(`Unrecognized action type ${type} to state reducer.`);
+      break;
+  }
+};
+
+const initialState = {
+  entities: staticEntities,
+  user: {
+    id: null,
+  },
+  ui: {
+    drawers: {
+      info: false,
+      data: false,
+    },
+    selectedEntityIndex: null,
+    selectedEntityHistory: [],
+  },
+};
+
 export const App = () => {
   const classes = useStyles({});
-  const [data, setData] = useState(initialData);
-  const [user, setUser] = useState('');
-  const dataState = useState(false);
-  const infoState = useState(false);
-  const [infoEntity, setInfoEntity] = useState('');
+  const stateManagement = useReducer(stateReducer, initialState);
+  const [state, stateDispatch] = stateManagement;
+  const infoEntity = '';
 
-  const core = new Core(data, setData, user, setUser);
+  const core = new Core(stateManagement);
 
   return (
     <ReduxProvider>
@@ -85,10 +125,10 @@ export const App = () => {
         <ThemeProvider theme={theme}>
           <div className={classes.root}>
             <CssBaseline />
-            <Header dataState={dataState} infoState={infoState} core={core} />
+            <Header core={core} />
             <SideMenu core={core} />
-            <DataView state={dataState} core={core} />
-            <InfoView state={infoState} entity={infoEntity} />
+            <DataView core={core} />
+            <InfoView core={core} entity={infoEntity} />
             <main className={classes.main}>
               <div className={classes.toolbar} />
               <Switch>

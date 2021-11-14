@@ -16,11 +16,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
   }),
 );
-export const Header: React.FunctionComponent = ({
-  dataState: [dataState, setDataState],
-  infoState: [infoState, setInfoState],
-  core,
-}) => {
+export const Header: React.FunctionComponent = ({ core }) => {
   const classes = useStyles({});
   const users = core.getByType(TYPE_USER);
   const currentUser = core.user;
@@ -37,11 +33,11 @@ export const Header: React.FunctionComponent = ({
             <UserSelect users={users} currentUser={currentUser} onSubmit={(userID) => (core.user = userID)} />
           </Grid>
           <Grid item xs={1} className={classes.dataButton}>
-            <Button onClick={() => setInfoState(!infoState)}>
+            <Button onClick={() => core.ui.toggleDrawer('info')}>
               <InfoIcon />
             </Button>
 
-            <Button onClick={() => setDataState(!dataState)}>
+            <Button onClick={() => core.ui.toggleDrawer('data')}>
               <StorageIcon />
             </Button>
           </Grid>

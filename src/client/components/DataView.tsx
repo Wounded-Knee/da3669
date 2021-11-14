@@ -34,15 +34,14 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-export const DataView: React.FunctionComponent = ({ state, core }) => {
-  const [drawerState, setDrawerState] = state;
+export const DataView: React.FunctionComponent = ({ core }) => {
   const classes = useStyles({});
   return (
     <Drawer
       anchor='right'
       variant='persistent'
-      open={drawerState}
-      onClose={() => setDrawerState(false)}
+      open={core.ui.drawerState('data')}
+      onClose={() => core.ui.closeDrawer('data')}
       classes={{
         paper: classes.drawerPaper,
       }}
