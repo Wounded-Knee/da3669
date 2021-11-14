@@ -90,6 +90,11 @@ class ContentEntity extends Entity {
   get relatives() {
     return new Relations(this, this.core);
   }
+
+  get isSelected() {
+    const selected = this.core.ui.getSelectedEntity();
+    return selected ? selected.id === this.id : false;
+  }
 }
 
 class UserEntity extends ContentEntity {
@@ -214,12 +219,19 @@ export class Core {
 
   /* Getters */
   get ui() {
+    const { ui } = this.state;
     return {
       closeDrawer: (drawerName) => this.dispatch({ type: 'DRAWER', payload: [drawerName, false] }),
       openDrawer: (drawerName) => this.dispatch({ type: 'DRAWER', payload: [drawerName, true] }),
-      toggleDrawer: (drawerName) =>
-        this.dispatch({ type: 'DRAWER', payload: [drawerName, !this.state.ui.drawers[drawerName]] }),
-      drawerState: (drawerName) => this.state.ui.drawers[drawerName],
+      toggleDrawer: (drawerName) => this.dispatch({ type: 'DRAWER', payload: [drawerName, !ui.drawers[drawerName]] }),
+      drawerState: (drawerName) => ui.drawers[drawerName],
+
+      selectEntity: (entityId) => this.dispatch({ type: 'SELECT_ENTITY', payload: entityId }),
+      getSelectedEntity: () => {
+        const selectedEntity = this.getById(ui.selectedEntityHistory[ui.selectedEntityIndex]);
+        return selectedEntity;
+      },
+      getSelectedEntityHistory: () => ui.selectedEntityHistory.map((entityId) => this.getById(entityId)),
     };
   }
 

@@ -11,6 +11,7 @@ export const Message = ({ message }) => {
     creatress: { name },
     mother,
     messages,
+    isSelected,
   } = message;
 
   let Messages = '',
@@ -40,7 +41,7 @@ export const Message = ({ message }) => {
   }
 
   const MainMessage = (
-    <dl onClick={() => console.log(message.data)}>
+    <dl onClick={() => message.core.ui.selectEntity(message.id)} className={isSelected ? 'selected' : ''}>
       <dt>{name}</dt>
       <dd>{text}</dd>
     </dl>

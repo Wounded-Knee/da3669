@@ -28,9 +28,9 @@ import { Display } from './wireframes/simple/display';
 import { Navigator } from './wireframes/simple2/navigator';
 import { View } from './wireframes/simple3/view';
 import { Core } from './wireframes/simple3/core';
-import { data as staticEntities } from './wireframes/simple3/data';
 import { DataView } from './components/DataView';
 import { InfoView } from './components/InfoView';
+import { stateManager } from './lib/stateManager';
 
 declare module '@material-ui/core/styles' {
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -69,51 +69,9 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const stateReducer = (state, { type, payload }) => {
-  switch (type) {
-    case 'ADD_ENTITY':
-      return {
-        ...state,
-        entities: [...state.entities, payload],
-      };
-      break;
-    case 'DRAWER':
-      const [drawerName, open] = payload;
-      return {
-        ...state,
-        ui: {
-          ...state.ui,
-          drawers: {
-            ...state.ui.drawers,
-            [drawerName]: open,
-          },
-        },
-      };
-      break;
-    default:
-      throw new Error(`Unrecognized action type ${type} to state reducer.`);
-      break;
-  }
-};
-
-const initialState = {
-  entities: staticEntities,
-  user: {
-    id: null,
-  },
-  ui: {
-    drawers: {
-      info: false,
-      data: false,
-    },
-    selectedEntityIndex: null,
-    selectedEntityHistory: [],
-  },
-};
-
 export const App = () => {
   const classes = useStyles({});
-  const stateManagement = useReducer(stateReducer, initialState);
+  const stateManagement = stateManager();
   const [state, stateDispatch] = stateManagement;
   const infoEntity = '';
 
