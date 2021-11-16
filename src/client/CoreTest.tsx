@@ -49,6 +49,7 @@ const wsClient = new WebSocketClient({
   host: WS_SERVER_HOST,
   port: WS_SERVER_PORT,
 });
+const serverDispatch = wsClient.dispatch.bind(wsClient);
 
 const uiLoad = new Date();
 
@@ -58,10 +59,7 @@ export const CoreTest: React.FunctionComponent = () => {
   const core = new Core({
     clientState: state,
     clientDispatch: dispatch,
-    serverDispatch: (action) => {
-      console.log('Server Dispatch: ', action);
-      return void 0;
-    },
+    serverDispatch,
     date: {
       uiLoad,
       uiRender: new Date(),

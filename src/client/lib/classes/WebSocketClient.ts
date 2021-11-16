@@ -1,5 +1,6 @@
 import { Client as Wsc } from 'rpc-websockets';
 import Client from './Client';
+import { action } from '../../../shared/all';
 
 export class WebSocketClient extends Client {
   host;
@@ -15,7 +16,6 @@ export class WebSocketClient extends Client {
 
     this.whileInitializing(
       new Promise((resolve) => {
-        console.log('asf');
         this.log(`Connecting to ${url}...`);
         this.wsc = new Wsc(url);
         this.wsc.on('open', () => {
@@ -24,6 +24,10 @@ export class WebSocketClient extends Client {
         });
       }),
     );
+  }
+
+  dispatch(action: action) {
+    return this.wsc.call('dispatch', action);
   }
 }
 Object.assign(WebSocketClient.prototype, {

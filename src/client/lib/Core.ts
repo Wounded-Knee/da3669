@@ -16,4 +16,11 @@ export class Core extends SharedCore {
   get dispatch() {
     return this.cfg.clientDispatch;
   }
+
+  tx(action: action): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.cfg.serverDispatch(action);
+      resolve(void 0);
+    });
+  }
 }

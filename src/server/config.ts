@@ -22,4 +22,6 @@ const WEBPACK_PORT = 8085; // For dev environment only
 // WS Server
 const STORE_DB_FILE = './db.json';
 
-export { IS_DEV, VERSION, WEBPACK_PORT, HTTP_SERVER_PORT, WS_SERVER_HOST, WS_SERVER_PORT, STORE_DB_FILE };
+const sliceName = 'D3';
+
+export { sliceName, IS_DEV, VERSION, WEBPACK_PORT, HTTP_SERVER_PORT, WS_SERVER_HOST, WS_SERVER_PORT, STORE_DB_FILE };

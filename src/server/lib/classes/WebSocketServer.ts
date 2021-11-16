@@ -1,15 +1,19 @@
 import Server from './Server';
 import { Server as Wss } from 'rpc-websockets';
+import { action } from '../../../shared/all';
 
 export class WebSocketServer extends Server {
   host;
   port;
+  methods;
+  onReceiveCallbacks = [];
   wss;
 
-  constructor({ host, port }: { host: string; port: number }) {
+  constructor({ host, port, methods }: { host: string; port: number; methods: string[] }) {
     super();
     this.host = host;
     this.port = port;
+    this.methods = methods;
 
     this.whileInitializing(
       new Promise((resolve) => {
@@ -22,8 +26,20 @@ export class WebSocketServer extends Server {
           this.log(`Listening on port ${port}`);
           resolve(void 0);
         });
+        methods.forEach((method) => {
+          this.wss.register(method);
+        });
+        this.wss.register('dispatch', this.receive.bind(this));
       }),
     );
+  }
+
+  receive(action: action): Promise<any[]> {
+    return Promise.all(this.onReceiveCallbacks.map((cb) => cb(action)));
+  }
+
+  onReceive(callback) {
+    this.onReceiveCallbacks.push(callback);
   }
 }
 Object.assign(WebSocketServer.prototype, {

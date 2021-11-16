@@ -1,42 +1,30 @@
 import { createSlice, configureStore } from '@reduxjs/toolkit';
 import { dispatch } from '../../../shared/all';
 import { initialState } from './initialState';
-import { reducer } from './reducer';
+import { reducer as serverReducer } from './reducer';
+import { sliceName } from '../../config';
 
-/*
-const reducers = Object.keys(actionTypes).reduce((reducers, actionType) => {
-  return {
-    ...reducers,
-    [actionTypes[actionType]]: (state, action) => reducer(action.type)
-  }
-}, {});
-*/
-
-const slice = createSlice({
-  name: 'D3 Server Slice',
+const { reducer, actions } = createSlice({
+  name: sliceName,
   initialState,
   reducers: {
-    general: reducer,
+    debugg(state, action) {
+      console.log('bugg');
+      return state;
+    },
+    debug: (state, action) => {
+      console.log('Dispatch ', action);
+      return state;
+    },
+    DO_SERVER_STUFF: serverReducer,
   },
 });
 
-const store = configureStore({
-  reducer: slice.reducer,
-});
+console.log(actions.DO_SERVER_STUFF(0));
 
-/*
-  slice: {
-    actions: {
-      [actionName](payload) {} // Creates an action object
-    }
-  }
-
-  store: {
-    subscribe(callback) {} // Subscribes to state updates
-    dispatch(slice.actions[n](payload)) {} // Dispatches an action
-  }
-*/
+const store = configureStore({ reducer });
+store.subscribe((...args) => console.log('SUBSCRIBE ', store.getState(), ...args));
 
 export const stateManager = (): [any, dispatch] => {
-  return [store, store.dispatch.bind(store)];
+  return [store, ({ type, ...other }) => store.dispatch({ type: `${sliceName}/${type}`, ...other })];
 };

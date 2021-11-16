@@ -1,18 +1,25 @@
 import { reducer as rootReducer, actionTypes as rootActionTypes } from '../../../shared/lib/stateManager/reducer';
 import { action } from '../../../shared/all';
+import { sliceName } from '../../config';
 
-export const actionTypes = {
+const unscopedActionTypes = {
   ...rootActionTypes,
   DO_SERVER_STUFF: 'DO_SERVER_STUFF',
 };
 
+export const actionTypes: { [key: string]: string } = Object.keys(unscopedActionTypes).reduce(
+  (scopedActionTypes, actionType) => ({
+    ...scopedActionTypes,
+    [actionType]: `${sliceName}/${unscopedActionTypes[actionType]}`,
+  }),
+  {},
+);
+
 const serverReducer = (state, { type, payload }) => {
   switch (type) {
     case actionTypes.DO_SERVER_STUFF:
-      return {
-        ...state,
-        entities: [...state.entities, payload],
-      };
+      console.log('Doing server stuff');
+      return state;
   }
   return state;
 };

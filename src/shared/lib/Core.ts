@@ -1,6 +1,7 @@
 import { ICoreConfig, action, IEntity } from '../all';
+import Kernel from './classes/Kernel';
 
-export class Core {
+export class Core extends Kernel {
   cfg: ICoreConfig;
 
   get all(): IEntity[] {
@@ -12,14 +13,16 @@ export class Core {
   }
 
   // Dispatches a message to the converse core via network
-  tx(action: action): boolean {
+  tx(action: action): Promise<any> {
     throw new Error('Failed to override Core.tx()');
-    return false;
   }
 
   // Receives a message from the converse core via network
-  rx(action: action): boolean {
+  rx(action: action): Promise<any> {
     throw new Error('Failed to override Core.rx()');
-    return false;
   }
 }
+Object.assign(Core.prototype, {
+  _className: 'Core',
+  _showDebug: true,
+});
