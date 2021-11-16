@@ -1,4 +1,4 @@
-import { FEATURES } from '../config';
+// @ts-nocheck
 import { ObjectFilter } from '../utils';
 
 /*

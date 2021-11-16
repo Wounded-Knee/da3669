@@ -1,6 +1,5 @@
 import { Core as SharedCore } from '../../shared/lib/Core';
 import { action, ICoreConfig } from '../all';
-import { dispatch } from '../../shared/all';
 
 export class Core extends SharedCore {
   cfg: ICoreConfig;
@@ -16,10 +15,5 @@ export class Core extends SharedCore {
 
   get dispatch() {
     return this.cfg.clientDispatch;
-  }
-
-  xdispatch(action: action): boolean {
-    console.log('Client Dispatch: ', action);
-    return true;
   }
 }

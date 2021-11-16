@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 import findUp from 'find-up';
 import path from 'path';
 import fs from 'fs';
-import { WS_SERVER_PORT, WS_SERVER_HOST, FEATURES } from '../shared/config';
+import { WS_SERVER_PORT, WS_SERVER_HOST, HTTP_SERVER_PORT as _HTTP_SERVER_PORT } from '../shared/config';
 
 const IS_DEV = process.env.NODE_ENV !== 'production';
 
@@ -16,10 +16,10 @@ const PackageJson = JSON.parse(rawPackageJson);
 const { version: VERSION } = PackageJson;
 
 // HTTP Server
-const SERVER_PORT = process.env.PORT || 3000;
+const HTTP_SERVER_PORT = parseInt(process.env.PORT) || _HTTP_SERVER_PORT;
 const WEBPACK_PORT = 8085; // For dev environment only
 
 // WS Server
 const STORE_DB_FILE = './db.json';
 
-export { IS_DEV, VERSION, SERVER_PORT, WEBPACK_PORT, WS_SERVER_HOST, WS_SERVER_PORT, STORE_DB_FILE, FEATURES };
+export { IS_DEV, VERSION, WEBPACK_PORT, HTTP_SERVER_PORT, WS_SERVER_HOST, WS_SERVER_PORT, STORE_DB_FILE };

@@ -4,17 +4,12 @@ import { apiRouter } from '../../routes/api-router';
 import { pagesRouter } from '../../routes/pages-router';
 import { staticsRouter } from '../../routes/statics-router';
 import Server from './Server';
-import * as config from '../../config';
 
 class HTTPServer extends Server {
   express;
 
-  constructor() {
+  constructor({ port }: { port: number }) {
     super();
-    console.log(`*******************************************`);
-    console.log(`NODE_ENV: ${process.env.NODE_ENV}`);
-    console.log(`config: ${JSON.stringify(config, null, 2)}`);
-    console.log(`*******************************************`);
 
     this.whileInitializing(
       new Promise((resolve) => {
@@ -27,15 +22,15 @@ class HTTPServer extends Server {
         httpServer.use(staticsRouter());
         httpServer.use(pagesRouter());
 
-        httpServer.listen(config.SERVER_PORT, () => {
-          this.log('Listening.');
+        httpServer.listen(port, () => {
+          this.log(`Listening on port ${port}`);
           resolve(void 0);
         });
       }),
     );
   }
 
-  initialize() {
+  initialize(): Promise<any[]> {
     this.log('Initializing...');
     return super.initialize();
   }

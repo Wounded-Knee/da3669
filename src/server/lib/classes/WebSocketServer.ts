@@ -19,7 +19,7 @@ export class WebSocketServer extends Server {
           host,
         });
         this.wss.on('listening', () => {
-          this.log('Listening.');
+          this.log(`Listening on port ${port}`);
           resolve(void 0);
         });
       }),

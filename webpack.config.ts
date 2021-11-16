@@ -3,7 +3,7 @@ import { Configuration } from 'webpack';
 import { WebpackManifestPlugin } from 'webpack-manifest-plugin';
 import cssnano from 'cssnano';
 
-import { SERVER_PORT, IS_DEV, WEBPACK_PORT } from './src/server/config';
+import { HTTP_SERVER_PORT as SERVER_PORT, IS_DEV, WEBPACK_PORT } from './src/server/config';
 
 const plugins = [new WebpackManifestPlugin()];
 
