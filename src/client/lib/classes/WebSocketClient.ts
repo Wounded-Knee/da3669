@@ -26,6 +26,14 @@ export class WebSocketClient extends Client {
     );
   }
 
+  on(...args) {
+    return this.wsc.on(...args);
+  }
+
+  subscribe(...args) {
+    return this.wsc.subscribe(...args);
+  }
+
   dispatch(action: action) {
     return this.wsc.call('dispatch', action);
   }

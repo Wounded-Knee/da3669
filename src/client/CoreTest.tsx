@@ -57,6 +57,7 @@ export const CoreTest: React.FunctionComponent = () => {
   const classes = useStyles({});
   const [state, dispatch] = useStateManager();
   const core = new Core({
+    client: wsClient,
     clientState: state,
     clientDispatch: dispatch,
     serverDispatch,

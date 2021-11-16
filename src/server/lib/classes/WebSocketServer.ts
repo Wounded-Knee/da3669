@@ -38,6 +38,14 @@ export class WebSocketServer extends Server {
     return Promise.all(this.onReceiveCallbacks.map((cb) => cb(action)));
   }
 
+  emit(...args) {
+    this.wss.emit(...args);
+  }
+
+  event(...args) {
+    this.wss.event(...args);
+  }
+
   onReceive(callback) {
     this.onReceiveCallbacks.push(callback);
   }

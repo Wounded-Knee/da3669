@@ -17,6 +17,7 @@ export interface ICoreConfig extends ISharedCoreConfig {
   clientState: IClientState;
   clientDispatch: dispatch;
   serverDispatch: dispatch;
+  client: any;
   date: {
     uiRender: Date;
     uiLoad: Date;
