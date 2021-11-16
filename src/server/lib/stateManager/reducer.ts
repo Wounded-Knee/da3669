@@ -13,11 +13,8 @@ const serverReducer = (state, { type, payload }) => {
         ...state,
         entities: [...state.entities, payload],
       };
-      break;
-    default:
-      throw new Error(`Unrecognized action type ${type} to state reducer.`);
-      break;
   }
+  return state;
 };
 
 export const reducer = (state: any, action: action): any => {

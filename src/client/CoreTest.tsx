@@ -5,7 +5,8 @@ import React from 'react';
 // Wireframes
 import { Core } from './lib/Core';
 import { useStateManager } from './lib/stateManager/useStateManager';
-import Client from './wireframes/simple3/WebSocketClient';
+import { WebSocketClient } from './lib/classes/WebSocketClient';
+import { WS_SERVER_HOST, WS_SERVER_PORT } from '../shared/config';
 
 declare module '@material-ui/core/styles' {
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -22,8 +23,6 @@ declare module '@material-ui/core/styles' {
     };
   }
 }
-
-const wsClient = new Client();
 
 const theme = createTheme({
   palette: {
@@ -45,6 +44,11 @@ const useStyles = makeStyles((theme: Theme) =>
     toolbar: theme.mixins.toolbar,
   }),
 );
+
+const wsClient = new WebSocketClient({
+  host: WS_SERVER_HOST,
+  port: WS_SERVER_PORT,
+});
 
 const uiLoad = new Date();
 

@@ -1,12 +1,44 @@
-import { WS_SERVER_HOST, WS_SERVER_PORT } from '../config';
+import { Client as Wsc } from 'rpc-websockets';
+import Client from './Client';
+
+export class WebSocketClient extends Client {
+  host;
+  port;
+  wsc;
+
+  constructor({ host, port }: { host: string; port: number }) {
+    super();
+    this.host = host;
+    this.port = port;
+
+    const url = `ws://${host}:${port}`;
+
+    this.whileInitializing(
+      new Promise((resolve) => {
+        console.log('asf');
+        this.log(`Connecting to ${url}...`);
+        this.wsc = new Wsc(url);
+        this.wsc.on('open', () => {
+          this.log('Connected.');
+          resolve(void 0);
+        });
+      }),
+    );
+  }
+}
+Object.assign(WebSocketClient.prototype, {
+  _className: 'WebSocketClient',
+  _showDebug: true,
+});
+
+/*
 import { Client as RPCClient } from 'rpc-websockets';
 // @ts-ignore
-import { actions } from '../../client/ReduxStore';
-import Kernel from './classes/Kernel';
+import { actions } from '../../ReduxStore';
+import Kernel from '../../../shared/lib/classes/Kernel';
 // @ts-ignore
 const { receiveEntity } = actions;
 
-const url = `ws://${WS_SERVER_HOST}:${WS_SERVER_PORT}`;
 class Client extends Kernel {
   rpcClient;
 
@@ -43,3 +75,7 @@ Object.assign(Client.prototype, {
 });
 
 export default Client;
+
+
+import Server from './Server';
+*/

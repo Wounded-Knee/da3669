@@ -1,14 +1,22 @@
-import { reducer as rootReducer } from '../../../shared/lib/stateManager/reducer';
+import { reducer as rootReducer, actionTypes as rootActionTypes } from '../../../shared/lib/stateManager/reducer';
 import { action } from '../../../shared/all';
+
+export const actionTypes = {
+  ...rootActionTypes,
+  CLOBBER_ENTITIES: 'CLOBBER_ENTITIES',
+  SET_USERID: 'SET_USERID',
+  SELECT_ENTITY: 'SELECT_ENTITY',
+  DRAWER: 'DRAWER',
+};
 
 const clientReducer = (state, { type, payload }) => {
   switch (type) {
-    case 'CLOBBER_ENTITIES':
+    case actionTypes.CLOBBER_ENTITIES:
       return {
         ...state,
         entities: payload,
       };
-    case 'SET_USERID':
+    case actionTypes.SET_USERID:
       return {
         ...state,
         user: {
@@ -16,7 +24,7 @@ const clientReducer = (state, { type, payload }) => {
           id: payload,
         },
       };
-    case 'SELECT_ENTITY':
+    case actionTypes.SELECT_ENTITY:
       const history = state.ui.selectedEntityHistory.filter((id) => id !== payload);
       return {
         ...state,
@@ -26,7 +34,7 @@ const clientReducer = (state, { type, payload }) => {
           selectedEntityHistory: [payload, ...history],
         },
       };
-    case 'DRAWER':
+    case actionTypes.DRAWER:
       const [drawerName, open] = payload;
       return {
         ...state,
