@@ -1,12 +1,14 @@
 import express from 'express';
 import path from 'path';
-import { apiRouter } from './routes/api-router';
-import { pagesRouter } from './routes/pages-router';
-import { staticsRouter } from './routes/statics-router';
-import Server from './lib/Server';
-import * as config from './config';
+import { apiRouter } from '../../routes/api-router';
+import { pagesRouter } from '../../routes/pages-router';
+import { staticsRouter } from '../../routes/statics-router';
+import Server from './Server';
+import * as config from '../../config';
 
 class HTTPServer extends Server {
+  express;
+
   constructor() {
     super();
     console.log(`*******************************************`);
@@ -26,6 +28,7 @@ class HTTPServer extends Server {
         httpServer.use(pagesRouter());
 
         httpServer.listen(config.SERVER_PORT, () => {
+          this.log('Listening.');
           resolve(void 0);
         });
       }),
@@ -33,9 +36,13 @@ class HTTPServer extends Server {
   }
 
   initialize() {
-    this.log('init');
+    this.log('Initializing...');
     return super.initialize();
   }
 }
+Object.assign(HTTPServer.prototype, {
+  _className: 'HTTPServer',
+  _showDebug: true,
+});
 
 export default HTTPServer;

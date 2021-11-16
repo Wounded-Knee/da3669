@@ -1,7 +1,18 @@
+// @ts-nocheck
 import React from 'react';
 import { TYPE_ANSWER, TYPE_VOTE, TYPE_MESSAGE } from './data';
 import { Answer } from './answer';
 import { TextField } from './textfield-autosubmit';
+import { makeStyles } from '@material-ui/core';
+import { createStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    selectedMessage: {
+      color: '#ff0',
+    },
+  }),
+);
 
 export const Message = ({ message }) => {
   const {
@@ -13,6 +24,8 @@ export const Message = ({ message }) => {
     messages,
     isSelected,
   } = message;
+
+  const classes = useStyles({});
 
   let Messages = '',
     Answers = '',
@@ -41,7 +54,7 @@ export const Message = ({ message }) => {
   }
 
   const MainMessage = (
-    <dl onClick={() => message.core.ui.selectEntity(message.id)} className={isSelected ? 'selected' : ''}>
+    <dl onClick={() => message.core.ui.selectEntity(message.id)} className={isSelected ? classes.selectedMessage : ''}>
       <dt>{name}</dt>
       <dd>{text}</dd>
     </dl>

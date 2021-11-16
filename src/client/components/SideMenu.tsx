@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-export const SideMenu: React.FunctionComponent = ({ core }) => {
+export const SideMenu: React.FunctionComponent<{ core: any }> = ({ core }) => {
   const classes = useStyles({});
   const options = core.getByType(TYPE_MESSAGE).filter(({ mother }) => mother === undefined);
   return (

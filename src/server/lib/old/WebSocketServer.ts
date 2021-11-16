@@ -1,4 +1,5 @@
-import Server from './Server';
+// @ts-nocheck
+import Server from '../classes/Server';
 import Context from '../../shared/lib/Context';
 import { Server as RPCServer } from 'rpc-websockets';
 import { compose } from 'middleware-io';
@@ -40,6 +41,7 @@ class WebSocketServer extends Server {
           const [[text]] = args;
           resolve(newEntity(Text(text)));
           break;
+
         default:
           console.log('Un-handled Command ', request, args);
           break;

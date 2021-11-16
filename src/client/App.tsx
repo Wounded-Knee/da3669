@@ -30,7 +30,7 @@ import { View } from './wireframes/simple3/view';
 import { Core } from './wireframes/simple3/core';
 import { DataView } from './components/DataView';
 import { InfoView } from './components/InfoView';
-import { stateManager } from './lib/stateManager';
+import { stateManager, initialStateWithTestData } from './lib/stateManager';
 
 declare module '@material-ui/core/styles' {
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -69,14 +69,28 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-export const App = () => {
+export const App = ({ setCore }) => {
   const classes = useStyles({});
-  const stateManagement = stateManager();
+  const stateManagement = stateManager(initialStateWithTestData);
   const [state, stateDispatch] = stateManagement;
   const infoEntity = '';
-
   const core = new Core(stateManagement);
+  if (setCore) setCore(core);
 
+  if (!window.core) {
+    core.clobber();
+  }
+  window.core = core;
+
+  return (
+    <ThemeProvider theme={theme}>
+      <div className={classes.root}>
+        <CssBaseline />
+        <center>Test Mode</center>
+      </div>
+    </ThemeProvider>
+  );
+  /*
   return (
     <ReduxProvider>
       <BrowserRouter>
@@ -86,21 +100,10 @@ export const App = () => {
             <Header core={core} />
             <SideMenu core={core} />
             <DataView core={core} />
-            <InfoView core={core} entity={infoEntity} />
+            <InfoView core={core} />
             <main className={classes.main}>
               <div className={classes.toolbar} />
               <Switch>
-                <Route exact path='/' component={Home} />
-
-                <Route exact path='/test' render={() => <Test wsClient={wsClient} />} />
-                <Route exact path='/test2' render={() => <Test2 wsClient={wsClient} />} />
-
-                <Route exact path='/rubric' component={Rubric} />
-                <Route exact path='/votes' component={Votes} />
-                <Route exact path='/screen1' component={Screen1} />
-                <Route exact path='/chat' render={() => <Chat wsClient={wsClient} />} />
-                <Route exact path='/simple' render={() => <Display {...displayProps} />} />
-                <Route exact path='/simple2' render={() => <Navigator {...displayProps} />} />
                 <Route
                   path='/message/:messageID'
                   render={({
@@ -114,7 +117,6 @@ export const App = () => {
                 <Route path='/fetch-example' component={UsersList} />
                 <Route path='/lazy-example' component={LazyLoadingExample} />
                 <Route path='/styled-example' component={StyledComponentsExample} />
-                <Route path='/router-example/:slug' component={RouterExample} />
               </Switch>
             </main>
           </div>
@@ -122,4 +124,5 @@ export const App = () => {
       </BrowserRouter>
     </ReduxProvider>
   );
+  */
 };

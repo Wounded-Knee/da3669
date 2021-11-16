@@ -36,10 +36,9 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-export const InfoView: React.FunctionComponent = ({ core }) => {
+export const InfoView: React.FunctionComponent<{ core: any }> = ({ core }) => {
   const classes = useStyles({});
-  const selectedEntity = core.ui.getSelectedEntity();
-  const selectedEntityHistory = core.ui.getSelectedEntityHistory();
+  const [selectedEntity, ...selectedEntityHistory] = core.ui.getSelectedEntityHistory();
   return (
     <Drawer
       anchor='right'
@@ -53,7 +52,6 @@ export const InfoView: React.FunctionComponent = ({ core }) => {
       <div className={classes.toolbar}></div>
 
       <List
-        sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
         component='nav'
         aria-labelledby='nested-list-subheader'
         subheader={
@@ -62,18 +60,36 @@ export const InfoView: React.FunctionComponent = ({ core }) => {
           </ListSubheader>
         }
       >
+        {selectedEntity ? (
+          <>
+            <Divider />
+            <ListItem>
+              <ListItemIcon>
+                <TouchAppIcon />
+              </ListItemIcon>
+              <ListItemText primary='Selected Entity' />
+            </ListItem>
+            <ListItem button>
+              <ListItemText primary={selectedEntity.text} />
+            </ListItem>
+          </>
+        ) : (
+          ''
+        )}
+
+        <Divider />
         <ListItem>
           <ListItemIcon>
             <TouchAppIcon />
           </ListItemIcon>
-          <ListItemText primary='Selected Entities' secondary={`${selectedEntityHistory.length} entities`} />
+          <ListItemText primary='Recent Entities' secondary={`${selectedEntityHistory.length} entities`} />
         </ListItem>
 
         <Divider />
 
-        {selectedEntityHistory.map((entity, index) => (
-          <ListItem button key={index}>
-            <ListItemText primary={entity.text} />
+        {selectedEntityHistory.map(({ text, id }, index) => (
+          <ListItem button key={index} onClick={() => core.ui.selectEntity(id)}>
+            <ListItemText primary={text} />
           </ListItem>
         ))}
       </List>

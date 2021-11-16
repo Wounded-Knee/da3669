@@ -1,8 +1,8 @@
-import Kernel from './Kernel';
 import { WS_SERVER_HOST, WS_SERVER_PORT } from '../config';
 import { Client as RPCClient } from 'rpc-websockets';
 // @ts-ignore
 import { actions } from '../../client/ReduxStore';
+import Kernel from './classes/Kernel';
 // @ts-ignore
 const { receiveEntity } = actions;
 

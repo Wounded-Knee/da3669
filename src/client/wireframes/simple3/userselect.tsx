@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FormControl, InputLabel, Select, MenuItem } from '@material-ui/core';
 import { TYPE_USER } from './data';
 
-export const UserSelect = ({ users, onSubmit }) => {
+export const UserSelect: React.FunctionComponent<{ users: any; onSubmit: any }> = ({ users, onSubmit }) => {
   const [user, selectUser] = useState('');
 
   const onChange = ({ target: { value } }) => {

@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-export const DataView: React.FunctionComponent = ({ core }) => {
+export const DataView: React.FunctionComponent<{ core: any }> = ({ core }) => {
   const classes = useStyles({});
   return (
     <Drawer
@@ -60,8 +60,6 @@ export const DataView: React.FunctionComponent = ({ core }) => {
       <ReactJson
         displayObjectSize={false}
         displayDataTypes={false}
-        displayArrayKey={false}
-        quotesOnKeys={false}
         enableClipboard={false}
         name={false}
         src={core.data}

@@ -1,4 +1,4 @@
-import Class from './Class';
+import Class from '../../shared/lib/classes/Class';
 
 class Feature extends Class {
   feature;

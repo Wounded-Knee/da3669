@@ -16,7 +16,8 @@ const useStyles = makeStyles((theme: Theme) =>
     },
   }),
 );
-export const Header: React.FunctionComponent = ({ core }) => {
+
+export const Header: React.FunctionComponent<{ core: any }> = ({ core }) => {
   const classes = useStyles({});
   const users = core.getByType(TYPE_USER);
   const currentUser = core.user;
@@ -30,7 +31,7 @@ export const Header: React.FunctionComponent = ({ core }) => {
             </Typography>
           </Grid>
           <Grid item xs={1} className={classes.dataButton}>
-            <UserSelect users={users} currentUser={currentUser} onSubmit={(userID) => (core.user = userID)} />
+            <UserSelect users={users} onSubmit={(userID) => (core.user = userID)} />
           </Grid>
           <Grid item xs={1} className={classes.dataButton}>
             <Button onClick={() => core.ui.toggleDrawer('info')}>

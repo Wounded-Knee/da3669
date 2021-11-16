@@ -3,7 +3,8 @@ import { Message } from './message';
 
 export const View = ({ messageID, core }) => {
   const message = core.getById(messageID);
-  window.core = core;
+  // @ts-ignore
+  if (window) window.core = core;
 
   return (
     <div className='messages'>

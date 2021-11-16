@@ -1,3 +1,4 @@
+// @ts-nocheck
 import Kernel from '../../shared/lib/Kernel';
 import fs from 'fs';
 
