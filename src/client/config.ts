@@ -1,5 +1,7 @@
+import { initialState as sharedInitialState } from '../shared/config';
+
 export const initialState = {
-  entities: [],
+  ...sharedInitialState,
   user: {
     id: null,
   },

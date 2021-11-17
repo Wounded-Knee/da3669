@@ -1,10 +1,11 @@
 import { CssBaseline, makeStyles } from '@material-ui/core';
 import { createStyles, Theme, ThemeProvider, createTheme } from '@material-ui/core/styles';
-import React from 'react';
+import React, { useEffect } from 'react';
+import { Provider } from 'react-redux';
 
 // Wireframes
 import { Core } from './lib/Core';
-import { useStateManager } from './lib/stateManager/useStateManager';
+import { store } from './lib/redux/store';
 import { WebSocketClient } from './lib/classes/WebSocketClient';
 import { WS_SERVER_HOST, WS_SERVER_PORT } from '../shared/config';
 
@@ -45,45 +46,39 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const wsClient = new WebSocketClient({
-  host: WS_SERVER_HOST,
-  port: WS_SERVER_PORT,
+const core = new Core({
+  client: new WebSocketClient({
+    host: WS_SERVER_HOST,
+    port: WS_SERVER_PORT,
+  }),
+  store,
+  date: {
+    uiLoad: new Date(),
+    uiRender: new Date(),
+  },
 });
-const serverDispatch = wsClient.dispatch.bind(wsClient);
-
-const uiLoad = new Date();
+window.core = core;
 
 export const CoreTest: React.FunctionComponent = () => {
   const classes = useStyles({});
-  const [state, dispatch] = useStateManager();
-  const core = new Core({
-    client: wsClient,
-    clientState: state,
-    clientDispatch: dispatch,
-    serverDispatch,
-    date: {
-      uiLoad,
-      uiRender: new Date(),
-    },
-  });
-
-  window.core = core;
 
   return (
-    <ThemeProvider theme={theme}>
-      <div className={classes.root}>
-        <CssBaseline />
-        <dl>
-          <dt>Entity Count</dt>
-          <dd>{core.all.length}</dd>
+    <Provider store={store}>
+      <ThemeProvider theme={theme}>
+        <div className={classes.root}>
+          <CssBaseline />
+          <dl>
+            <dt>Entity Count</dt>
+            <dd>{core.all.length}</dd>
 
-          <dt>User ID</dt>
-          <dd>{core.user.id}</dd>
+            <dt>User ID</dt>
+            <dd>{core.user.id}</dd>
 
-          <dt>Start Date</dt>
-          <dd>{core.date.uiLoad.toString()}</dd>
-        </dl>
-      </div>
-    </ThemeProvider>
+            <dt>Start Date</dt>
+            <dd>{core.date.uiLoad.toString()}</dd>
+          </dl>
+        </div>
+      </ThemeProvider>
+    </Provider>
   );
 };

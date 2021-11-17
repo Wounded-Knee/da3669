@@ -1,11 +1,10 @@
 import HTTPServer from './lib/classes/HttpServer';
 import { WebSocketServer } from './lib/classes/WebSocketServer';
 import { Core } from './lib/Core';
-import { stateManager } from './lib/stateManager/stateManager';
+import { store } from './lib/stateManager/store';
 import { HTTP_SERVER_PORT, WS_SERVER_HOST, WS_SERVER_PORT } from './config';
 import { actionTypes } from './lib/stateManager/reducer';
 
-const stateManagement = stateManager();
 const httpServer = new HTTPServer({
   port: HTTP_SERVER_PORT,
 });
@@ -18,8 +17,8 @@ const core = new Core({
   date: {
     serverLoad: new Date(),
   },
+  store,
   server: wsServer,
-  stateManager: stateManagement,
 });
 
 Promise.all([httpServer.initialize(), wsServer.initialize()]).then(() => {

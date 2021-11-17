@@ -6,5 +6,4 @@ interface ICoreConfig extends ISharedCoreConfig {
     serverLoad: Date;
   };
   server: WebSocketServer;
-  stateManager: [any, function];
 }

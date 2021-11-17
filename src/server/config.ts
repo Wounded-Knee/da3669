@@ -2,7 +2,12 @@ import dotenv from 'dotenv';
 import findUp from 'find-up';
 import path from 'path';
 import fs from 'fs';
-import { WS_SERVER_PORT, WS_SERVER_HOST, HTTP_SERVER_PORT as _HTTP_SERVER_PORT } from '../shared/config';
+import {
+  initialState as sharedInitialState,
+  WS_SERVER_PORT,
+  WS_SERVER_HOST,
+  HTTP_SERVER_PORT as _HTTP_SERVER_PORT,
+} from '../shared/config';
 
 const IS_DEV = process.env.NODE_ENV !== 'production';
 
@@ -24,7 +29,7 @@ const STORE_DB_FILE = './db.json';
 
 // Store
 const initialState = {
-  entities: [],
+  ...sharedInitialState,
 };
 
 export { initialState, IS_DEV, VERSION, WEBPACK_PORT, HTTP_SERVER_PORT, WS_SERVER_HOST, WS_SERVER_PORT, STORE_DB_FILE };

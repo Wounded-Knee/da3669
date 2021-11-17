@@ -30,7 +30,7 @@ import { View } from './wireframes/simple3/view';
 import { Core } from './wireframes/simple3/core';
 import { DataView } from './components/DataView';
 import { InfoView } from './components/InfoView';
-import { stateManager, initialStateWithTestData } from './lib/stateManager';
+import { stateManager, initialStateWithTestData } from './lib/redux';
 
 declare module '@material-ui/core/styles' {
   // eslint-disable-next-line @typescript-eslint/naming-convention

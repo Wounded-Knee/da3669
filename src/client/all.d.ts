@@ -14,10 +14,8 @@ export interface IState extends ISharedState {
 }
 
 export interface ICoreConfig extends ISharedCoreConfig {
-  clientState: IClientState;
-  clientDispatch: dispatch;
-  serverDispatch: dispatch;
   client: any;
+  store: any;
   date: {
     uiRender: Date;
     uiLoad: Date;

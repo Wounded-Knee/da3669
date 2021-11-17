@@ -25,6 +25,7 @@ interface IState {
 export type IServerState = IState;
 
 export interface ICoreConfig {
+  store: any;
   date: {
     [key: string]: Date;
   };

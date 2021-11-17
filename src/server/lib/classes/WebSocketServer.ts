@@ -29,6 +29,7 @@ export class WebSocketServer extends Server {
         methods.forEach((method) => {
           this.wss.register(method);
         });
+        this.wss.event('dispatch');
         this.wss.register('dispatch', this.receive.bind(this));
       }),
     );

@@ -12,6 +12,10 @@ export class Core extends Kernel {
     return this.cfg.date;
   }
 
+  get store() {
+    return this.cfg.store;
+  }
+
   // Dispatches a message to the converse core via network
   tx(action: action): Promise<any> {
     throw new Error('Failed to override Core.tx()');

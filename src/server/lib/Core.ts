@@ -8,7 +8,6 @@ export class Core extends SharedCore {
   constructor(cfg: ICoreConfig) {
     super();
     this.cfg = cfg;
-    this.wss.event('dispatch');
     this.wss.onReceive((action: action) => {
       try {
         return this.rx(action);
@@ -32,6 +31,7 @@ export class Core extends SharedCore {
 
   tx(action: action): Promise<any> {
     return new Promise((resolve) => {
+      this.log('Emit ', action);
       this.wss.emit('dispatch', action);
       resolve(void 0);
     });
@@ -41,11 +41,11 @@ export class Core extends SharedCore {
     return this.cfg.server;
   }
 
-  get dispatch() {
-    return this.cfg.stateManager[1];
+  get state() {
+    return this.store.getState();
   }
 
-  get state() {
-    return this.cfg.stateManager[0].getState();
+  get dispatch() {
+    return this.store.dispatch;
   }
 }
