@@ -1,26 +1,20 @@
 import HTTPServer from './lib/classes/HttpServer';
-import { WebSocketServer } from './lib/classes/WebSocketServer';
 import { Core } from './lib/Core';
-import { store } from './lib/stateManager/store';
-import { HTTP_SERVER_PORT, WS_SERVER_HOST, WS_SERVER_PORT } from './config';
-import { actionTypes } from './lib/stateManager/reducer';
+import { store } from './lib/redux/store';
+import { HTTP_SERVER_PORT, WS_SERVER_HOST as host, WS_SERVER_PORT as port } from './config';
 
 const httpServer = new HTTPServer({
   port: HTTP_SERVER_PORT,
-});
-const wsServer = new WebSocketServer({
-  host: WS_SERVER_HOST,
-  port: WS_SERVER_PORT,
-  methods: Object.values(actionTypes),
 });
 const core = new Core({
   date: {
     serverLoad: new Date(),
   },
+  host,
+  port,
   store,
-  server: wsServer,
 });
 
-Promise.all([httpServer.initialize(), wsServer.initialize()]).then(() => {
+Promise.all([httpServer.initialize()]).then(() => {
   console.log('Ready');
 });

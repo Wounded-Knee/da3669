@@ -14,7 +14,6 @@ export interface IState extends ISharedState {
 }
 
 export interface ICoreConfig extends ISharedCoreConfig {
-  client: any;
   store: any;
   date: {
     uiRender: Date;

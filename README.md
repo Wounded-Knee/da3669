@@ -25,22 +25,22 @@
 
 ```bash
 .
-├── /node_modules/                    # 3rd-party libraries and utilities
-├── /dist/                            # All the generated files will go here, and will run from this folder
-├── /src/                             # The source code of the application
-│   ├── /client/                      # React app
-|   │   ├── /lib/                     # Local libraries
-|   |   │   ├── /classes/             # Classes
-|   │   ├── /redux/                   # Redux store / reducer
-│   ├── /server/                      # Express server app
-|   │   ├── /lib/                     # Local libraries
-|   |   │   ├── /classes/             # Classes
-|   │   ├── /redux/                   # Redux store / reducer
-│   ├── /shared/                      # The shared code between the client and the server
-|   │   ├── /lib/                     # Local libraries
-|   |   │   ├── /classes/             # Classes
-|   │   ├── /redux/                   # Redux store / reducer
-├── /assets/                          # images, css, jsons etc.
+├── node_modules/                    # 3rd-party libraries and utilities
+├── dist/                            # All the generated files will go here, and will run from this folder
+├── src/                             # The source code of the application
+│   ├── client/                      # React app
+│   │   ├── lib/                     # Local libraries
+│   │   │   ├── classes/             # Classes
+│   │   ├── redux/                   # Redux store / reducer
+│   ├── server/                      # Express server app
+│   │   ├── lib/                     # Local libraries
+│   │   │   ├── classes/             # Classes
+│   │   ├── redux/                   # Redux store / reducer
+│   ├── shared/                      # The shared code between the client and the server
+│   │   ├── lib/                     # Local libraries
+│   │   │   ├── classes/             # Classes
+│   │   ├── redux/                   # Redux store / reducer
+├── assets/                          # images, css, jsons etc.
 ├── .eslintrc                         # es-lint configuration
 ├── .prettierec                       # prettier configuration
 ├── .gitignore                        # ignored git files and folders
@@ -48,8 +48,8 @@
 ├── .env                              # (ignored) Can be used to override environment variables
 ├── index.js                          # The server's entry point
 ├── package.json                      # The list of 3rd party libraries and utilities
-└── tsconfig-for-webpack-config.json  # using TypeScript for the webpack config file
-├── README.md                         # This file
+├── tsconfig-for-webpack-config.json  # using TypeScript for the webpack config file
+└── README.md                         # This file
 ```
 
 ### Built On
@@ -81,7 +81,7 @@ All applications require a config mechanism, for example, `SLACK_API_TOKEN`. Thi
 
 No license is offered.
 
-Copyright (C) ɐʞoʎǝH - All Rights Reserved
-Unauthorized copying of data in this project, via any medium, is strictly prohibited
-Proprietary and confidential
-Written by ɐʞoʎǝH <*@heyoka.us>, November 2021
+Copyright © ɐʞoʎǝH - All Rights Reserved.
+Unauthorized copying of data in this project, via any medium, is strictly prohibited.
+Proprietary and confidential.
+Written by ɐʞoʎǝH <*@heyoka.us>, November 2021.

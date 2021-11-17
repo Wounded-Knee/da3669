@@ -8,6 +8,7 @@ export class Core extends SharedCore {
   constructor(cfg: ICoreConfig) {
     super();
     this.cfg = cfg;
+    const { host, port } = this.cfg;
 
     this.whileInitializing(
       new Promise((resolve) => {

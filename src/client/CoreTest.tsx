@@ -1,12 +1,11 @@
 import { CssBaseline, makeStyles } from '@material-ui/core';
 import { createStyles, Theme, ThemeProvider, createTheme } from '@material-ui/core/styles';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Provider } from 'react-redux';
 
 // Wireframes
 import { Core } from './lib/Core';
 import { store } from './lib/redux/store';
-import { WebSocketClient } from './lib/classes/WebSocketClient';
 import { WS_SERVER_HOST, WS_SERVER_PORT } from '../shared/config';
 
 declare module '@material-ui/core/styles' {
@@ -47,10 +46,8 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 const core = new Core({
-  client: new WebSocketClient({
-    host: WS_SERVER_HOST,
-    port: WS_SERVER_PORT,
-  }),
+  host: WS_SERVER_HOST,
+  port: WS_SERVER_PORT,
   store,
   date: {
     uiLoad: new Date(),

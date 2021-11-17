@@ -26,6 +26,8 @@ export type IServerState = IState;
 
 export interface ICoreConfig {
   store: any;
+  host: string;
+  port: number;
   date: {
     [key: string]: Date;
   };
