@@ -1,6 +1,6 @@
+import { Server } from 'rpc-websockets';
 import { Core as SharedCore } from '../../shared/lib/Core';
-import { ICoreConfig } from '../all';
-import { action } from '../../shared/all';
+import { ICoreConfig, action } from '../all';
 
 export class Core extends SharedCore {
   cfg: ICoreConfig;
@@ -8,14 +8,30 @@ export class Core extends SharedCore {
   constructor(cfg: ICoreConfig) {
     super();
     this.cfg = cfg;
-    this.wss.onReceive((action: action) => {
-      try {
-        return this.rx(action);
-      } catch (e) {
-        this.log('ERROR: ', e);
-        return Promise.reject();
-      }
-    });
+
+    this.whileInitializing(
+      new Promise((resolve) => {
+        this.log('Initializing...');
+        const transport = new Server({
+          port,
+          host,
+        });
+        transport.on('listening', () => {
+          this.log(`Listening on port ${port}`);
+          transport.event('dispatch');
+          transport.on('dispatch', (action: action) => {
+            try {
+              return this.rx(action);
+            } catch (e) {
+              this.log('ERROR: ', e);
+              return Promise.reject();
+            }
+          });
+          resolve(void 0);
+        });
+        this.transport = transport;
+      }),
+    );
   }
 
   rx(action: action): Promise<any> {
@@ -32,12 +48,8 @@ export class Core extends SharedCore {
   tx(action: action): Promise<any> {
     return new Promise((resolve) => {
       this.log('Emit ', action);
-      this.wss.emit('dispatch', action);
+      this.transport.emit('dispatch', action);
       resolve(void 0);
     });
-  }
-
-  get wss() {
-    return this.cfg.server;
   }
 }

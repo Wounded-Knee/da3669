@@ -1,9 +1,11 @@
-import { ICoreConfig as ISharedCoreConfig } from '../shared/all';
+import { ICoreConfig as ISharedCoreConfig, action as sharedAction } from '../shared/all';
 import { WebSocketServer } from './classes/WebSocketServer';
 
-interface ICoreConfig extends ISharedCoreConfig {
+export interface ICoreConfig extends ISharedCoreConfig {
   date: {
     serverLoad: Date;
   };
   server: WebSocketServer;
 }
+
+export type action = sharedAction;

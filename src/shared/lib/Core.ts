@@ -3,6 +3,7 @@ import Kernel from './classes/Kernel';
 
 export class Core extends Kernel {
   cfg: ICoreConfig;
+  transport: any;
 
   get all(): IEntity[] {
     return [];

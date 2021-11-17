@@ -36,7 +36,7 @@
     "url": "https://github.com/WAKlNYAN/da3669"
   },
   "license": "MIT",
-  "author": "Heyoka",
+  "author": "ɐʞoʎǝH",
   "jest": {
     "roots": [
       "<rootDir>/src"
@@ -76,7 +76,6 @@
     "express": "^4.17.1",
     "find-up": "^5.0.0",
     "middleware-io": "^2.8.0",
-    "mui-treasury": "*",
     "react-redux": "^7.2.6",
     "rpc-websockets": "^7.4.15",
     "searchable-react-json-view": "^0.0.8",

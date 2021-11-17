@@ -29,8 +29,17 @@
 ├── /dist/                            # All the generated files will go here, and will run from this folder
 ├── /src/                             # The source code of the application
 │   ├── /client/                      # React app
+|   │   ├── /lib/                     # Local libraries
+|   |   │   ├── /classes/             # Classes
+|   │   ├── /redux/                   # Redux store / reducer
 │   ├── /server/                      # Express server app
+|   │   ├── /lib/                     # Local libraries
+|   |   │   ├── /classes/             # Classes
+|   │   ├── /redux/                   # Redux store / reducer
 │   ├── /shared/                      # The shared code between the client and the server
+|   │   ├── /lib/                     # Local libraries
+|   |   │   ├── /classes/             # Classes
+|   │   ├── /redux/                   # Redux store / reducer
 ├── /assets/                          # images, css, jsons etc.
 ├── .eslintrc                         # es-lint configuration
 ├── .prettierec                       # prettier configuration
@@ -50,6 +59,8 @@
 - [Material-ui](https://github.com/mui-org/material-ui)
 - [Jest](https://github.com/facebook/jest)
 - [Styled Components](https://github.com/styled-components/styled-components)
+- [Express](https://expressjs.com/)
+- [RPC Websockets](https://www.npmjs.com/package/rpc-websockets)
 
 ### Usage
 
