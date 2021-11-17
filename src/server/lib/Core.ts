@@ -20,7 +20,7 @@ export class Core extends SharedCore {
         transport.on('listening', () => {
           this.log(`Listening on port ${port}`);
           transport.event('dispatch');
-          transport.on('dispatch', (action: action) => {
+          transport.register('dispatch', (action: action) => {
             try {
               return this.rx(action);
             } catch (e) {
@@ -39,8 +39,7 @@ export class Core extends SharedCore {
     return new Promise((resolve) => {
       this.dispatch(action);
       setTimeout(() => {
-        this.tx({ type: 'CURRENT_STATE', payload: this.state });
-        console.log('New state ', this.state);
+        this.tx({ type: 'CLOBBER_ENTITIES', payload: this.state.entities });
         resolve(void 0);
       }, 1000);
     });

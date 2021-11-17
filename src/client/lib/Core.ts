@@ -1,6 +1,7 @@
 import { Core as SharedCore } from '../../shared/lib/Core';
 import { action, ICoreConfig } from '../all';
 import { Client } from 'rpc-websockets';
+import { dispatch } from '../../shared/all';
 
 export class Core extends SharedCore {
   cfg: ICoreConfig;
@@ -27,14 +28,14 @@ export class Core extends SharedCore {
 
   tx(action: action): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.transport.dispatch(action);
-      resolve(void 0);
+      this.transport.call('dispatch', action).then(resolve).catch(reject);
     });
   }
 
   rx(action: action): Promise<any> {
     return new Promise((resolve) => {
-      console.log('Received action ', action, this.date);
+      console.log('Received action ', action);
+      this.store.dispatch(action);
       resolve(void 0);
     });
   }

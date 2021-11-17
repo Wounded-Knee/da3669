@@ -6,7 +6,7 @@ export class Core extends Kernel {
   transport: any;
 
   get all(): IEntity[] {
-    return [];
+    return this.state.entities;
   }
 
   get date() {
