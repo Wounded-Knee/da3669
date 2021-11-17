@@ -1,18 +1,14 @@
-import Server from './Server';
+import WebSocket from '../../../shared/lib/classes/WebSocket';
 import { Server as Wss } from 'rpc-websockets';
 import { action } from '../../../shared/all';
 
-export class WebSocketServer extends Server {
-  host;
-  port;
+export class WebSocketServer extends WebSocket {
   methods;
   onReceiveCallbacks = [];
   wss;
 
   constructor({ host, port, methods }: { host: string; port: number; methods: string[] }) {
-    super();
-    this.host = host;
-    this.port = port;
+    super({ host, port, methods });
     this.methods = methods;
 
     this.whileInitializing(

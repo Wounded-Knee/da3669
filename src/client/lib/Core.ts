@@ -18,14 +18,6 @@ export class Core extends SharedCore {
     return this.state.user;
   }
 
-  get dispatch() {
-    return this.store.dispatch;
-  }
-
-  get state() {
-    return this.store.getState();
-  }
-
   get client() {
     return this.cfg.client;
   }

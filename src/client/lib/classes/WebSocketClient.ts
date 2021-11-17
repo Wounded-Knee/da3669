@@ -1,14 +1,12 @@
 import { Client as Wsc } from 'rpc-websockets';
-import Client from './Client';
+import WebSocket from '../../../shared/lib/classes/WebSocket';
 import { action } from '../../../shared/all';
 
-export class WebSocketClient extends Client {
-  host;
-  port;
+export class WebSocketClient extends WebSocket {
   wsc;
 
   constructor({ host, port }: { host: string; port: number }) {
-    super();
+    super({ host, port });
     this.host = host;
     this.port = port;
 

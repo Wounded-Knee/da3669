@@ -22,7 +22,7 @@ export class Core extends SharedCore {
     return new Promise((resolve) => {
       this.dispatch(action);
       setTimeout(() => {
-        this.tx({ type: 'TEST_GOOD', payload: 0 });
+        this.tx({ type: 'CURRENT_STATE', payload: this.state });
         console.log('New state ', this.state);
         resolve(void 0);
       }, 1000);
@@ -39,13 +39,5 @@ export class Core extends SharedCore {
 
   get wss() {
     return this.cfg.server;
-  }
-
-  get state() {
-    return this.store.getState();
-  }
-
-  get dispatch() {
-    return this.store.dispatch;
   }
 }
