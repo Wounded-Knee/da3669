@@ -1,5 +1,6 @@
 import { reducer as rootReducer, actionTypes as rootActionTypes } from '../../../shared/lib/redux/reducer';
 import { action } from '../../../shared/all';
+import { initialState } from '../../config';
 
 export const actionTypes = {
   ...rootActionTypes,
@@ -15,6 +16,6 @@ const serverReducer = (state, { type, payload }) => {
   return state;
 };
 
-export const reducer = (state: any, action: action): any => {
+export const reducer = (state = initialState, action: action): any => {
   return rootReducer(serverReducer(state, action), action);
 };

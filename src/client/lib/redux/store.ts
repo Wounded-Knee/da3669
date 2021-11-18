@@ -1,5 +1,4 @@
-import { createStore } from 'redux';
-import { reducer as serverReducer } from './reducer';
-import { initialState } from '../../config';
+import { reducer } from './reducer';
+import { getStore } from '../../../shared/lib/redux/store';
 
-export const store = createStore(serverReducer, initialState);
+export const store = getStore(reducer);
