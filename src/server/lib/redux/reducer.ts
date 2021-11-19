@@ -4,21 +4,35 @@ import { initialState } from '../../config';
 
 export const actionTypes = {
   ...rootActionTypes,
-  DO_SERVER_STUFF: 'DO_SERVER_STUFF',
 };
 
 const serverReducer = (state, { type, payload }) => {
   switch (type) {
-    case actionTypes.DO_SERVER_STUFF:
-      console.log('Doing server stuff');
-      return state;
     case actionTypes.ADD_ENTITY:
+      // Shared reducer adds the entity, server reducer increments ID.
       return {
         ...state,
         nextId: state.nextId + 1,
       };
   }
   return state;
+};
+
+export const addEntity = (data) => {
+  return (dispatch, getState) => {
+    const action = {
+      type: actionTypes.ADD_ENTITY,
+      payload: {
+        ...data,
+        date: new Date(),
+        id: getState().nextId + 1,
+      },
+    };
+    return new Promise((resolve) => {
+      dispatch(action);
+      resolve(action);
+    });
+  };
 };
 
 export const reducer = (state = initialState, action: action): any => {

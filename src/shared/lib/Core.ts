@@ -1,12 +1,13 @@
 import { ICoreConfig, action, IEntity } from '../all';
 import Kernel from './classes/Kernel';
+import Entity from './classes/entities/Entity';
 
 export class Core extends Kernel {
   cfg: ICoreConfig;
   transport: any;
 
   get all(): IEntity[] {
-    return this.state.entities;
+    return this.classify(this.state.entities);
   }
 
   get date() {
@@ -23,6 +24,24 @@ export class Core extends Kernel {
 
   get dispatch() {
     return this.store.dispatch;
+  }
+
+  getEntityById(soughtId) {
+    return this.classify(this.all.find(({ id }) => id === soughtId));
+  }
+
+  classify(entityData) {
+    if (entityData === undefined) {
+      return undefined;
+    } else if (entityData instanceof Array) {
+      return entityData.map((data) => this.classify(data));
+    } else {
+      const { type } = entityData;
+      switch (type) {
+        default:
+          return new Entity(this, entityData);
+      }
+    }
   }
 
   // Dispatches a message to the converse core via network

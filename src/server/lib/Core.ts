@@ -1,6 +1,6 @@
 import { Server } from 'rpc-websockets';
 import { Core as SharedCore } from '../../shared/lib/Core';
-import { actionTypes } from './redux/reducer';
+import { actionTypes, addEntity } from './redux/reducer';
 import { ICoreConfig, action } from '../all';
 
 export class Core extends SharedCore {
@@ -40,7 +40,7 @@ export class Core extends SharedCore {
     const { type, payload } = action;
     switch (type) {
       case actionTypes.ADD_ENTITY:
-        return this.store.dispatch(addEntity(payload));
+        return this.dispatch(addEntity(payload));
         break;
       default:
         this.log(`Unrecognized action ${type}`);
@@ -61,22 +61,3 @@ export class Core extends SharedCore {
     });
   }
 }
-
-const addEntity = (data) => {
-  return (dispatch, getState) => {
-    const action = {
-      type: actionTypes.ADD_ENTITY,
-      payload: {
-        ...data,
-        id: getState().nextId + 1,
-      },
-    };
-    return new Promise((resolve) => {
-      console.log('Dispatching ', action);
-      dispatch(action);
-      setTimeout(() => {
-        resolve(action);
-      }, 100);
-    });
-  };
-};

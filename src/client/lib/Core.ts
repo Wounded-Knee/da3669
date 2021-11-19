@@ -1,7 +1,6 @@
 import { Core as SharedCore } from '../../shared/lib/Core';
 import { action, ICoreConfig } from '../all';
 import { Client } from 'rpc-websockets';
-import { dispatch } from '../../shared/all';
 
 export class Core extends SharedCore {
   cfg: ICoreConfig;
@@ -15,8 +14,6 @@ export class Core extends SharedCore {
     this.log(`Connecting to ${url}...`);
     const transport = new Client(url);
     transport.on('open', () => {
-      transport.subscribe('dispatch');
-      transport.on('dispatch', this.rx.bind(this));
       this.log('Connected.');
     });
     this.transport = transport;
@@ -27,11 +24,13 @@ export class Core extends SharedCore {
   }
 
   createEntity(data) {
-    this.tx({ type: 'ADD_ENTITY', payload: data })
-      .then((action) => {
-        return this.store.dispatch(action);
-      })
-      .catch((...args) => this.log(...args));
+    return new Promise((resolve, reject) => {
+      this.tx({ type: 'ADD_ENTITY', payload: data })
+        .then((action) => {
+          resolve(this.dispatch(action));
+        })
+        .catch((...args) => this.log(...args));
+    });
   }
 
   tx(action: action): Promise<any> {
@@ -43,12 +42,8 @@ export class Core extends SharedCore {
   rx(action: action): Promise<any> {
     return new Promise((resolve) => {
       console.log('Received action ', action);
-      this.store.dispatch(action);
+      this.dispatch(action);
       resolve(void 0);
     });
-  }
-
-  destroy() {
-    console.log('Will destroy');
   }
 }
