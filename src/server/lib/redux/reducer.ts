@@ -1,6 +1,7 @@
 import { reducer as rootReducer, actionTypes as rootActionTypes } from '../../../shared/lib/redux/reducer';
 import { action } from '../../../shared/all';
 import { initialState } from '../../config';
+import { load } from '../persist';
 
 export const actionTypes = {
   ...rootActionTypes,
@@ -8,7 +9,7 @@ export const actionTypes = {
 
 const serverReducer = (state, { type, payload }) => {
   switch (type) {
-    case actionTypes.ADD_ENTITY:
+    case actionTypes.ADDED_ENTITY:
       // Shared reducer adds the entity, server reducer increments ID.
       return {
         ...state,
@@ -21,10 +22,13 @@ const serverReducer = (state, { type, payload }) => {
 export const addEntity = (data) => {
   return (dispatch, getState) => {
     const action = {
-      type: actionTypes.ADD_ENTITY,
+      type: actionTypes.ADDED_ENTITY,
       payload: {
         ...data,
-        date: new Date(),
+        date: {
+          created: new Date(),
+          updated: new Date(),
+        },
         id: getState().nextId + 1,
       },
     };
@@ -35,6 +39,6 @@ export const addEntity = (data) => {
   };
 };
 
-export const reducer = (state = initialState, action: action): any => {
+export const reducer = (state = load() || initialState, action: action): any => {
   return rootReducer(serverReducer(state, action), action);
 };

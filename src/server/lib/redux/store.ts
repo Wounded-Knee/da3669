@@ -1,6 +1,6 @@
 import { reducer } from './reducer';
 import { getStore } from '../../../shared/lib/redux/store';
-import { save, load } from '../persist';
+import { save } from '../persist';
 
 export const store = getStore(reducer);
 

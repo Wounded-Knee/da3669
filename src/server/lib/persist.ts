@@ -8,11 +8,4 @@ export const save = (data) => {
   });
 };
 
-export const load = () => {
-  return new Promise((resolve, reject) => {
-    fs.readFile(STORE_DB_FILE, 'utf8', (err, data) => {
-      if (err) reject(err);
-      resolve(JSON.parse(data));
-    });
-  });
-};
+export const load = () => JSON.parse(fs.readFileSync(STORE_DB_FILE).toString());

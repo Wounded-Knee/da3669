@@ -1,5 +1,7 @@
 import { Core as SharedCore } from '../../shared/lib/Core';
 import { action, ICoreConfig } from '../all';
+import { actionTypes } from './redux/reducer';
+
 import { Client } from 'rpc-websockets';
 
 export class Core extends SharedCore {
@@ -25,7 +27,7 @@ export class Core extends SharedCore {
 
   createEntity(data) {
     return new Promise((resolve, reject) => {
-      this.tx({ type: 'ADD_ENTITY', payload: data })
+      this.tx({ type: actionTypes.ADDED_ENTITY, payload: data })
         .then((action) => {
           resolve(this.dispatch(action));
         })
