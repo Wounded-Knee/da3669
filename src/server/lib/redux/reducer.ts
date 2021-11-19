@@ -12,6 +12,11 @@ const serverReducer = (state, { type, payload }) => {
     case actionTypes.DO_SERVER_STUFF:
       console.log('Doing server stuff');
       return state;
+    case actionTypes.ADD_ENTITY:
+      return {
+        ...state,
+        nextId: state.nextId + 1,
+      };
   }
   return state;
 };

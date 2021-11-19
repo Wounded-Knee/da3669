@@ -7,6 +7,7 @@ export const actionTypes = {
 export const reducer = (state: any, { type, payload }: action): any => {
   switch (type) {
     case actionTypes.ADD_ENTITY:
+      console.log('reduce add entity');
       return {
         ...state,
         entities: [...state.entities, payload],

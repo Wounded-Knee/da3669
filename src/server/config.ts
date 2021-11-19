@@ -29,6 +29,7 @@ const STORE_DB_FILE = './db.json';
 
 // Store
 const initialState = {
+  nextId: 0,
   ...sharedInitialState,
 };
 

@@ -1,5 +1,6 @@
 import { Server } from 'rpc-websockets';
 import { Core as SharedCore } from '../../shared/lib/Core';
+import { actionTypes } from './redux/reducer';
 import { ICoreConfig, action } from '../all';
 
 export class Core extends SharedCore {
@@ -35,14 +36,21 @@ export class Core extends SharedCore {
     );
   }
 
+  dispatchAction(action) {
+    const { type, payload } = action;
+    switch (type) {
+      case actionTypes.ADD_ENTITY:
+        return this.store.dispatch(addEntity(payload));
+        break;
+      default:
+        this.log(`Unrecognized action ${type}`);
+        break;
+    }
+    return Promise.reject();
+  }
+
   rx(action: action): Promise<any> {
-    return new Promise((resolve) => {
-      this.dispatch(action);
-      setTimeout(() => {
-        this.tx({ type: 'CLOBBER_ENTITIES', payload: this.state.entities });
-        resolve(void 0);
-      }, 1000);
-    });
+    return this.dispatchAction(action);
   }
 
   tx(action: action): Promise<any> {
@@ -53,3 +61,22 @@ export class Core extends SharedCore {
     });
   }
 }
+
+const addEntity = (data) => {
+  return (dispatch, getState) => {
+    const action = {
+      type: actionTypes.ADD_ENTITY,
+      payload: {
+        ...data,
+        id: getState().nextId + 1,
+      },
+    };
+    return new Promise((resolve) => {
+      console.log('Dispatching ', action);
+      dispatch(action);
+      setTimeout(() => {
+        resolve(action);
+      }, 100);
+    });
+  };
+};

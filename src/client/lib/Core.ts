@@ -26,6 +26,14 @@ export class Core extends SharedCore {
     return this.state.user;
   }
 
+  createEntity(data) {
+    this.tx({ type: 'ADD_ENTITY', payload: data })
+      .then((action) => {
+        return this.store.dispatch(action);
+      })
+      .catch((...args) => this.log(...args));
+  }
+
   tx(action: action): Promise<any> {
     return new Promise((resolve, reject) => {
       this.transport.call('dispatch', action).then(resolve).catch(reject);
