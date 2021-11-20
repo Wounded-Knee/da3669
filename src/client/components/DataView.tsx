@@ -1,70 +1,31 @@
-import React, { useState } from 'react';
-import {
-  List,
-  ListItemText,
-  ListItem,
-  ListItemIcon,
-  Button,
-  Grid,
-  Drawer,
-  makeStyles,
-  Typography,
-  Toolbar,
-} from '@material-ui/core';
+import React from 'react';
+import { List, ListItemText, ListItem, ListItemIcon } from '@material-ui/core';
 import StorageIcon from '@material-ui/icons/Storage';
-import EqualizerIcon from '@material-ui/icons/Equalizer';
-import CloseIcon from '@material-ui/icons/Close';
-import { createStyles, Theme } from '@material-ui/core/styles';
 import ReactJson from 'searchable-react-json-view';
-
-const drawerWidth = 450;
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    drawerPaper: {
-      width: drawerWidth,
-    },
-    closeButton: {
-      textAlign: 'right',
-    },
-    toolbar: {
-      ...theme.mixins.toolbar,
-      backgroundColor: 'red',
-    },
-  }),
-);
+import { Drawer } from './Drawer';
 
 export const DataView: React.FunctionComponent<{ core: any }> = ({ core }) => {
-  const classes = useStyles({});
   return (
-    <Drawer
-      anchor='right'
-      variant='persistent'
-      open={core.ui.drawers.data}
-      onClose={() => core.uiSetDrawer('data', false)}
-      classes={{
-        paper: classes.drawerPaper,
-      }}
-    >
-      <div className={classes.toolbar}></div>
+    <Drawer drawerName='data'>
+      <>
+        <List>
+          <ListItem>
+            <ListItemIcon>
+              <StorageIcon />
+            </ListItemIcon>
+            <ListItemText primary='D³ata Inspector' secondary={`${core.all.length} entities`} />
+          </ListItem>
+        </List>
 
-      <List>
-        <ListItem>
-          <ListItemIcon>
-            <StorageIcon />
-          </ListItemIcon>
-          <ListItemText primary='D³ata Inspector' secondary={`${core.all.length} entities`} />
-        </ListItem>
-      </List>
-
-      <ReactJson
-        displayObjectSize={false}
-        displayDataTypes={false}
-        enableClipboard={false}
-        name={false}
-        src={core.data}
-        theme='shapeshifter'
-      />
+        <ReactJson
+          displayObjectSize={false}
+          displayDataTypes={false}
+          enableClipboard={false}
+          name={false}
+          src={core.data}
+          theme='shapeshifter'
+        />
+      </>
     </Drawer>
   );
 };

@@ -1,56 +1,12 @@
-import React, { useState } from 'react';
-import {
-  List,
-  ListItemText,
-  ListItem,
-  ListItemIcon,
-  ListSubheader,
-  Divider,
-  Button,
-  Grid,
-  Drawer,
-  makeStyles,
-  Typography,
-  Toolbar,
-} from '@material-ui/core';
-import InfoIcon from '@material-ui/icons/Info';
-import CloseIcon from '@material-ui/icons/Close';
+import React from 'react';
+import { List, ListItemText, ListItem, ListItemIcon, ListSubheader, Divider } from '@material-ui/core';
 import TouchAppIcon from '@material-ui/icons/TouchApp';
-import { createStyles, Theme } from '@material-ui/core/styles';
-import ReactJson from 'searchable-react-json-view';
-
-const drawerWidth = 350;
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    drawerPaper: {
-      width: drawerWidth,
-    },
-    closeButton: {
-      textAlign: 'right',
-    },
-    toolbar: {
-      ...theme.mixins.toolbar,
-      backgroundColor: 'green',
-    },
-  }),
-);
+import { Drawer } from './Drawer';
 
 export const InfoView: React.FunctionComponent<{ core: any }> = ({ core }) => {
-  const classes = useStyles({});
   const [selectedEntity, ...selectedEntityHistory] = core.uiGetSelectedEntityHistory();
   return (
-    <Drawer
-      anchor='right'
-      variant='persistent'
-      open={core.ui.drawers.info}
-      onClose={() => core.uiSetDrawer('info', false)}
-      classes={{
-        paper: classes.drawerPaper,
-      }}
-    >
-      <div className={classes.toolbar}></div>
-
+    <Drawer drawerName='info'>
       <List
         component='nav'
         aria-labelledby='nested-list-subheader'

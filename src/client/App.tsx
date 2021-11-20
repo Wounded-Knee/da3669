@@ -14,6 +14,7 @@ import { SideMenu } from './components/SideMenu';
 import { View } from './wireframes/simple3/view';
 import { DataView } from './components/DataView';
 import { InfoView } from './components/InfoView';
+import { Loading } from './components/Loading';
 
 declare module '@material-ui/core/styles' {
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -78,7 +79,7 @@ const AppComponent = ({ webSocketConnected }) => {
             </main>
           </div>
         ) : (
-          <div>Connecting webSocket</div>
+          <Loading />
         )}
       </ThemeProvider>
     </BrowserRouter>
