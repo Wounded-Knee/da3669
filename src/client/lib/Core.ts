@@ -30,7 +30,7 @@ export class Core extends SharedCore {
   }
 
   uiSetDrawer(drawerName, bool) {
-    this.dispatch({ type: actionTypes.DRAWER, payload: bool });
+    this.dispatch({ type: actionTypes.DRAWER, payload: [drawerName, bool] });
   }
 
   uiGetSelectedEntityHistory() {

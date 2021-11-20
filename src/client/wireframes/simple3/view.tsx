@@ -1,7 +1,14 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { connect } from 'react-redux';
 import { Message } from './message';
 
-export const View = ({ messageID, core }) => {
+const mapStateToProps = (state) => {
+  return {
+    entities: state.entities,
+  };
+};
+
+export const View = connect(mapStateToProps)(({ messageID, core }) => {
   const message = core.getEntityById(messageID);
 
   return message ? (
@@ -11,4 +18,4 @@ export const View = ({ messageID, core }) => {
   ) : (
     <p>No Message</p>
   );
-};
+});

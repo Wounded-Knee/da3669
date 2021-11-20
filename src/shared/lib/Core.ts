@@ -45,7 +45,6 @@ export class Core extends Kernel {
       const { type } = entityData;
       switch (type) {
         default:
-          console.log('Found entity', entityData);
           return new entityClasses[type](this, entityData);
       }
     }

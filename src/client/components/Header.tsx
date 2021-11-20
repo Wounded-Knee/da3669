@@ -34,11 +34,11 @@ export const Header: React.FunctionComponent<{ core: any }> = ({ core }) => {
             <UserSelect users={users} onSubmit={(userID) => (core.user = userID)} />
           </Grid>
           <Grid item xs={1} className={classes.dataButton}>
-            <Button onClick={() => core.ui.toggleDrawer('info')}>
+            <Button onClick={() => core.uiSetDrawer('info')}>
               <InfoIcon />
             </Button>
 
-            <Button onClick={() => core.ui.toggleDrawer('data')}>
+            <Button onClick={() => core.uiSetDrawer('data')}>
               <StorageIcon />
             </Button>
           </Grid>

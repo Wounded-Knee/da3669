@@ -15,4 +15,8 @@ export default class Entity {
   get type() {
     return this.data.type;
   }
+
+  get text() {
+    return this.data.text;
+  }
 }

@@ -1,11 +1,8 @@
 // App
 import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom'; // Pages
-import { store } from './lib/redux/store';
 import { connect } from 'react-redux';
-
-// Config
-import { WS_SERVER_HOST, WS_SERVER_PORT } from './config';
+import { core } from './core';
 
 // MUI
 import { CssBaseline, makeStyles } from '@material-ui/core';
@@ -17,9 +14,6 @@ import { SideMenu } from './components/SideMenu';
 import { View } from './wireframes/simple3/view';
 import { DataView } from './components/DataView';
 import { InfoView } from './components/InfoView';
-
-// Core
-import { Core } from './lib/Core';
 
 declare module '@material-ui/core/styles' {
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -56,21 +50,8 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const core = new Core({
-  host: WS_SERVER_HOST,
-  port: WS_SERVER_PORT,
-  store,
-  date: {
-    uiLoad: new Date(),
-    uiRender: new Date(),
-  },
-});
-window.core = core;
-
 const AppComponent = ({ webSocketConnected }) => {
   const classes = useStyles({});
-
-  console.log('webSocket Ready ', webSocketConnected);
 
   return (
     <BrowserRouter>

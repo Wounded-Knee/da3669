@@ -78,7 +78,6 @@ const clientReducer = (state, { type, payload }) => {
       };
 
     case actionTypes.READY_WEBSOCKET:
-      console.log(type);
       return {
         ...state,
         ui: {
