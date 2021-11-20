@@ -38,13 +38,13 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export const InfoView: React.FunctionComponent<{ core: any }> = ({ core }) => {
   const classes = useStyles({});
-  const [selectedEntity, ...selectedEntityHistory] = core.ui.getSelectedEntityHistory();
+  const [selectedEntity, ...selectedEntityHistory] = core.uiGetSelectedEntityHistory();
   return (
     <Drawer
       anchor='right'
       variant='persistent'
-      open={core.ui.drawerState('info')}
-      onClose={() => core.ui.closeDrawer('info')}
+      open={core.ui.drawers.info}
+      onClose={() => core.uiSetDrawer('info', false)}
       classes={{
         paper: classes.drawerPaper,
       }}

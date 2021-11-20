@@ -10,10 +10,10 @@ export const actionTypes = {
 const serverReducer = (state, { type, payload }) => {
   switch (type) {
     case actionTypes.ADDED_ENTITY:
-      // Shared reducer adds the entity, server reducer increments ID.
       return {
         ...state,
-        nextId: state.nextId + 1,
+        entities: [...state.entities, payload],
+        nextId: payload.id + 1,
       };
   }
   return state;
@@ -29,11 +29,25 @@ export const addEntity = (data) => {
           created: new Date(),
           updated: new Date(),
         },
-        id: getState().nextId + 1,
+        id: getState().nextId,
       },
     };
     return new Promise((resolve) => {
       dispatch(action);
+      resolve(action);
+    });
+  };
+};
+
+export const fetchEntity = (soughtId) => {
+  return (dispatch, getState) => {
+    return new Promise((resolve, reject) => {
+      const { entities } = getState();
+      const action = {
+        type: actionTypes.ADDED_ENTITY,
+        payload: entities.find(({ id }) => id === soughtId),
+      };
+      console.log('Sending to client ', action);
       resolve(action);
     });
   };

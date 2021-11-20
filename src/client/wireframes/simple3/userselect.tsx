@@ -10,7 +10,7 @@ export const UserSelect: React.FunctionComponent<{ users: any; onSubmit: any }> 
     onSubmit(value);
   };
 
-  return (
+  return users ? (
     <FormControl fullWidth>
       <Select labelId='demo-simple-select-label' id='demo-simple-select' value={user} label='User' onChange={onChange}>
         {users.map(({ id, name }, index) => (
@@ -20,5 +20,7 @@ export const UserSelect: React.FunctionComponent<{ users: any; onSubmit: any }> 
         ))}
       </Select>
     </FormControl>
+  ) : (
+    <p>No Users</p>
   );
 };

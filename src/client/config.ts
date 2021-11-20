@@ -1,4 +1,4 @@
-import { initialState as sharedInitialState } from '../shared/config';
+import { WS_SERVER_HOST, WS_SERVER_PORT, initialState as sharedInitialState } from '../shared/config';
 
 export const initialState = {
   ...sharedInitialState,
@@ -14,3 +14,5 @@ export const initialState = {
     selectedEntityHistory: [],
   },
 };
+
+export { WS_SERVER_PORT, WS_SERVER_HOST };

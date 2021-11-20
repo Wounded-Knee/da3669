@@ -4,7 +4,7 @@ import StorageIcon from '@material-ui/icons/Storage';
 import InfoIcon from '@material-ui/icons/Info';
 import React from 'react';
 import { UserSelect } from '../wireframes/simple3/userselect';
-import { TYPE_USER } from '../wireframes/simple3/core';
+import { entityTypes } from '../../shared/lib/classes/entities';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export const Header: React.FunctionComponent<{ core: any }> = ({ core }) => {
   const classes = useStyles({});
-  const users = core.getByType(TYPE_USER);
+  const users = core.getEntitiesByType(entityTypes.USER);
   const currentUser = core.user;
   return (
     <AppBar position='fixed' className={classes.appBar}>

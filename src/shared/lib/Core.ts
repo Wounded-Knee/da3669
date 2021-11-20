@@ -1,13 +1,13 @@
 import { ICoreConfig, action, IEntity } from '../all';
 import Kernel from './classes/Kernel';
-import Entity from './classes/entities/Entity';
+import { entityClasses, entityTypes } from './classes/entities';
 
 export class Core extends Kernel {
   cfg: ICoreConfig;
   transport: any;
 
   get all(): IEntity[] {
-    return this.classify(this.state.entities);
+    return this.state.entities;
   }
 
   get date() {
@@ -30,16 +30,23 @@ export class Core extends Kernel {
     return this.classify(this.all.find(({ id }) => id === soughtId));
   }
 
+  getEntitiesByType(soughtType) {
+    return this.classify(this.all.find(({ type }) => type === soughtType));
+  }
+
   classify(entityData) {
     if (entityData === undefined) {
       return undefined;
+    } else if (entityData instanceof entityClasses[entityTypes.ENTITY]) {
+      console.warn('Why are you trying to classify a classified entity?');
     } else if (entityData instanceof Array) {
       return entityData.map((data) => this.classify(data));
     } else {
       const { type } = entityData;
       switch (type) {
         default:
-          return new Entity(this, entityData);
+          console.log('Found entity', entityData);
+          return new entityClasses[type](this, entityData);
       }
     }
   }

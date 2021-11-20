@@ -3,6 +3,7 @@ import { action, ICoreConfig } from '../all';
 import { actionTypes } from './redux/reducer';
 
 import { Client } from 'rpc-websockets';
+import { resolve } from 'path';
 
 export class Core extends SharedCore {
   cfg: ICoreConfig;
@@ -25,6 +26,18 @@ export class Core extends SharedCore {
     return this.state.user;
   }
 
+  get ui() {
+    return this.state.ui;
+  }
+
+  uiSetDrawer(drawerName, bool) {
+    this.dispatch({ type: actionTypes.DRAWER, payload: bool });
+  }
+
+  uiGetSelectedEntityHistory() {
+    return this.state.ui.selectedEntityHistory;
+  }
+
   createEntity(data) {
     return new Promise((resolve, reject) => {
       this.tx({ type: actionTypes.ADDED_ENTITY, payload: data })
@@ -33,6 +46,15 @@ export class Core extends SharedCore {
         })
         .catch((...args) => this.log(...args));
     });
+  }
+
+  getEntityById(soughtId) {
+    new Promise((resolve, reject) => {
+      this.tx({ type: actionTypes.FETCH_ENTITY, payload: soughtId }).then((action) => {
+        return this.dispatch(action);
+      });
+    });
+    return super.getEntityById(soughtId);
   }
 
   tx(action: action): Promise<any> {

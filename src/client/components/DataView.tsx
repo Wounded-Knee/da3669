@@ -40,8 +40,8 @@ export const DataView: React.FunctionComponent<{ core: any }> = ({ core }) => {
     <Drawer
       anchor='right'
       variant='persistent'
-      open={core.ui.drawerState('data')}
-      onClose={() => core.ui.closeDrawer('data')}
+      open={core.ui.drawers.data}
+      onClose={() => core.uiSetDrawer('data', false)}
       classes={{
         paper: classes.drawerPaper,
       }}
@@ -53,7 +53,7 @@ export const DataView: React.FunctionComponent<{ core: any }> = ({ core }) => {
           <ListItemIcon>
             <StorageIcon />
           </ListItemIcon>
-          <ListItemText primary='D³ata Inspector' secondary={`${core.data.length} entities`} />
+          <ListItemText primary='D³ata Inspector' secondary={`${core.all.length} entities`} />
         </ListItem>
       </List>
 

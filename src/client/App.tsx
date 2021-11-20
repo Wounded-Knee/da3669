@@ -1,36 +1,25 @@
+// App
+import React from 'react';
+import { BrowserRouter, Route, Switch } from 'react-router-dom'; // Pages
+import { store } from './lib/redux/store';
+import { Provider } from 'react-redux';
+
+// Config
+import { WS_SERVER_HOST, WS_SERVER_PORT } from './config';
+
+// MUI
 import { CssBaseline, makeStyles } from '@material-ui/core';
 import { createStyles, Theme, ThemeProvider, createTheme } from '@material-ui/core/styles';
-import React, { useReducer } from 'react';
-import { BrowserRouter, Route, Switch } from 'react-router-dom'; // Pages
+
+// Components
 import { Header } from './components/Header';
 import { SideMenu } from './components/SideMenu';
-import { Home } from './components/Home';
-import { Usage } from './components/Usage';
-import { LazyLoadingExample } from './components/LazyLoadingExample';
-import { RouterExample } from './components/RouterExample';
-import { StyledComponentsExample } from './components/StyledComponentsExample';
-import { UsersList } from './components/UsersList';
-import Client from '../shared/lib/Client';
-
-// Custom
-import { Test } from './components/Test';
-import { Test2 } from './components/Test2';
-import { ReduxContext, ReduxProvider } from './context/ReduxContext';
-
-// Wireframes
-import data from './wireframes/mockdata';
-const { routes, displayProps } = data;
-import { Rubric } from './wireframes/Rubric';
-import { Votes } from './wireframes/Votes';
-import { Screen1 } from './wireframes/Screen1';
-import { Chat } from './wireframes/Chat';
-import { Display } from './wireframes/simple/display';
-import { Navigator } from './wireframes/simple2/navigator';
 import { View } from './wireframes/simple3/view';
-import { Core } from './wireframes/simple3/core';
 import { DataView } from './components/DataView';
 import { InfoView } from './components/InfoView';
-import { stateManager, initialStateWithTestData } from './lib/redux';
+
+// Core
+import { Core } from './lib/Core';
 
 declare module '@material-ui/core/styles' {
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -47,8 +36,6 @@ declare module '@material-ui/core/styles' {
     };
   }
 }
-
-const wsClient = new Client();
 
 const theme = createTheme({
   palette: {
@@ -69,30 +56,22 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-export const App = ({ setCore }) => {
+const core = new Core({
+  host: WS_SERVER_HOST,
+  port: WS_SERVER_PORT,
+  store,
+  date: {
+    uiLoad: new Date(),
+    uiRender: new Date(),
+  },
+});
+window.core = core;
+
+export const App = () => {
   const classes = useStyles({});
-  const stateManagement = stateManager(initialStateWithTestData);
-  const [state, stateDispatch] = stateManagement;
-  const infoEntity = '';
-  const core = new Core(stateManagement);
-  if (setCore) setCore(core);
-
-  if (!window.core) {
-    core.clobber();
-  }
-  window.core = core;
 
   return (
-    <ThemeProvider theme={theme}>
-      <div className={classes.root}>
-        <CssBaseline />
-        <center>Test Mode</center>
-      </div>
-    </ThemeProvider>
-  );
-  /*
-  return (
-    <ReduxProvider>
+    <Provider store={store}>
       <BrowserRouter>
         <ThemeProvider theme={theme}>
           <div className={classes.root}>
@@ -110,19 +89,13 @@ export const App = ({ setCore }) => {
                     match: {
                       params: { messageID },
                     },
-                  }) => <View {...displayProps} core={core} messageID={parseInt(messageID)} />}
+                  }) => <View core={core} messageID={parseInt(messageID)} />}
                 />
-
-                <Route exact path='/usage' component={Usage} />
-                <Route path='/fetch-example' component={UsersList} />
-                <Route path='/lazy-example' component={LazyLoadingExample} />
-                <Route path='/styled-example' component={StyledComponentsExample} />
               </Switch>
             </main>
           </div>
         </ThemeProvider>
       </BrowserRouter>
-    </ReduxProvider>
+    </Provider>
   );
-  */
 };
