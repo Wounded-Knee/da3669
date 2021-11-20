@@ -44,6 +44,8 @@ export class Core extends Kernel {
     } else {
       const { type } = entityData;
       switch (type) {
+        case undefined:
+          return new entityClasses[entityTypes.ENTITY](this, entityData);
         default:
           return new entityClasses[type](this, entityData);
       }

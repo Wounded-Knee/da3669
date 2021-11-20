@@ -22,7 +22,7 @@ export const DataView: React.FunctionComponent<{ core: any }> = ({ core }) => {
           displayDataTypes={false}
           enableClipboard={false}
           name={false}
-          src={core.data}
+          src={core.state}
           theme='shapeshifter'
         />
       </>

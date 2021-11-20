@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Message } from './message';
+import { EntityView, MessageView } from '../../components/Entities';
+import { entityTypes } from '../../../shared/lib/classes/entities';
 
 const mapStateToProps = (state) => {
   return {
@@ -8,14 +9,18 @@ const mapStateToProps = (state) => {
   };
 };
 
-export const View = connect(mapStateToProps)(({ messageID, core }) => {
-  const message = core.getEntityById(messageID);
+const getEntityView = (type) => {
+  switch (type) {
+    case entityTypes.MESSAGE:
+      return MessageView;
+    default:
+      return EntityView;
+  }
+};
 
-  return message ? (
-    <div className='messages'>
-      <Message message={message} />
-    </div>
-  ) : (
-    <p>No Message</p>
-  );
+export const View = connect(mapStateToProps)(({ entityId, core }) => {
+  const entity = core.getEntityById(entityId);
+  const View = entity && getEntityView(entity.type);
+
+  return entity ? <View entity={entity} /> : <p>Entity #{entityId} Not Found</p>;
 });

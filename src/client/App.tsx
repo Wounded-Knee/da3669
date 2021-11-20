@@ -68,12 +68,12 @@ const AppComponent = ({ webSocketConnected }) => {
               <div className={classes.toolbar} />
               <Switch>
                 <Route
-                  path='/message/:messageID'
+                  path='/entity/:entityId'
                   render={({
                     match: {
-                      params: { messageID },
+                      params: { entityId },
                     },
-                  }) => <View core={core} messageID={parseInt(messageID)} />}
+                  }) => <View core={core} entityId={parseInt(entityId)} />}
                 />
               </Switch>
             </main>
