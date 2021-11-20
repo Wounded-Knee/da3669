@@ -8,6 +8,7 @@ export const actionTypes = {
   SET_USERID: 'SET_USERID',
   SELECT_ENTITY: 'SELECT_ENTITY',
   DRAWER: 'DRAWER',
+  READY_WEBSOCKET: 'READY_WEBSOCKET',
 };
 
 const clientReducer = (state, { type, payload }) => {
@@ -36,11 +37,13 @@ const clientReducer = (state, { type, payload }) => {
           entities: [...entities, payload],
         };
       }
+
     case actionTypes.CLOBBER_ENTITIES:
       return {
         ...state,
         entities: payload,
       };
+
     case actionTypes.SET_USERID:
       return {
         ...state,
@@ -49,6 +52,7 @@ const clientReducer = (state, { type, payload }) => {
           id: payload,
         },
       };
+
     case actionTypes.SELECT_ENTITY:
       const history = state.ui.selectedEntityHistory.filter((id) => id !== payload);
       return {
@@ -59,6 +63,7 @@ const clientReducer = (state, { type, payload }) => {
           selectedEntityHistory: [payload, ...history],
         },
       };
+
     case actionTypes.DRAWER:
       const [drawerName, open] = payload;
       return {
@@ -68,6 +73,19 @@ const clientReducer = (state, { type, payload }) => {
           drawers: {
             ...state.ui.drawers,
             [drawerName]: open || !state.ui.drawers[drawerName],
+          },
+        },
+      };
+
+    case actionTypes.READY_WEBSOCKET:
+      console.log(type);
+      return {
+        ...state,
+        ui: {
+          ...state.ui,
+          ready: {
+            ...state.ui.ready,
+            webSocket: true,
           },
         },
       };

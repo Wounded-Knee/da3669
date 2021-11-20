@@ -1,9 +1,7 @@
 import { Core as SharedCore } from '../../shared/lib/Core';
 import { action, ICoreConfig } from '../all';
 import { actionTypes } from './redux/reducer';
-
 import { Client } from 'rpc-websockets';
-import { resolve } from 'path';
 
 export class Core extends SharedCore {
   cfg: ICoreConfig;
@@ -18,6 +16,7 @@ export class Core extends SharedCore {
     const transport = new Client(url);
     transport.on('open', () => {
       this.log('Connected.');
+      this.dispatch({ type: actionTypes.READY_WEBSOCKET });
     });
     this.transport = transport;
   }

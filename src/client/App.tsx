@@ -2,7 +2,7 @@
 import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom'; // Pages
 import { store } from './lib/redux/store';
-import { Provider } from 'react-redux';
+import { connect } from 'react-redux';
 
 // Config
 import { WS_SERVER_HOST, WS_SERVER_PORT } from './config';
@@ -67,13 +67,15 @@ const core = new Core({
 });
 window.core = core;
 
-export const App = () => {
+const AppComponent = ({ webSocketConnected }) => {
   const classes = useStyles({});
 
+  console.log('webSocket Ready ', webSocketConnected);
+
   return (
-    <Provider store={store}>
-      <BrowserRouter>
-        <ThemeProvider theme={theme}>
+    <BrowserRouter>
+      <ThemeProvider theme={theme}>
+        {webSocketConnected ? (
           <div className={classes.root}>
             <CssBaseline />
             <Header core={core} />
@@ -94,8 +96,18 @@ export const App = () => {
               </Switch>
             </main>
           </div>
-        </ThemeProvider>
-      </BrowserRouter>
-    </Provider>
+        ) : (
+          <div>Connecting webSocket</div>
+        )}
+      </ThemeProvider>
+    </BrowserRouter>
   );
 };
+
+const mapStateToProps = (state) => {
+  return {
+    webSocketConnected: state.ui.ready.webSocket,
+  };
+};
+
+export const App = connect(mapStateToProps)(AppComponent);

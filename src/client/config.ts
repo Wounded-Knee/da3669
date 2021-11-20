@@ -10,6 +10,9 @@ export const initialState = {
       info: false,
       data: false,
     },
+    ready: {
+      webSocket: false,
+    },
     selectedEntityIndex: null,
     selectedEntityHistory: [],
   },

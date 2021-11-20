@@ -1,10 +1,9 @@
-// @ts-nocheck
 import React from 'react';
-import { TYPE_ANSWER, TYPE_VOTE, TYPE_MESSAGE } from './data';
 import { Answer } from './answer';
 import { TextField } from './textfield-autosubmit';
 import { makeStyles } from '@material-ui/core';
 import { createStyles } from '@material-ui/core/styles';
+import { entityTypes } from '../../../shared/lib/classes/entities';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -31,7 +30,7 @@ export const Message = ({ message }) => {
     Answers = '',
     AnswerInput = '',
     ChosenAnswer = '';
-  if (type === TYPE_MESSAGE) {
+  if (type === entityTypes.MESSAGE) {
     const { answers, answerVotedByCreatress } = message;
 
     if (answerVotedByCreatress) {
