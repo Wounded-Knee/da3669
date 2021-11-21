@@ -1,6 +1,6 @@
 // App
 import React from 'react';
-import { BrowserRouter, Route, Switch } from 'react-router-dom'; // Pages
+import { BrowserRouter, Route, Routes } from 'react-router-dom'; // Pages
 import { connect } from 'react-redux';
 import { core } from './core';
 
@@ -51,7 +51,13 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const AppComponent = ({ webSocketConnected }) => {
+const mapStateToProps = (state) => {
+  return {
+    webSocketConnected: state.ui.ready.webSocket,
+  };
+};
+
+export const App = connect(mapStateToProps)(({ webSocketConnected }) => {
   const classes = useStyles({});
 
   return (
@@ -66,16 +72,9 @@ const AppComponent = ({ webSocketConnected }) => {
             <InfoView core={core} />
             <main className={classes.main}>
               <div className={classes.toolbar} />
-              <Switch>
-                <Route
-                  path='/:entityId'
-                  render={({
-                    match: {
-                      params: { entityId },
-                    },
-                  }) => <View core={core} entityId={parseInt(entityId)} />}
-                />
-              </Switch>
+              <Routes>
+                <Route path='/:entityId' element={<View />} />
+              </Routes>
             </main>
           </div>
         ) : (
@@ -84,12 +83,4 @@ const AppComponent = ({ webSocketConnected }) => {
       </ThemeProvider>
     </BrowserRouter>
   );
-};
-
-const mapStateToProps = (state) => {
-  return {
-    webSocketConnected: state.ui.ready.webSocket,
-  };
-};
-
-export const App = connect(mapStateToProps)(AppComponent);
+});
