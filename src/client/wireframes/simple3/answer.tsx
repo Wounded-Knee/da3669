@@ -3,7 +3,6 @@ import { TYPE_ANSWER, TYPE_VOTE } from './data';
 import { Button } from '@material-ui/core';
 
 export const Answer = ({ answer }) => {
-  window.answer = answer;
   const { text, id, votes } = answer;
   const currentUserId = answer.core.user ? answer.core.user.id : undefined;
   const iVotedForThis =

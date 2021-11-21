@@ -1,36 +1,20 @@
+// App
+import React from 'react';
+import { BrowserRouter, Route, Switch } from 'react-router-dom'; // Pages
+import { connect } from 'react-redux';
+import { core } from './core';
+
+// MUI
 import { CssBaseline, makeStyles } from '@material-ui/core';
 import { createStyles, Theme, ThemeProvider, createTheme } from '@material-ui/core/styles';
-import React, { useReducer } from 'react';
-import { BrowserRouter, Route, Switch } from 'react-router-dom'; // Pages
+
+// Components
 import { Header } from './components/Header';
 import { SideMenu } from './components/SideMenu';
-import { Home } from './components/Home';
-import { Usage } from './components/Usage';
-import { LazyLoadingExample } from './components/LazyLoadingExample';
-import { RouterExample } from './components/RouterExample';
-import { StyledComponentsExample } from './components/StyledComponentsExample';
-import { UsersList } from './components/UsersList';
-import Client from '../shared/lib/Client';
-
-// Custom
-import { Test } from './components/Test';
-import { Test2 } from './components/Test2';
-import { ReduxContext, ReduxProvider } from './context/ReduxContext';
-
-// Wireframes
-import data from './wireframes/mockdata';
-const { routes, displayProps } = data;
-import { Rubric } from './wireframes/Rubric';
-import { Votes } from './wireframes/Votes';
-import { Screen1 } from './wireframes/Screen1';
-import { Chat } from './wireframes/Chat';
-import { Display } from './wireframes/simple/display';
-import { Navigator } from './wireframes/simple2/navigator';
 import { View } from './wireframes/simple3/view';
-import { Core } from './wireframes/simple3/core';
 import { DataView } from './components/DataView';
 import { InfoView } from './components/InfoView';
-import { stateManager } from './lib/stateManager';
+import { Loading } from './components/Loading';
 
 declare module '@material-ui/core/styles' {
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -47,8 +31,6 @@ declare module '@material-ui/core/styles' {
     };
   }
 }
-
-const wsClient = new Client();
 
 const theme = createTheme({
   palette: {
@@ -69,57 +51,45 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-export const App = () => {
+const AppComponent = ({ webSocketConnected }) => {
   const classes = useStyles({});
-  const stateManagement = stateManager();
-  const [state, stateDispatch] = stateManagement;
-  const infoEntity = '';
-
-  const core = new Core(stateManagement);
 
   return (
-    <ReduxProvider>
-      <BrowserRouter>
-        <ThemeProvider theme={theme}>
+    <BrowserRouter>
+      <ThemeProvider theme={theme}>
+        {webSocketConnected ? (
           <div className={classes.root}>
             <CssBaseline />
             <Header core={core} />
             <SideMenu core={core} />
             <DataView core={core} />
-            <InfoView core={core} entity={infoEntity} />
+            <InfoView core={core} />
             <main className={classes.main}>
               <div className={classes.toolbar} />
               <Switch>
-                <Route exact path='/' component={Home} />
-
-                <Route exact path='/test' render={() => <Test wsClient={wsClient} />} />
-                <Route exact path='/test2' render={() => <Test2 wsClient={wsClient} />} />
-
-                <Route exact path='/rubric' component={Rubric} />
-                <Route exact path='/votes' component={Votes} />
-                <Route exact path='/screen1' component={Screen1} />
-                <Route exact path='/chat' render={() => <Chat wsClient={wsClient} />} />
-                <Route exact path='/simple' render={() => <Display {...displayProps} />} />
-                <Route exact path='/simple2' render={() => <Navigator {...displayProps} />} />
                 <Route
-                  path='/message/:messageID'
+                  path='/:entityId'
                   render={({
                     match: {
-                      params: { messageID },
+                      params: { entityId },
                     },
-                  }) => <View {...displayProps} core={core} messageID={parseInt(messageID)} />}
+                  }) => <View core={core} entityId={parseInt(entityId)} />}
                 />
-
-                <Route exact path='/usage' component={Usage} />
-                <Route path='/fetch-example' component={UsersList} />
-                <Route path='/lazy-example' component={LazyLoadingExample} />
-                <Route path='/styled-example' component={StyledComponentsExample} />
-                <Route path='/router-example/:slug' component={RouterExample} />
               </Switch>
             </main>
           </div>
-        </ThemeProvider>
-      </BrowserRouter>
-    </ReduxProvider>
+        ) : (
+          <Loading />
+        )}
+      </ThemeProvider>
+    </BrowserRouter>
   );
 };
+
+const mapStateToProps = (state) => {
+  return {
+    webSocketConnected: state.ui.ready.webSocket,
+  };
+};
+
+export const App = connect(mapStateToProps)(AppComponent);

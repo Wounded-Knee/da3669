@@ -4,3 +4,31 @@ export type FixedLengthArray<T extends any[]> = Pick<T, Exclude<keyof T, ArrayLe
   [Symbol.iterator]: () => IterableIterator<ArrayItems<T>>;
 };
 export type RelationshipArray = FixedLengthArray<[number, number]>;
+
+// D3
+export type action = { type: string; payload: any };
+export type dispatch = (action) => any;
+
+export interface IEntity {
+  id: number;
+  type: string;
+  date: {
+    created: Date;
+    published: Date;
+  };
+}
+
+interface IState {
+  entities: [IEntity];
+}
+
+export type IServerState = IState;
+
+export interface ICoreConfig {
+  store: any;
+  host: string;
+  port: number;
+  date: {
+    [key: string]: Date;
+  };
+}

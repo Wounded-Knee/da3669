@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FormControl, InputLabel, Select, MenuItem } from '@material-ui/core';
 import { TYPE_USER } from './data';
 
-export const UserSelect = ({ users, onSubmit }) => {
+export const UserSelect: React.FunctionComponent<{ users: any; onSubmit: any }> = ({ users, onSubmit }) => {
   const [user, selectUser] = useState('');
 
   const onChange = ({ target: { value } }) => {
@@ -10,7 +10,7 @@ export const UserSelect = ({ users, onSubmit }) => {
     onSubmit(value);
   };
 
-  return (
+  return users ? (
     <FormControl fullWidth>
       <Select labelId='demo-simple-select-label' id='demo-simple-select' value={user} label='User' onChange={onChange}>
         {users.map(({ id, name }, index) => (
@@ -20,5 +20,7 @@ export const UserSelect = ({ users, onSubmit }) => {
         ))}
       </Select>
     </FormControl>
+  ) : (
+    <p>No Users</p>
   );
 };
