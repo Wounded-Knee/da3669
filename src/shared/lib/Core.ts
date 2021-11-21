@@ -1,6 +1,6 @@
 import { ICoreConfig, action, IEntity } from '../all';
 import Kernel from './classes/Kernel';
-import { entityClasses, entityTypes } from './classes/entities';
+import { getClassByType } from './classes/entities';
 
 export class Core extends Kernel {
   cfg: ICoreConfig;
@@ -37,18 +37,12 @@ export class Core extends Kernel {
   classify(entityData) {
     if (entityData === undefined) {
       return undefined;
-    } else if (entityData instanceof entityClasses[entityTypes.ENTITY]) {
-      console.warn('Why are you trying to classify a classified entity?');
     } else if (entityData instanceof Array) {
       return entityData.map((data) => this.classify(data));
     } else {
       const { type } = entityData;
-      switch (type) {
-        case undefined:
-          return new entityClasses[entityTypes.ENTITY](this, entityData);
-        default:
-          return new entityClasses[type](this, entityData);
-      }
+      const constructor = getClassByType(type);
+      return new constructor(this, entityData);
     }
   }
 

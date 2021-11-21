@@ -1,7 +1,18 @@
-import Entity from './Entity';
+import { Entity } from './Entity';
 
-export default class YouTube extends Entity {
+const entityType = 'YOUTUBE';
+
+export class YouTube extends Entity {
   get videoId() {
     return this.data.videoId;
   }
 }
+
+export default {
+  entityType: {
+    [entityType]: entityType,
+  },
+  entityClass: {
+    [entityType]: YouTube,
+  },
+};

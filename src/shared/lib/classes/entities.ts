@@ -1,21 +1,31 @@
-import Entity from './entities/Entity';
-import Image from './entities/Image';
-import YouTube from './entities/YouTube';
+/**
+ * Imports all entity type modules,
+ * Exports a list of types and classes.
+ */
 
-export const entityTypes = {
-  ENTITY: 'ENTITY',
-  USER: 'USER',
-  MESSAGE: 'MESSAGE',
-  IMAGE: 'IMAGE',
-  YOUTUBE: 'YOUTUBE',
-};
+const defaultEntityType = 'ENTITY';
 
-export const entityClasses = {
-  [entityTypes.ENTITY]: Entity,
-  [entityTypes.USER]: Entity,
-  [entityTypes.MESSAGE]: Entity,
-  [entityTypes.IMAGE]: Image,
-  [entityTypes.YOUTUBE]: YouTube,
-};
+export const { entityTypes, entityClasses } = ['Entity', 'Image', 'Relationship', 'YouTube'].reduce(
+  ({ entityTypes, entityClasses }, moduleName) => {
+    const {
+      default: { entityType, entityClass },
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+    } = require(`./entities/${moduleName}`);
+    return {
+      entityTypes: {
+        ...entityTypes,
+        ...entityType,
+      },
+      entityClasses: {
+        ...entityClasses,
+        ...entityClass,
+      },
+    };
+  },
+  {
+    entityTypes: {},
+    entityClasses: {},
+  },
+);
 
-export { Entity, Image, YouTube };
+export const getClassByType = (type) => (type ? entityClasses[type] : entityClasses[defaultEntityType]);

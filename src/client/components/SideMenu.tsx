@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export const SideMenu: React.FunctionComponent<{ core: any }> = ({ core }) => {
   const classes = useStyles({});
-  const options = core.getEntitiesByType(entityTypes.MESSAGE);
+  const options = core.all;
 
   return (
     <Drawer

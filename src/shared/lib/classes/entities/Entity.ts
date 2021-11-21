@@ -1,4 +1,6 @@
-export default class Entity {
+const entityType = 'ENTITY';
+
+export class Entity {
   data;
   core;
   isEntity = true;
@@ -20,3 +22,12 @@ export default class Entity {
     return this.data.text;
   }
 }
+
+export default {
+  entityType: {
+    [entityType]: entityType,
+  },
+  entityClass: {
+    [entityType]: Entity,
+  },
+};

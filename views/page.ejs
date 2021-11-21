@@ -6,12 +6,17 @@
     <title>
 			DA3669
     </title>
+    <style>
+        body {
+            background-color: black;
+        }
+    </style>
     <link rel="icon" href="/assets/d3.gif"/>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <body>
         <div class="container">
-            <div id="app">Loading...</div>
+            <div id="app"></div>
         </div>
     <% if(process.env.NODE_ENV === 'production') { %>
         <script crossorigin src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
