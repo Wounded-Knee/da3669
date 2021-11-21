@@ -1,11 +1,13 @@
+import Kernel from '../Kernel';
 const entityType = 'ENTITY';
 
-export class Entity {
+export class Entity extends Kernel {
   data;
   core;
   isEntity = true;
 
   constructor(core, data) {
+    super();
     this.core = core;
     this.data = data;
   }

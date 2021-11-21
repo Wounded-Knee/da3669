@@ -10,4 +10,8 @@ const initialState = {
   entities: [],
 };
 
-export { initialState, HTTP_SERVER_PORT, WS_SERVER_HOST, WS_SERVER_PORT };
+// Entities
+const entityModules = ['Entity', 'Image', 'Relationship', 'YouTube'];
+const defaultEntityModule = entityModules[0];
+
+export { entityModules, defaultEntityModule, initialState, HTTP_SERVER_PORT, WS_SERVER_HOST, WS_SERVER_PORT };
