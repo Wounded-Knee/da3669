@@ -51,7 +51,13 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const AppComponent = ({ webSocketConnected }) => {
+const mapStateToProps = (state) => {
+  return {
+    webSocketConnected: state.ui.ready.webSocket,
+  };
+};
+
+export const App = connect(mapStateToProps)(({ webSocketConnected }) => {
   const classes = useStyles({});
 
   return (
@@ -67,14 +73,9 @@ const AppComponent = ({ webSocketConnected }) => {
             <main className={classes.main}>
               <div className={classes.toolbar} />
               <Switch>
-                <Route
-                  path='/:entityId'
-                  render={({
-                    match: {
-                      params: { entityId },
-                    },
-                  }) => <View core={core} entityId={parseInt(entityId)} />}
-                />
+                <Route path='/:entityId'>
+                  <View />
+                </Route>
               </Switch>
             </main>
           </div>
@@ -84,12 +85,4 @@ const AppComponent = ({ webSocketConnected }) => {
       </ThemeProvider>
     </BrowserRouter>
   );
-};
-
-const mapStateToProps = (state) => {
-  return {
-    webSocketConnected: state.ui.ready.webSocket,
-  };
-};
-
-export const App = connect(mapStateToProps)(AppComponent);
+});

@@ -3,8 +3,13 @@ import { List, ListItemText, ListItem, ListItemIcon } from '@material-ui/core';
 import StorageIcon from '@material-ui/icons/Storage';
 import { JSON } from './JSON';
 import { Drawer } from './Drawer';
+import { connect } from 'react-redux';
 
-export const DataView: React.FunctionComponent<{ core: any }> = ({ core }) => {
+const mapStateToProps = (state) => ({
+  state: state,
+});
+
+export const DataView: React.FunctionComponent<{ core: any }> = connect(mapStateToProps)(({ core, state }) => {
   return (
     <Drawer drawerName='data'>
       <List>
@@ -12,11 +17,11 @@ export const DataView: React.FunctionComponent<{ core: any }> = ({ core }) => {
           <ListItemIcon>
             <StorageIcon />
           </ListItemIcon>
-          <ListItemText primary='D³ata Inspector' secondary={`${core.all.length} entities`} />
+          <ListItemText primary='D³ata Inspector' secondary={`${state.entities.length} entities`} />
         </ListItem>
       </List>
 
-      <JSON data={core.state} />
+      <JSON data={state} />
     </Drawer>
   );
-};
+});

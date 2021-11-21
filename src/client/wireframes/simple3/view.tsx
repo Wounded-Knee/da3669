@@ -1,8 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { useParams } from 'react-router';
 import { EntityView, MessageView, ImageView } from '../../components/Entities';
 import { View as YouTubeView } from '../../components/entities/YouTube';
 import { entityTypes } from '../../../shared/lib/classes/entities';
+import { core } from '../../core';
 
 const mapStateToProps = (state) => {
   return {
@@ -23,7 +25,8 @@ const getEntityView = (type) => {
   }
 };
 
-export const View = connect(mapStateToProps)(({ entityId, core }) => {
+export const View = connect(mapStateToProps)(() => {
+  const entityId = parseInt(useParams().entityId);
   const entity = core.getEntityById(entityId);
   const View = entity && getEntityView(entity.type);
 

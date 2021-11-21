@@ -48,7 +48,7 @@ export const SideMenu: React.FunctionComponent<{ core: any }> = ({ core }) => {
       <List>
         {options &&
           options.map(({ id, text }, index) => (
-            <ListItem key={index} button component={NavLinkMui} to={`/entity/${id}`}>
+            <ListItem key={index} button component={NavLinkMui} to={`/${id}`}>
               <ListItemIcon>
                 <QuestionAnswer />
               </ListItemIcon>
