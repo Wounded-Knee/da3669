@@ -7,8 +7,8 @@ import { entityModules, defaultEntityModule } from '../../config';
 
 let defaultEntityType = '';
 
-export const { entityTypes, entityClasses } = entityModules.reduce(
-  ({ entityTypes, entityClasses }, moduleName) => {
+export const { entityTypes, entityClasses, moduleNameToEntityType } = entityModules.reduce(
+  ({ entityTypes, entityClasses, moduleNameToEntityType }, moduleName) => {
     const {
       default: { entityType, entityClass },
       // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -17,6 +17,10 @@ export const { entityTypes, entityClasses } = entityModules.reduce(
     defaultEntityType = defaultEntityModule === moduleName ? Object.values(entityType)[0] : defaultEntityType;
 
     return {
+      moduleNameToEntityType: {
+        ...moduleNameToEntityType,
+        [moduleName]: Object.values(entityType)[0],
+      },
       entityTypes: {
         ...entityTypes,
         ...entityType,
@@ -30,7 +34,10 @@ export const { entityTypes, entityClasses } = entityModules.reduce(
   {
     entityTypes: {},
     entityClasses: {},
+    moduleNameToEntityType: {},
   },
 );
 
 export const getClassByType = (type) => entityClasses[type] || entityClasses[defaultEntityType];
+export const getEntityTypeByModuleName = (moduleName) =>
+  moduleNameToEntityType[moduleName] || moduleNameToEntityType[defaultEntityType];

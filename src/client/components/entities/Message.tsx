@@ -1,4 +1,5 @@
 import React from 'react';
+import { QuestionAnswer } from '@material-ui/icons';
 
 export const Edit = () => {
   return <div>Message Editor</div>;
@@ -12,3 +13,5 @@ export const View = ({ entity }) => {
     </dl>
   );
 };
+
+export const icon = <QuestionAnswer />;

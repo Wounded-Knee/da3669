@@ -1,6 +1,6 @@
 // App
 import React from 'react';
-import { BrowserRouter, Route, Switch } from 'react-router-dom'; // Pages
+import { BrowserRouter, Route, Routes } from 'react-router-dom'; // Pages
 import { connect } from 'react-redux';
 import { core } from './core';
 
@@ -72,11 +72,9 @@ export const App = connect(mapStateToProps)(({ webSocketConnected }) => {
             <InfoView core={core} />
             <main className={classes.main}>
               <div className={classes.toolbar} />
-              <Switch>
-                <Route path='/:entityId'>
-                  <View />
-                </Route>
-              </Switch>
+              <Routes>
+                <Route path='/:entityId' element={<View />} />
+              </Routes>
             </main>
           </div>
         ) : (
