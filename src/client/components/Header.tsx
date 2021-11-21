@@ -26,7 +26,7 @@ export const Header: React.FunctionComponent<{ core: any }> = ({ core }) => {
       <Toolbar>
         <Grid container alignItems='center'>
           <Grid item xs={10}>
-            <Typography variant='h6' noWrap>
+            <Typography variant='h5' noWrap>
               🙃 DA3669 Prototype
             </Typography>
           </Grid>

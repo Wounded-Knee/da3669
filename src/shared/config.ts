@@ -11,7 +11,7 @@ const initialState = {
 };
 
 // Entities
-const entityModules = ['Entity', 'Image', 'Relationship', 'YouTube'];
+const entityModules = ['Entity', 'Image', 'Relationship', 'YouTube', 'User'];
 const defaultEntityModule = entityModules[0];
 
 export { entityModules, defaultEntityModule, initialState, HTTP_SERVER_PORT, WS_SERVER_HOST, WS_SERVER_PORT };
