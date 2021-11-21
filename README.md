@@ -25,22 +25,25 @@
 
 ```bash
 .
-├── node_modules/                    # 3rd-party libraries and utilities
-├── dist/                            # All the generated files will go here, and will run from this folder
-├── src/                             # The source code of the application
-│   ├── client/                      # React app
-│   │   ├── lib/                     # Local libraries
-│   │   │   ├── classes/             # Classes
-│   │   ├── redux/                   # Redux store / reducer
-│   ├── server/                      # Express server app
-│   │   ├── lib/                     # Local libraries
-│   │   │   ├── classes/             # Classes
-│   │   ├── redux/                   # Redux store / reducer
-│   ├── shared/                      # The shared code between the client and the server
-│   │   ├── lib/                     # Local libraries
-│   │   │   ├── classes/             # Classes
-│   │   ├── redux/                   # Redux store / reducer
-├── assets/                          # images, css, jsons etc.
+├── node_modules/                     # 3rd-party libraries and utilities
+├── dist/                             # All the generated files will go here, and will run from this folder
+├── src/                              # The source code of the application
+│   ├── client/                       # React app
+│   │   ├── components/               # React components
+│   │   │   ├── entities/             # React components for display/edit of entities
+│   │   ├── lib/                      # Local libraries
+│   │   │   ├── classes/              # Classes
+│   │   │   ├── redux/                # Redux store / reducer
+│   ├── server/                       # Express server app
+│   │   ├── lib/                      # Local libraries
+│   │   │   ├── classes/              # Classes
+│   │   │   ├── redux/                # Redux store / reducer
+│   ├── shared/                       # The shared code between the client and the server
+│   │   ├── lib/                      # Local libraries
+│   │   │   ├── classes/              # Classes
+│   │   │   │   ├── entities/         # Entity classes by entity type
+│   │   │   ├── redux/                # Redux store / reducer
+├── assets/                           # images, css, jsons etc.
 ├── .eslintrc                         # es-lint configuration
 ├── .prettierec                       # prettier configuration
 ├── .gitignore                        # ignored git files and folders
