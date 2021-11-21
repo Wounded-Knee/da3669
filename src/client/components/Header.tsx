@@ -24,7 +24,7 @@ export const Header: React.FunctionComponent<{ core: any }> = ({ core }) => {
   return (
     <AppBar position='fixed' className={classes.appBar}>
       <Toolbar>
-        <Grid container>
+        <Grid container alignItems='center'>
           <Grid item xs={10}>
             <Typography variant='h6' noWrap>
               🙃 DA3669 Prototype

@@ -20,35 +20,34 @@ const serverReducer = (state, { type, payload }) => {
 };
 
 export const addEntity = (data) => {
-  return (dispatch, getState) => {
-    const action = {
-      type: actionTypes.ADDED_ENTITY,
-      payload: {
-        ...data,
-        date: {
-          created: new Date(),
-          updated: new Date(),
+  return (localDispatch, getState) => {
+    return new Promise((clientDispatch) => {
+      const action = {
+        type: actionTypes.ADDED_ENTITY,
+        payload: {
+          ...data,
+          date: {
+            created: new Date(),
+            updated: new Date(),
+          },
+          id: getState().nextId,
         },
-        id: getState().nextId,
-      },
-    };
-    return new Promise((resolve) => {
-      dispatch(action);
-      resolve(action);
+      };
+      localDispatch(action);
+      clientDispatch(action);
     });
   };
 };
 
 export const fetchEntity = (soughtId) => {
-  return (dispatch, getState) => {
-    return new Promise((resolve, reject) => {
+  return (localDispatch, getState) => {
+    return new Promise((clientDispatch, reject) => {
       const { entities } = getState();
       const action = {
         type: actionTypes.ADDED_ENTITY,
         payload: entities.find(({ id }) => id === soughtId),
       };
-      console.log('Sending to client ', action);
-      resolve(action);
+      clientDispatch(action);
     });
   };
 };
