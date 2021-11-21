@@ -1,7 +1,7 @@
 import React from 'react';
 import { List, ListItemText, ListItem, ListItemIcon } from '@material-ui/core';
 import StorageIcon from '@material-ui/icons/Storage';
-import ReactJson from 'searchable-react-json-view';
+import { JSON } from './JSON';
 import { Drawer } from './Drawer';
 
 export const DataView: React.FunctionComponent<{ core: any }> = ({ core }) => {
@@ -16,14 +16,7 @@ export const DataView: React.FunctionComponent<{ core: any }> = ({ core }) => {
         </ListItem>
       </List>
 
-      <ReactJson
-        displayObjectSize={false}
-        displayDataTypes={false}
-        enableClipboard={false}
-        name={false}
-        src={core.state}
-        theme='shapeshifter'
-      />
+      <JSON data={core.state} />
     </Drawer>
   );
 };

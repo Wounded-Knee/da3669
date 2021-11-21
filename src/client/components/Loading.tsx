@@ -6,6 +6,7 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     loading: {
       fontSize: '15em',
+      color: '#fff',
     },
   }),
 );

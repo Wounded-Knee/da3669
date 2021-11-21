@@ -68,7 +68,7 @@ const AppComponent = ({ webSocketConnected }) => {
               <div className={classes.toolbar} />
               <Switch>
                 <Route
-                  path='/entity/:entityId'
+                  path='/:entityId'
                   render={({
                     match: {
                       params: { entityId },
