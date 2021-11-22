@@ -1,6 +1,6 @@
 import React from 'react';
 import { List, ListItemText, ListItem, ListItemIcon } from '@material-ui/core';
-import StorageIcon from '@material-ui/icons/Storage';
+import StorageIcon from '@mui/icons-material/Storage';
 import { JSON } from './JSON';
 import { Drawer } from './Drawer';
 import { connect } from 'react-redux';

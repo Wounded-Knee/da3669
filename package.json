@@ -67,7 +67,11 @@
     }
   },
   "dependencies": {
-    "@material-ui/icons": "^4.11.2",
+    "@emotion/react": "^11.6.0",
+    "@emotion/styled": "^11.6.0",
+    "@mui/icons-material": "^5.1.1",
+    "@mui/material": "^5.1.1",
+    "@mui/styles": "^5.1.1",
     "@reduxjs/toolkit": "^1.6.2",
     "@webpack-cli/serve": "^1.2.2",
     "body-parser": "^1.19.0",

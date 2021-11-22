@@ -1,7 +1,7 @@
 import { AppBar, makeStyles, Toolbar, Typography, Grid, Button } from '@material-ui/core';
 import { createStyles, Theme } from '@material-ui/core/styles';
-import StorageIcon from '@material-ui/icons/Storage';
-import InfoIcon from '@material-ui/icons/Info';
+import StorageIcon from '@mui/icons-material/Storage';
+import InfoIcon from '@mui/icons-material/Info';
 import React from 'react';
 import { UserSelect } from './UserSelect';
 import { entityTypes } from '../../shared/lib/classes/entities';

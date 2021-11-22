@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactPlayer from 'react-player';
-import { YouTube } from '@material-ui/icons';
+import { YouTube } from '@mui/icons-material';
 
 export const Edit = () => {
   return <div>YouTube Editor</div>;

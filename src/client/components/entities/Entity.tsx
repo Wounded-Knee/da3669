@@ -1,6 +1,6 @@
 import React from 'react';
 import { JSON } from '../JSON';
-import { ChatBubbleOutline } from '@material-ui/icons';
+import { ChatBubbleOutline } from '@mui/icons-material';
 
 export const Edit = () => {
   return <div>Entity Editor</div>;

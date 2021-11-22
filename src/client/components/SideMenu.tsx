@@ -4,7 +4,7 @@ import { createStyles, Theme } from '@material-ui/core/styles';
 import { NavLink, Link } from 'react-router-dom';
 import { getComponentByType } from '../components/entities';
 import { connect } from 'react-redux';
-import { QuestionAnswer } from '@material-ui/icons';
+import { QuestionAnswer } from '@mui/icons-material';
 
 class NavLinkMui extends React.Component<any> {
   render() {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Chat } from '@material-ui/icons';
+import { Chat } from '@mui/icons-material';
 
 export const Edit = () => {
   return <div>Message Editor</div>;
