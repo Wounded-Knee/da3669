@@ -6,7 +6,7 @@ import { core } from './core';
 
 // MUI
 import { CssBaseline, makeStyles } from '@material-ui/core';
-import { createStyles, Theme, ThemeProvider, createTheme } from '@material-ui/core/styles';
+import { createStyles, Theme } from '@material-ui/core/styles';
 
 // Components
 import { Header } from './components/Header';
@@ -32,12 +32,6 @@ declare module '@material-ui/core/styles' {
   }
 }
 
-const theme = createTheme({
-  palette: {
-    type: 'dark',
-  },
-});
-
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
@@ -62,25 +56,23 @@ export const App = connect(mapStateToProps)(({ webSocketConnected }) => {
 
   return (
     <BrowserRouter>
-      <ThemeProvider theme={theme}>
-        {webSocketConnected ? (
-          <div className={classes.root}>
-            <CssBaseline />
-            <Header core={core} />
-            <SideMenu core={core} />
-            <DataView core={core} />
-            <InfoView core={core} />
-            <main className={classes.main}>
-              <div className={classes.toolbar} />
-              <Routes>
-                <Route path='/:entityId' element={<View />} />
-              </Routes>
-            </main>
-          </div>
-        ) : (
-          <Loading />
-        )}
-      </ThemeProvider>
+      {webSocketConnected ? (
+        <div className={classes.root}>
+          <CssBaseline />
+          <Header core={core} />
+          <SideMenu core={core} />
+          <DataView core={core} />
+          <InfoView core={core} />
+          <main className={classes.main}>
+            <div className={classes.toolbar} />
+            <Routes>
+              <Route path='/:entityId' element={<View />} />
+            </Routes>
+          </main>
+        </div>
+      ) : (
+        <Loading />
+      )}
     </BrowserRouter>
   );
 });
