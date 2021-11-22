@@ -5,5 +5,5 @@ export const Edit = () => {
 };
 
 export const View = ({ entity }) => {
-  return <p>User: { entity.name }</p>;
+  return <p>User: {entity.name}</p>;
 };

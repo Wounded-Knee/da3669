@@ -30,19 +30,19 @@
 ├── src/                              # The source code of the application
 │   ├── client/                       # React app
 │   │   ├── components/               # React components
-│   │   │   ├── entities/             # React components for display/edit of entities
+│   │   │   └── entities/             # React components for display/edit of entities
 │   │   ├── lib/                      # Local libraries
 │   │   │   ├── classes/              # Classes
-│   │   │   ├── redux/                # Redux store / reducer
+│   │   │   └── redux/                # Redux store / reducer
 │   ├── server/                       # Express server app
 │   │   ├── lib/                      # Local libraries
 │   │   │   ├── classes/              # Classes
-│   │   │   ├── redux/                # Redux store / reducer
+│   │   │   └── redux/                # Redux store / reducer
 │   ├── shared/                       # The shared code between the client and the server
 │   │   ├── lib/                      # Local libraries
 │   │   │   ├── classes/              # Classes
-│   │   │   │   ├── entities/         # Entity classes by entity type
-│   │   │   ├── redux/                # Redux store / reducer
+│   │   │   │   └── entities/         # Entity classes by entity type
+│   │   │   └── redux/                # Redux store / reducer
 ├── assets/                           # images, css, jsons etc.
 ├── .eslintrc                         # es-lint configuration
 ├── .prettierec                       # prettier configuration
@@ -57,8 +57,9 @@
 
 ### Built On
 
-- [React v16](https://facebook.github.io/react/)
-- [React router v4](https://github.com/ReactTraining/react-router)
+- [React v17](https://facebook.github.io/react/)
+- [React router v6](https://reactrouter.com/)
+- [MongoDB](https://www.mongodb.com/)
 - [Material-ui](https://github.com/mui-org/material-ui)
 - [Jest](https://github.com/facebook/jest)
 - [Styled Components](https://github.com/styled-components/styled-components)
