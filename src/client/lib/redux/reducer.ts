@@ -19,11 +19,9 @@ const clientReducer = (state, { type, payload }) => {
       if (extantEntity) {
         if (extantEntity.date.updated === payload.date.updated) {
           // Cache is fresh; do nothing.
-          console.log('noop');
           return state;
         } else {
           // Cache is stale; update entity.
-          console.log('stale; updating');
           return {
             ...state,
             entities: [...entities.filter(({ id }) => id === payload.id), payload],
@@ -31,7 +29,6 @@ const clientReducer = (state, { type, payload }) => {
         }
       } else {
         // Cache is clean; insert entity.
-        console.log('clean; inserting');
         return {
           ...state,
           entities: [...entities, payload],

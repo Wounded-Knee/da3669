@@ -1,4 +1,6 @@
 import { Core as SharedCore } from '../../shared/lib/Core';
+import { set } from './LocalStorage';
+import { appName } from '../config';
 import { action, ICoreConfig } from '../all';
 import { actionTypes } from './redux/reducer';
 import { Client } from 'rpc-websockets';
@@ -19,6 +21,11 @@ export class Core extends SharedCore {
       this.dispatch({ type: actionTypes.READY_WEBSOCKET });
     });
     this.transport = transport;
+    this.store.subscribe(() => {
+      const { user, ui } = this.store.getState();
+      this.log('Stashing local state');
+      set(appName, { ui, user });
+    });
   }
 
   get user() {

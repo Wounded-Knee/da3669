@@ -1,5 +1,5 @@
 import React from 'react';
-import ImageIcon from '@material-ui/icons/Image';
+import ImageIcon from '@mui/icons-material/Image';
 
 export const Edit = () => {
   return <div>Image Editor</div>;

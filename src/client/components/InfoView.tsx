@@ -1,6 +1,6 @@
 import React from 'react';
 import { List, ListItemText, ListItem, ListItemIcon, ListSubheader, Divider } from '@material-ui/core';
-import TouchAppIcon from '@material-ui/icons/TouchApp';
+import TouchAppIcon from '@mui/icons-material/TouchApp';
 import { Drawer } from './Drawer';
 
 export const InfoView: React.FunctionComponent<{ core: any }> = ({ core }) => {

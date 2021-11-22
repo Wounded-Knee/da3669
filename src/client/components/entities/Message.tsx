@@ -1,5 +1,5 @@
 import React from 'react';
-import { QuestionAnswer } from '@material-ui/icons';
+import { Chat } from '@mui/icons-material';
 
 export const Edit = () => {
   return <div>Message Editor</div>;
@@ -14,4 +14,4 @@ export const View = ({ entity }) => {
   );
 };
 
-export const icon = <QuestionAnswer />;
+export const icon = <Chat />;
