@@ -66,7 +66,7 @@ export class Core extends SharedCore {
           })
           .catch((err) => this.error('MongoDB error ', err));
       } catch (e) {
-        this.error('Error at Core.ts:61 ', e);
+        this.error('Error at Core.ts:execute() ', e);
       }
     });
   }
