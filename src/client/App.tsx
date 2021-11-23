@@ -15,6 +15,7 @@ import { View } from './wireframes/simple3/view';
 import { DataView } from './components/DataView';
 import { InfoView } from './components/InfoView';
 import { Loading } from './components/Loading';
+import DocStore from './wireframes/docstore/DocStore';
 
 declare module '@material-ui/core/styles' {
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -67,6 +68,7 @@ export const App = connect(mapStateToProps)(({ webSocketConnected }) => {
             <div className={classes.toolbar} />
             <Routes>
               <Route path='/:entityId' element={<View />} />
+              <Route path='/docstore' element={<DocStore />} />
             </Routes>
           </main>
         </div>

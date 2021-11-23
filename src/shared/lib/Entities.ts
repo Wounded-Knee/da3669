@@ -8,7 +8,7 @@ Event
     Classifier
 */
 
-import { QuestionAnswer } from '@material-ui/icons';
+import { QuestionAnswer } from '@mui/icons-material';
 
 export const Entity = (text = 'Generic Entity') => ({
   id: 0,
