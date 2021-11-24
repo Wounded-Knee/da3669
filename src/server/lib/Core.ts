@@ -21,13 +21,18 @@ export class Core extends SharedCore {
       new Promise((resolve) => {
         this.log('Initializing...');
         // MongoDB
-        mongoose.connect(mongoDBURL).catch((err) => {
-          if (err.toString().indexOf('certificate validation failed') !== -1) {
-            this.log('MongoDB Certificate Validation Failed');
-          } else {
-            this.log(err);
-          }
-        });
+        mongoose
+          .connect(mongoDBURL)
+          .then(() => {
+            this.log('MongoDB Connected.');
+          })
+          .catch((err) => {
+            if (err.toString().indexOf('certificate validation failed') !== -1) {
+              this.log('MongoDB Certificate Validation Failed');
+            } else {
+              this.log(err);
+            }
+          });
 
         // Web Socket Server
         const transport = new Server({
@@ -58,13 +63,32 @@ export class Core extends SharedCore {
     return new Promise((resolve, reject) => {
       this.log('Executing action ', action);
       try {
-        new Document(payload)
-          .save()
-          .then((newDoc) => {
-            console.log('Mongo returned ', newDoc);
-            resolve({ type: actionTypes.DOCSTORE_UPDATE, payload: newDoc });
-          })
-          .catch((err) => this.error('MongoDB error ', err));
+        switch (type) {
+          case actionTypes.DOCSTORE_UPDATE:
+            const { _id } = payload;
+            switch (_id) {
+              case undefined:
+                new Document(payload)
+                  .save()
+                  .then((newDoc) => {
+                    this.log('Mongo returned ', newDoc);
+                    resolve({ type: actionTypes.DOCSTORE_UPDATE, payload: newDoc });
+                  })
+                  .catch((err) => this.error('MongoDB error ', err));
+                break;
+              default:
+                Document.findOneAndUpdate({ _id: _id }, payload, { new: true }).then((document) => {
+                  resolve({ type: actionTypes.DOCSTORE_UPDATE, payload: document });
+                });
+            }
+            break;
+          case actionTypes.DOCSTORE_GET_DOC_BY_ID:
+            Document.find({ _id: payload }).then((document) => {
+              this.log(`Mongo found doc ID ${payload}`, document);
+              resolve(document);
+            });
+            break;
+        }
       } catch (e) {
         this.error('Error at Core.ts:execute() ', e);
       }
