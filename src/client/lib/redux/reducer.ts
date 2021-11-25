@@ -1,6 +1,7 @@
 import { reducer as rootReducer, actionTypes as rootActionTypes } from '../../../shared/lib/redux/reducer';
 import { action } from '../../../shared/all';
 import { initialState } from '../../config';
+import transport from '../transport';
 
 export const actionTypes = {
   ...rootActionTypes,
@@ -9,11 +10,24 @@ export const actionTypes = {
   SELECT_ENTITY: 'SELECT_ENTITY',
   DRAWER: 'DRAWER',
   READY_WEBSOCKET: 'READY_WEBSOCKET',
+  DOCSTORE_SET_CURRENT_DOC: 'DOCSTORE_SET_CURRENT_DOC',
 };
 
 const clientReducer = (state, { type, payload }) => {
   const { entities } = state;
   switch (type) {
+    case actionTypes.DOCSTORE_SET_CURRENT_DOC:
+      return {
+        ...state,
+        ui: {
+          ...state.ui,
+          docStore: {
+            ...state.ui.docStore,
+            currentDoc: payload,
+          },
+        },
+      };
+
     case actionTypes.ADDED_ENTITY:
       const extantEntity = entities.find(({ id }) => id === payload.id);
       if (extantEntity) {
@@ -88,6 +102,15 @@ const clientReducer = (state, { type, payload }) => {
   }
   return state;
 };
+
+export const setCurrentDoc = (currentDoc) => {
+  return async function setCurrentDocThunk(dispatch, getState) {
+    const doc = await transport.call('document.persist', currentDoc);
+    console.log('Server returned ', doc);
+    dispatch({ type: actionTypes.DOCSTORE_SET_CURRENT_DOC, payload: doc });
+  };
+};
+export const getCurrentDoc = (state) => state.ui.docStore.currentDoc;
 
 export const reducer = (state = initialState, action: action): any => {
   return rootReducer(clientReducer(state, action), action);

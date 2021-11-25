@@ -12,6 +12,8 @@ export default (action) => {
           if (action) {
             console.log('Dispatching local action ', action);
             dispatch(action);
+          } else {
+            console.log('Server returned no action.');
           }
           resolve(returnValue);
         })

@@ -5,6 +5,7 @@ export const actionTypes = {
   FETCH_ENTITY: 'FETCH_ENTITY',
   DOCSTORE_UPDATE: 'DOCSTORE_UPDATE',
   DOCSTORE_GET_DOC_BY_ID: 'DOCSTORE_GET_DOC_BY_ID',
+  DOCSTORE_LIST: 'DOCSTORE_LIST',
 };
 
 export const reducer = (state: any, { type, payload }: action): any => {

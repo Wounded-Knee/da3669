@@ -2,6 +2,7 @@ import HTTPServer from './lib/classes/HttpServer';
 import { Core } from './lib/Core';
 import { store } from './lib/redux/store';
 import { HTTP_SERVER_PORT, WS_SERVER_HOST as host, WS_SERVER_PORT as port } from './config';
+import setupDocStore from './lib/docStore';
 const fs = require('fs');
 
 const mongoDB = {
@@ -21,6 +22,7 @@ const core = new Core({
   port,
   store,
 });
+setupDocStore(core);
 
 Promise.all([httpServer.initialize()]).then(() => {
   console.log('Ready');

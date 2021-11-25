@@ -1,6 +1,7 @@
 import React, { useReducer, useEffect } from 'react';
 import { TextareaAutosize, Button, Input } from '../../components/Branded';
 
+export type Document = { text: string; title: string };
 const emptyDocument = { text: '', title: '' };
 
 const reducer = (document, { type, payload }) => {
@@ -36,9 +37,9 @@ export const Editor = ({ document: originalDocument = emptyDocument, onChange })
 
   return (
     <>
-      {_id && <p>Doc ID {_id}</p>}
+      {_id ? <p>Doc ID {_id}</p> : <p>NO ID</p>}
       <Input
-        value={title}
+        value={title || ''}
         onChange={({ target: { value: title } }) => {
           return dispatch({ type: 'UPDATED_TITLE', payload: title });
         }}
@@ -46,7 +47,7 @@ export const Editor = ({ document: originalDocument = emptyDocument, onChange })
       <TextareaAutosize
         aria-label='Document Contents'
         placeholder='Empty'
-        value={text}
+        value={text || ''}
         onChange={({ target: { value: text } }) => {
           return dispatch({ type: 'UPDATED_TEXT', payload: text });
         }}

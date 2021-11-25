@@ -3,7 +3,7 @@ import { set } from './LocalStorage';
 import { appName } from '../config';
 import { action, ICoreConfig } from '../all';
 import { actionTypes } from './redux/reducer';
-import { Client } from 'rpc-websockets';
+import transport from './transport';
 
 export class Core extends SharedCore {
   cfg: ICoreConfig;
@@ -12,10 +12,6 @@ export class Core extends SharedCore {
     super();
     this.cfg = cfg;
 
-    const { host, port } = this.cfg;
-    const url = `ws://${host}:${port}`;
-    this.log(`Connecting to ${url}...`);
-    const transport = new Client(url);
     transport.on('open', () => {
       this.log('Connected.');
       this.dispatch({ type: actionTypes.READY_WEBSOCKET });

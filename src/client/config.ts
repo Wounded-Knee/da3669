@@ -19,6 +19,9 @@ export const initialState = {
     ready: {
       webSocket: false,
     },
+    docStore: {
+      currentDoc: {},
+    },
     selectedEntityIndex: null,
     selectedEntityHistory: [],
   },

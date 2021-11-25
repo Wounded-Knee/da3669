@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import { Core as SharedCore } from '../../shared/lib/Core';
 import { actionTypes, addEntity, fetchEntity } from './redux/reducer';
 import { ICoreConfig, action } from '../all';
-import Document from './models/documentModel';
+import Document, { createDocument } from './models/documentModel';
 
 export class Core extends SharedCore {
   cfg: ICoreConfig;
@@ -64,27 +64,43 @@ export class Core extends SharedCore {
       this.log('Executing action ', action);
       try {
         switch (type) {
+          case actionTypes.DOCSTORE_LIST:
+            // @ts-ignore
+            Document.list().then((docList) => {
+              resolve({ type: actionTypes.DOCSTORE_LIST, payload: docList });
+            });
+            break;
+
           case actionTypes.DOCSTORE_UPDATE:
-            const { _id } = payload;
-            switch (_id) {
-              case undefined:
-                new Document(payload)
-                  .save()
-                  .then((newDoc) => {
-                    this.log('Mongo returned ', newDoc);
-                    resolve({ type: actionTypes.DOCSTORE_UPDATE, payload: newDoc });
-                  })
-                  .catch((err) => this.error('MongoDB error ', err));
-                break;
-              default:
-                Document.findOneAndUpdate({ _id: _id }, payload, { new: true }).then((document) => {
+            switch (payload.title) {
+              case 'f':
+                console.log('Doesnt work');
+                // @ts-ignore
+                return new Document(payload).save().then((document) => {
                   resolve({ type: actionTypes.DOCSTORE_UPDATE, payload: document });
                 });
+              case 's':
+                console.log('Does work');
+                const { _id } = payload;
+                switch (_id) {
+                  case undefined:
+                    new Document(payload)
+                      .save()
+                      .then((newDoc) => {
+                        resolve({ type: actionTypes.DOCSTORE_UPDATE, payload: newDoc });
+                      })
+                      .catch((err) => this.error('MongoDB error ', err));
+                    break;
+                  default:
+                    Document.findByIdAndUpdate(_id, payload, { new: true }).then((document) => {
+                      resolve({ type: actionTypes.DOCSTORE_UPDATE, payload: document });
+                    });
+                }
+                break;
             }
-            break;
+
           case actionTypes.DOCSTORE_GET_DOC_BY_ID:
             Document.find({ _id: payload }).then((document) => {
-              this.log(`Mongo found doc ID ${payload}`, document);
               resolve(document);
             });
             break;
