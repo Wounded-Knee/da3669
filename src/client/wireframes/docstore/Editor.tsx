@@ -1,31 +1,48 @@
 import React, { useReducer, useEffect } from 'react';
-import { TextareaAutosize, Button } from '../../components/Branded';
+import { TextareaAutosize, Button, Input } from '../../components/Branded';
+
+const emptyDocument = { text: '', title: '' };
 
 const reducer = (document, { type, payload }) => {
+  let newDocument;
   switch (type) {
     case 'UPDATED_TEXT':
-      const newDocument = {
+      newDocument = {
         ...document,
         text: payload,
       };
-      return newDocument;
+      break;
+    case 'UPDATED_TITLE':
+      newDocument = {
+        ...document,
+        title: payload,
+      };
+      break;
   }
+  return newDocument;
 };
 
-export const Editor = ({ document: originalDocument, onChange }) => {
-  const [document, dispatch] = useReducer(reducer, originalDocument || { text: '' });
-  const { text, _id } = document;
+export const Editor = ({ document: originalDocument = emptyDocument, onChange }) => {
+  const [document, dispatch] = useReducer(reducer, originalDocument);
+  const { text, _id, title } = document;
 
   useEffect(() => {
     // Runs ONCE after initial rendering
     // and after every rendering ONLY IF `id` changes
-    console.log('Document Changed ', document);
-    onChange(document);
-  }, [text]);
+    if (text || title) {
+      onChange(document);
+    }
+  }, [text, title]);
 
   return (
     <>
       {_id && <p>Doc ID {_id}</p>}
+      <Input
+        value={title}
+        onChange={({ target: { value: title } }) => {
+          return dispatch({ type: 'UPDATED_TITLE', payload: title });
+        }}
+      />
       <TextareaAutosize
         aria-label='Document Contents'
         placeholder='Empty'

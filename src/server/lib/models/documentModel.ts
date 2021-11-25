@@ -5,6 +5,7 @@ const Schema = mongoose.Schema;
 const documentSchema = new Schema(
   {
     text: String,
+    title: String,
   },
   {
     timestamps: true,

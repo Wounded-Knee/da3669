@@ -9,7 +9,7 @@ import { entityTypes } from '../../shared/lib/classes/entities';
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     appBar: {
-      animation: 'background-color-change 20s linear infinite',
+      animation: 'background-color-change 720s linear infinite',
       zIndex: theme.zIndex.drawer + 1,
     },
     dataButton: {

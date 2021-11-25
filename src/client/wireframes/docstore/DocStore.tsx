@@ -15,31 +15,31 @@ const mapStateToProps = (state: { documents: any[] }, { documentId }: any) => ({
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  getDocById: (docId: any) => {
-    return new Promise((resolve, reject) => {
-      const remoteAction = { type: actionTypes.DOCSTORE_GET_DOC_BY_ID, payload: docId };
-      dispatch(tx(remoteAction)).then((document) => {
-        console.log(`getDocById(${JSON.stringify(remoteAction)})`, document);
-      });
-    });
-  },
-  update: (editorState: any) => {
+  // getDocById: (docId: any) => {
+  //   return new Promise((resolve, reject) => {
+  //     const remoteAction = { type: actionTypes.DOCSTORE_GET_DOC_BY_ID, payload: docId };
+  //     dispatch(tx(remoteAction)).then((document) => {
+  //       console.log(`getDocById(${JSON.stringify(remoteAction)})`, document);
+  //     });
+  //   });
+  // },
+  persistDocument: (editorState: any) => {
     const remoteAction = { type: actionTypes.DOCSTORE_UPDATE, payload: editorState };
-    console.log('remoteAction ', remoteAction);
     return new Promise((resolve, reject) => {
       dispatch(tx(remoteAction)).then(({ payload }) => resolve(payload));
     });
   },
 });
 
-export const DocStore = ({ documentId, update, getDocById, document }) => {
-  const [docId, setDocId] = useState(documentId);
-
-  useEffect(() => {
-    // Runs ONCE after initial rendering
-    // and after every rendering ONLY IF `docId` changes
-    if (docId) getDocById(docId);
-  }, [docId]);
+export const DocStore = ({ persistDocument }) => {
+  const [document, setDocument] = useState(undefined);
+  console.log('DocStore Document ', document);
+  // useEffect(() => {
+  //   // Runs ONCE after initial rendering
+  //   // and after every rendering ONLY IF `docId` changes
+  //   const { _id } = document;
+  //   if (_id) getDocById(_id);
+  // }, [docId]);
 
   return (
     <div
@@ -47,21 +47,17 @@ export const DocStore = ({ documentId, update, getDocById, document }) => {
         padding: 3em;
       `}
     >
-      <>
-        <h1>Doc Store</h1>
-        {docId && <p>DocStore-DocId {docId}</p>}
-        <Editor
-          document={document}
-          onChange={(document) => {
-            console.log('Editor ', document);
-            update(document).then((document) => {
-              console.log('update came back with ', document);
-              const { _id } = document;
-              setDocId(_id);
-            });
-          }}
-        />
-      </>
+      <h1>Doc Store</h1>
+      <Editor
+        key={document}
+        document={document}
+        onChange={(document) => {
+          persistDocument(document).then((document) => {
+            console.log('Server-supplied document ', document);
+            setDocument(document);
+          });
+        }}
+      />
     </div>
   );
 };
