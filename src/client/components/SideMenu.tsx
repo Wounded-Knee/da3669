@@ -4,7 +4,7 @@ import { createStyles, Theme } from '@material-ui/core/styles';
 import { NavLink, Link } from 'react-router-dom';
 import { getComponentByType } from '../components/entities';
 import { connect } from 'react-redux';
-import { QuestionAnswer } from '@mui/icons-material';
+import { QuestionAnswer, Article } from '@mui/icons-material';
 
 class NavLinkMui extends React.Component<any> {
   render() {
@@ -45,6 +45,13 @@ export const SideMenu: React.FunctionComponent<{ core: any }> = connect(mapState
     >
       <div className={classes.toolbar} />
       <List>
+        <ListItem button component={NavLinkMui} to='/docstore'>
+          <ListItemIcon>
+            <Article />
+          </ListItemIcon>
+          <ListItemText primary='Doc Store' />
+        </ListItem>
+
         {options &&
           options.map(({ id, text, type }, index) => (
             <ListItem key={index} button component={NavLinkMui} to={`/${id}`}>

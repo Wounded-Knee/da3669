@@ -5,6 +5,10 @@ export interface ICoreConfig extends ISharedCoreConfig {
   date: {
     serverLoad: Date;
   };
+  mongoDB: {
+    url: string;
+    sslCert: any;
+  };
 }
 
 export type action = sharedAction;

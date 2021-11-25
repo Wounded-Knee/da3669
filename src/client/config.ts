@@ -5,6 +5,7 @@ const localState = get(appName) || { ui: { drawers: {} } };
 
 export const initialState = {
   ...sharedInitialState,
+  documents: [],
   user: {
     id: null,
   },

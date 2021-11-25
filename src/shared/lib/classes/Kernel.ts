@@ -6,6 +6,10 @@ class Kernel extends Class {
     return super.log(...args);
   }
 
+  error(...args) {
+    return super.error(...args);
+  }
+
   initialize() {
     return Promise.all(this._initPromises || []);
   }
