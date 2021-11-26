@@ -62,19 +62,6 @@ export const SideMenu: React.FunctionComponent<{ core: any }> = connect(mapState
       </List>
 
       <Divider />
-
-      <List>
-        {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((id) => (
-          <Link to={`/${id}`} key={id}>
-            <ListItem button>
-              <ListItemIcon>
-                <QuestionAnswer />
-              </ListItemIcon>
-              <ListItemText primary={id} />
-            </ListItem>
-          </Link>
-        ))}
-      </List>
     </Drawer>
   );
 });

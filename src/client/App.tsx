@@ -96,7 +96,6 @@ export const App = connect(mapStateToProps)(({ webSocketConnected }) => {
           <main className={classes.main}>
             <div className={classes.toolbar} />
             <Routes>
-              <Route path='/:entityId' element={<View />} />
               <Route path='/docstore' element={<DocStore />} />
             </Routes>
           </main>
