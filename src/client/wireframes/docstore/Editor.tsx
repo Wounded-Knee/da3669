@@ -1,5 +1,6 @@
 import React, { useReducer, useEffect } from 'react';
 import { TextareaAutosize, Button, Input } from '../../components/Branded';
+import { useParams } from 'react-router';
 
 export type Document = { text: string; title: string };
 const emptyDocument = { text: '', title: '' };
@@ -26,6 +27,7 @@ const reducer = (document, { type, payload }) => {
 export const Editor = ({ document: originalDocument = emptyDocument, onChange }) => {
   const [document, dispatch] = useReducer(reducer, originalDocument);
   const { text, _id, title } = document;
+  const { nodeId } = useParams();
 
   useEffect(() => {
     // Runs ONCE after initial rendering

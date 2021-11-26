@@ -1,6 +1,6 @@
 import { appName, WS_SERVER_HOST, WS_SERVER_PORT, initialState as sharedInitialState } from '../shared/config';
 import { get } from './lib/LocalStorage';
-import { QuestionAnswer, Article } from '@mui/icons-material';
+import { Article } from '@mui/icons-material';
 import DocStore from './wireframes/docstore/DocStore';
 
 const localState = get(appName) || { ui: { drawers: {} } };

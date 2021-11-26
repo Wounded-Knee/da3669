@@ -4,6 +4,7 @@ import StorageIcon from '@mui/icons-material/Storage';
 import InfoIcon from '@mui/icons-material/Info';
 import React from 'react';
 import { UserSelect } from './UserSelect';
+import { appName } from '../config';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -26,7 +27,7 @@ export const Header: React.FunctionComponent = () => {
         <Grid container alignItems='center'>
           <Grid item xs={10}>
             <Typography variant='h5' noWrap>
-              🙃 DA3669 Prototype
+              🙃 {appName} Prototype
             </Typography>
           </Grid>
           <Grid item xs={1} className={classes.dataButton}>
