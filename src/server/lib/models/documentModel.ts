@@ -20,6 +20,9 @@ export default {
   schema,
   model: Model,
   actions: {
+    list: async () => {
+      return await Model.find({});
+    },
     persist: async (document) => {
       const { _id, __v, createdAt, updatedAt, ...cleanDocument } = document;
       if (_id) {

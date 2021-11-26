@@ -16,6 +16,7 @@ export const routes = [
 
 export const initialState = {
   ...sharedInitialState,
+  nodes: [],
   documents: [],
   user: {
     id: null,

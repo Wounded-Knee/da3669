@@ -88,10 +88,10 @@ export const App = connect(mapStateToProps)(({ webSocketConnected }) => {
       {webSocketConnected ? (
         <div className={classes.root}>
           <CssBaseline />
-          <Header core={core} />
-          <SideMenu core={core} />
-          <DataView core={core} />
-          <InfoView core={core} />
+          <Header />
+          <SideMenu />
+          <DataView />
+          <InfoView />
           <main className={classes.main}>
             <div className={classes.toolbar} />
             <Routes>

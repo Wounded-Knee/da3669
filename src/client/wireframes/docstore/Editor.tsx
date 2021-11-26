@@ -39,23 +39,29 @@ export const Editor = ({ document: originalDocument = emptyDocument, onChange })
   return (
     <>
       {_id ? <p>Doc ID {_id}</p> : <p>NO ID</p>}
-      <Input
-        value={title || ''}
-        onChange={({ target: { value: title } }) => {
-          return dispatch({ type: 'UPDATED_TITLE', payload: title });
-        }}
-      />
-      <TextareaAutosize
-        aria-label='Document Contents'
-        placeholder='Empty'
-        value={text || ''}
-        onChange={({ target: { value: text } }) => {
-          return dispatch({ type: 'UPDATED_TEXT', payload: text });
-        }}
-        style={{ width: 200 }}
-      />
-      <Button>Publish</Button>
-      <Button>Delete</Button>
+      <div>
+        <Input
+          value={title || ''}
+          onChange={({ target: { value: title } }) => {
+            return dispatch({ type: 'UPDATED_TITLE', payload: title });
+          }}
+        />
+      </div>
+      <div>
+        <TextareaAutosize
+          aria-label='Document Contents'
+          placeholder='Empty'
+          value={text || ''}
+          onChange={({ target: { value: text } }) => {
+            return dispatch({ type: 'UPDATED_TEXT', payload: text });
+          }}
+          style={{ width: 200 }}
+        />
+      </div>
+      <div>
+        <Button>Publish</Button>
+        <Button>Delete</Button>
+      </div>
     </>
   );
 };

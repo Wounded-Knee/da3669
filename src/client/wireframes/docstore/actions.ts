@@ -9,3 +9,17 @@ export const setCurrentDoc = (currentDoc) => {
   };
 };
 export const getCurrentDoc = (state) => state.ui.docStore.currentDoc;
+
+export const nodeReplace = (nodes) => {
+  return (dispatch) => {
+    return dispatch({ type: actionTypes.NODE_REPLACE, payload: nodes });
+  };
+};
+
+export const nodeList = () => {
+  return async function thunk(dispatch) {
+    const nodes = await server.document.list();
+    console.log('Found ' + nodes.length + ' nodes');
+    dispatch({ type: actionTypes.NODE_REPLACE, payload: nodes });
+  };
+};

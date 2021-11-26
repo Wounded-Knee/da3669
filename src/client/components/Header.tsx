@@ -4,7 +4,6 @@ import StorageIcon from '@mui/icons-material/Storage';
 import InfoIcon from '@mui/icons-material/Info';
 import React from 'react';
 import { UserSelect } from './UserSelect';
-import { entityTypes } from '../../shared/lib/classes/entities';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -18,10 +17,9 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-export const Header: React.FunctionComponent<{ core: any }> = ({ core }) => {
+export const Header: React.FunctionComponent = () => {
   const classes = useStyles({});
-  const users = core.getEntitiesByType(entityTypes.USER);
-  const currentUser = core.user;
+
   return (
     <AppBar position='fixed' className={classes.appBar}>
       <Toolbar>
@@ -32,7 +30,7 @@ export const Header: React.FunctionComponent<{ core: any }> = ({ core }) => {
             </Typography>
           </Grid>
           <Grid item xs={1} className={classes.dataButton}>
-            <UserSelect users={users} onSubmit={(userID) => (core.user = userID)} />
+            <UserSelect users={[]} onSubmit={console.log} />
           </Grid>
           <Grid item xs={1} className={classes.dataButton}>
             <Button onClick={() => core.uiSetDrawer('info')}>
