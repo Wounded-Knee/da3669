@@ -1,7 +1,6 @@
 import { reducer as rootReducer, actionTypes as rootActionTypes } from '../../../shared/lib/redux/reducer';
 import { action } from '../../../shared/all';
 import { initialState } from '../../config';
-import transport from '../transport';
 
 export const actionTypes = {
   ...rootActionTypes,
@@ -102,15 +101,6 @@ const clientReducer = (state, { type, payload }) => {
   }
   return state;
 };
-
-export const setCurrentDoc = (currentDoc) => {
-  return async function setCurrentDocThunk(dispatch, getState) {
-    const doc = await transport.call('document.persist', currentDoc);
-    console.log('Server returned ', doc);
-    dispatch({ type: actionTypes.DOCSTORE_SET_CURRENT_DOC, payload: doc });
-  };
-};
-export const getCurrentDoc = (state) => state.ui.docStore.currentDoc;
 
 export const reducer = (state = initialState, action: action): any => {
   return rootReducer(clientReducer(state, action), action);

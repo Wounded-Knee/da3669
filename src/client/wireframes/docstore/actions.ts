@@ -1,40 +1,11 @@
-export interface ITypedAction<TAction, TPayload> {
-  type: TAction;
-  payload: TPayload;
-}
+import { actionTypes } from '../../lib/redux/reducer';
+import server from '../../lib/server';
 
-export type TypeA = 'EXAMPLE_A';
-export type TypeB = 'EXAMPLE_B';
-
-export interface IPayloadA {
-  p1: string;
-  p2: number;
-}
-
-export interface IPayloadB {
-  p1: number;
-}
-
-export type ActionA = ITypedAction<TypeA, IPayloadA>;
-export type ActionB = ITypedAction<TypeB, IPayloadB>;
-
-export type Actions = ActionA | ActionB;
-
-export type ActionCreatorA = (p1: string, p2: number) => ActionA;
-
-export type ActionCreatorB = (p1: number) => ActionB;
-
-export const actionCreatorA: ActionCreatorA = (p1, p2) => ({
-  type: 'EXAMPLE_A',
-  payload: {
-    p1,
-    p2,
-  },
-});
-
-export const actionCreatorB: ActionCreatorB = (p1) => ({
-  type: 'EXAMPLE_B',
-  payload: {
-    p1,
-  },
-});
+export const setCurrentDoc = (currentDoc) => {
+  return async function setCurrentDocThunk(dispatch, getState) {
+    const doc = await server.document.persist(currentDoc);
+    console.log('scd', doc, currentDoc);
+    dispatch({ type: actionTypes.DOCSTORE_SET_CURRENT_DOC, payload: doc });
+  };
+};
+export const getCurrentDoc = (state) => state.ui.docStore.currentDoc;

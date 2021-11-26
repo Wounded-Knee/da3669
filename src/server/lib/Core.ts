@@ -1,9 +1,11 @@
-import { Server } from 'rpc-websockets';
 import mongoose from 'mongoose';
 import { Core as SharedCore } from '../../shared/lib/Core';
 import { actionTypes, addEntity, fetchEntity } from './redux/reducer';
 import { ICoreConfig, action } from '../all';
-import Document, { createDocument } from './models/documentModel';
+import DocumentModel from './models/documentModel';
+import transport from '../transport';
+
+const { model: Document } = DocumentModel;
 
 export class Core extends SharedCore {
   cfg: ICoreConfig;
@@ -35,10 +37,6 @@ export class Core extends SharedCore {
           });
 
         // Web Socket Server
-        const transport = new Server({
-          port,
-          host,
-        });
         transport.on('listening', () => {
           this.log(`Listening on port ${port}`);
           transport.event('dispatch');
@@ -70,34 +68,6 @@ export class Core extends SharedCore {
               resolve({ type: actionTypes.DOCSTORE_LIST, payload: docList });
             });
             break;
-
-          case actionTypes.DOCSTORE_UPDATE:
-            switch (payload.title) {
-              case 'f':
-                console.log('Doesnt work');
-                // @ts-ignore
-                return new Document(payload).save().then((document) => {
-                  resolve({ type: actionTypes.DOCSTORE_UPDATE, payload: document });
-                });
-              case 's':
-                console.log('Does work');
-                const { _id } = payload;
-                switch (_id) {
-                  case undefined:
-                    new Document(payload)
-                      .save()
-                      .then((newDoc) => {
-                        resolve({ type: actionTypes.DOCSTORE_UPDATE, payload: newDoc });
-                      })
-                      .catch((err) => this.error('MongoDB error ', err));
-                    break;
-                  default:
-                    Document.findByIdAndUpdate(_id, payload, { new: true }).then((document) => {
-                      resolve({ type: actionTypes.DOCSTORE_UPDATE, payload: document });
-                    });
-                }
-                break;
-            }
 
           case actionTypes.DOCSTORE_GET_DOC_BY_ID:
             Document.find({ _id: payload }).then((document) => {

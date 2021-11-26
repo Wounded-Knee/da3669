@@ -1,6 +1,9 @@
 import { model, Schema } from 'mongoose';
 
-const documentSchema = new Schema(
+const modelName = 'Document';
+const namespace = modelName.toLowerCase();
+
+const schema = new Schema(
   {
     text: String,
     title: String,
@@ -10,42 +13,25 @@ const documentSchema = new Schema(
   },
 );
 
-// Statics
-documentSchema.static({
-  list: function () {
-    return this.find({}, '_id title');
+const Model = model(modelName, schema);
+
+export default {
+  namespace,
+  schema,
+  model: Model,
+  actions: {
+    persist: async (document) => {
+      const { _id, __v, createdAt, updatedAt, ...cleanDocument } = document;
+      if (_id) {
+        return await new Promise((resolve, reject) => {
+          Model.findOneAndUpdate({ _id }, cleanDocument, { upsert: true }, (nothing, document) => {
+            console.log(document);
+            resolve(document);
+          });
+        });
+      } else {
+        return await new Model(cleanDocument).save();
+      }
+    },
   },
-  persist: function (document) {
-    const { _id } = document;
-    console.log('persist by id ', _id);
-    switch (_id) {
-      case undefined:
-        console.log('New doc ', document, this);
-        return this.create([document]);
-      default:
-        console.log('howdy!');
-        return Document.findByIdAndUpdate(_id, document, { new: true });
-    }
-  },
-});
-
-export const createDocument = (document) => new Document(document).save();
-export const persistDocument = async (document) => {
-  const { _id, __v, createdAt, updatedAt, ...cleanDocument } = document;
-  if (_id) {
-    console.log('Updating ', _id, cleanDocument);
-    return await Document.findOneAndUpdate({ _id }, cleanDocument, { upsert: true });
-  } else {
-    console.log('Creating ', cleanDocument);
-    return await new Document(cleanDocument).save();
-  }
 };
-
-export const namespace = 'document';
-export const actions = {
-  create: createDocument,
-  persist: persistDocument,
-};
-const Document = model('Document', documentSchema);
-
-export default Document;

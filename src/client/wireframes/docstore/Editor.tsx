@@ -31,6 +31,7 @@ export const Editor = ({ document: originalDocument = emptyDocument, onChange })
     // Runs ONCE after initial rendering
     // and after every rendering ONLY IF `id` changes
     if (text || title) {
+      console.log('editor', document);
       onChange(document);
     }
   }, [text, title]);
