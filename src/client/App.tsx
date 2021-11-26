@@ -3,6 +3,7 @@ import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom'; // Pages
 import { connect } from 'react-redux';
 import { core } from './core';
+import { routes } from './config';
 
 // MUI
 import { CssBaseline, makeStyles } from '@material-ui/core';
@@ -11,11 +12,9 @@ import { createStyles, Theme } from '@material-ui/core/styles';
 // Components
 import { Header } from './components/Header';
 import { SideMenu } from './components/SideMenu';
-import { View } from './wireframes/simple3/view';
 import { DataView } from './components/DataView';
 import { InfoView } from './components/InfoView';
 import { Loading } from './components/Loading';
-import DocStore from './wireframes/docstore/DocStore';
 
 declare module '@material-ui/core/styles' {
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -96,7 +95,9 @@ export const App = connect(mapStateToProps)(({ webSocketConnected }) => {
           <main className={classes.main}>
             <div className={classes.toolbar} />
             <Routes>
-              <Route path='/docstore' element={<DocStore />} />
+              {routes.map(({ route, component: Component }, index) => (
+                <Route key={index} path={route} element={<Component />} />
+              ))}
             </Routes>
           </main>
         </div>
