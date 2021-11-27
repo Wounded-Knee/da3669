@@ -17,7 +17,7 @@ const mapDispatchToProps = (dispatch) => ({
   persist: (node) => dispatch(persist(node)),
 });
 
-export const DocStore = ({ nodes, fetchNodeList, getNodeById, persist }) => {
+export const DocStore = ({ nodeId: propNodeId, nodes, fetchNodeList, getNodeById, persist }) => {
   const { nodeId } = useParams();
   const thisNode = nodes.find(({ _id }) => _id === nodeId);
   const thisId = thisNode ? thisNode._id : undefined;
@@ -30,18 +30,6 @@ export const DocStore = ({ nodes, fetchNodeList, getNodeById, persist }) => {
     if (nodeId) getNodeById(nodeId);
   }, [nodeId]);
 
-  const DocList = () => {
-    return (
-      <>
-        {nodes.map(({ _id, text }, index) => (
-          <Link key={index} to={`/docstore/${_id}`}>
-            {index}: {text}{' '}
-          </Link>
-        ))}
-      </>
-    );
-  };
-
   return (
     <div
       css={css`
@@ -49,7 +37,13 @@ export const DocStore = ({ nodes, fetchNodeList, getNodeById, persist }) => {
       `}
     >
       <h1>Doc Store</h1>
-      <DocList />
+      {nodes.map(({ _id, text }, index) => (
+        <Link key={index} to={`/docstore/${_id}`}>
+          {index}: {text}
+          {' | '}
+        </Link>
+      ))}
+      <p>This ID {thisId}</p>
       <Editor key={thisId} onChange={persist} document={thisNode} />
     </div>
   );

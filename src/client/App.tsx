@@ -2,7 +2,11 @@
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom'; // Pages
 import { connect } from 'react-redux';
-import { routes } from './config';
+import { routes, appName } from './config';
+import transport from './lib/transport';
+import { set } from './lib/LocalStorage';
+import { store } from './lib/redux/store';
+import { actionTypes } from './lib/redux/reducer';
 
 // MUI
 import { CssBaseline, makeStyles } from '@material-ui/core';
@@ -73,14 +77,33 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
+store.subscribe(() => {
+  const { user, ui } = store.getState();
+  set(appName, { ui, user });
+});
+
 const mapStateToProps = (state) => {
   return {
     webSocketConnected: state.ui.ready.webSocket,
   };
 };
 
-export const App = connect(mapStateToProps)(({ webSocketConnected }) => {
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setWebSocketConnected: () => dispatch({ type: actionTypes.READY_WEBSOCKET }),
+  };
+};
+
+export const App = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(({ setWebSocketConnected, webSocketConnected }) => {
   const classes = useStyles({});
+
+  transport.on('open', () => {
+    console.log('WebSocket Connected.');
+    setWebSocketConnected();
+  });
 
   return (
     <BrowserRouter>

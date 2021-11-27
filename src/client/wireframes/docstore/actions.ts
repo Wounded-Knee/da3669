@@ -3,8 +3,8 @@ import { call } from '../../lib/transport';
 
 const document = {
   persist: (node) => call('document.persist', node),
-  list: async () => await call('document.list'),
-  getNodeById: async (nodeId) => await call('document.getNodeById', nodeId),
+  list: () => call('document.list'),
+  getNodeById: (nodeId) => call('document.getNodeById', nodeId),
 };
 
 export const persist = (node) => generic(document.persist, actionTypes.NODE_REPLACE, node);
@@ -15,5 +15,6 @@ export const generic = (remoteAction, localAction, ...args) => {
   return async function generic(dispatch) {
     const payload = await remoteAction(...args);
     dispatch({ type: localAction, payload });
+    return payload;
   };
 };

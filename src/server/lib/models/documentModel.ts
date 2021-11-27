@@ -31,10 +31,15 @@ export default {
       if (_id) {
         return await new Promise((resolve, reject) => {
           console.log('persisting ', cleanDocument);
-          Model.findOneAndUpdate({ _id }, cleanDocument, { upsert: true }, (nothing, document) => {
-            console.log(document);
-            resolve(document);
-          });
+          Model.findOneAndUpdate(
+            { _id },
+            cleanDocument,
+            { upsert: true, returnDocument: 'after' },
+            (nothing, document) => {
+              console.log('xyzzy ', nothing, document);
+              resolve(document);
+            },
+          );
         });
       } else {
         console.log('New document ', _id, cleanDocument, document);

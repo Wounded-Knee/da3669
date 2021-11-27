@@ -8,6 +8,9 @@ const emptyDocument = { text: '', title: '' };
 const reducer = (document, { type, payload }) => {
   let newDocument;
   switch (type) {
+    case 'CLOBBER':
+      newDocument = payload;
+      break;
     case 'UPDATED_TEXT':
       newDocument = {
         ...document,
@@ -24,16 +27,32 @@ const reducer = (document, { type, payload }) => {
   return newDocument;
 };
 
-export const Editor = ({ onChange, document = emptyDocument }) => {
+/**
+ *
+ * Editor can load in two states
+ * 1) Empty, fresh, no document.
+ * 2) With document for edit
+ */
+export const Editor = ({ onChange: propsOnChange, document = emptyDocument }) => {
   const [thisDoc, dispatch] = useReducer(reducer, document);
   const { text, _id, title } = thisDoc;
 
+  const onChange = () => {
+    console.log('Persisting Editor Changes as ', thisDoc);
+    propsOnChange(thisDoc).then((newDoc) => dispatch({ type: 'CLOBBER', payload: newDoc }));
+  };
+
   useEffect(() => {
-    // Runs ONCE after initial rendering
-    // and after every rendering ONLY IF `id` changes
+    console.log('Document has changed to ', document);
+  }, [document]);
+
+  useEffect(() => {
+    console.log('ThisDoc has changed to ', thisDoc);
+  }, [thisDoc]);
+
+  useEffect(() => {
     if (text || title) {
-      console.log('editor signals onchange ', thisDoc);
-      onChange(thisDoc);
+      onChange();
     }
   }, [text, title]);
 
@@ -60,7 +79,7 @@ export const Editor = ({ onChange, document = emptyDocument }) => {
         />
       </div>
       <div>
-        <Button onClick={() => onChange(thisDoc)}>Publish</Button>
+        <Button onClick={() => onChange()}>Publish</Button>
         <Button>Delete</Button>
       </div>
     </>
