@@ -11,16 +11,17 @@ models.forEach((modelName) => {
     console.log('Registering ', actionName);
     transport.register(actionName, async (...args) => {
       const args2 = args[0];
+      const executionLog = `Executing: ${actionName}(${JSON.stringify(args2[0])})`;
       //@ts-ignore
       return await actions[keyName](...args2)
         .then((rv) => {
           //@ts-ignore
-          console.log(' Executing: ', keyName, ...args2, '\n', 'Returning: ', rv);
+          console.log(`${executionLog} === ${rv}`);
           return rv;
         })
         .catch((...err) => {
           //@ts-ignore
-          console.error(' Executing: ', keyName, ...args2, '\n', 'Error: ', ...err);
+          console.error(`${executionLog} => ${err}`);
         });
     });
   });

@@ -52,6 +52,20 @@ const useStyles = makeStyles((theme: Theme) =>
         '100%': { color: 'rgba(255,0,0,1)' },
       },
 
+      '@keyframes border-change': {
+        '0%': { borderColor: 'rgba(255,0,0,1)' },
+        '10%': { borderColor: 'rgba(255,154,0,1)' },
+        '20%': { borderColor: 'rgba(208,222,33,1)' },
+        '30%': { borderColor: 'rgba(79,220,74,1)' },
+        '40%': { borderColor: 'rgba(63,218,216,1)' },
+        '50%': { borderColor: 'rgba(47,201,226,1)' },
+        '60%': { borderColor: 'rgba(28,127,238,1)' },
+        '70%': { borderColor: 'rgba(95,21,242,1)' },
+        '80%': { borderColor: 'rgba(186,12,248,1)' },
+        '90%': { borderColor: 'rgba(251,7,217,1)' },
+        '100%': { borderColor: 'rgba(255,0,0,1)' },
+      },
+
       '@keyframes background-color-change': {
         '0%': { backgroundColor: 'rgba(255,0,0,1)' },
         '10%': { backgroundColor: 'rgba(255,154,0,1)' },

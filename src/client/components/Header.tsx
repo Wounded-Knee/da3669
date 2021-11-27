@@ -1,42 +1,39 @@
-import { AppBar, makeStyles, Toolbar, Typography, Grid, Button } from '@material-ui/core';
-import { createStyles, Theme } from '@material-ui/core/styles';
+/** @jsx jsx */
+import { css, jsx } from '@emotion/react';
+import { AppBar, Toolbar, Typography, Grid, Button } from '@material-ui/core';
 import StorageIcon from '@mui/icons-material/Storage';
 import InfoIcon from '@mui/icons-material/Info';
 import React from 'react';
 import { UserSelect } from './UserSelect';
 import { appName } from '../config';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    appBar: {
-      animation: 'background-color-change 720s linear infinite',
-      zIndex: theme.zIndex.drawer + 1,
-    },
-    dataButton: {
-      textAlign: 'right',
-    },
-    toolbar: {
-      minHeight: 50,
-    },
-  }),
-);
+import { getAnimationCss } from './Branded';
 
 export const Header: React.FunctionComponent = () => {
-  const classes = useStyles({});
-
+  const styles = {
+    appBar: css`
+      ${getAnimationCss('background-color')}
+      z-index: 10000;
+    `,
+    dataButton: css`
+      text-align: right;
+    `,
+    toolbar: css`
+      min-height: 50px;
+    `,
+  };
   return (
-    <AppBar position='fixed' className={classes.appBar}>
-      <Toolbar className={classes.toolbar}>
+    <AppBar position='fixed' css={styles.appBar}>
+      <Toolbar css={styles.toolbar}>
         <Grid container alignItems='center'>
           <Grid item xs={10}>
             <Typography variant='h5' noWrap>
               🙃 {appName} Prototype
             </Typography>
           </Grid>
-          <Grid item xs={1} className={classes.dataButton}>
+          <Grid item xs={1} css={styles.dataButton}>
             <UserSelect users={[]} onSubmit={console.log} />
           </Grid>
-          <Grid item xs={1} className={classes.dataButton}>
+          <Grid item xs={1} css={styles.dataButton}>
             <Button onClick={() => core.uiSetDrawer('info')}>
               <InfoIcon />
             </Button>
