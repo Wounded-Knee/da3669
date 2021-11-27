@@ -7,7 +7,12 @@ const localState = get(appName) || { ui: { drawers: {} } };
 
 export const routes = [
   {
+    path: '/docstore/:nodeId',
+    component: DocStore,
+  },
+  {
     route: '/docstore',
+    path: '/docstore',
     icon: Article,
     text: 'Doc Store',
     component: DocStore,

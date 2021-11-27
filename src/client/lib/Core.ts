@@ -19,7 +19,6 @@ export class Core extends SharedCore {
     this.transport = transport;
     this.store.subscribe(() => {
       const { user, ui } = this.store.getState();
-      this.log('Stashing local state');
       set(appName, { ui, user });
     });
   }

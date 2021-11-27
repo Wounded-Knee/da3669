@@ -15,6 +15,9 @@ const useStyles = makeStyles((theme: Theme) =>
     dataButton: {
       textAlign: 'right',
     },
+    toolbar: {
+      minHeight: 50,
+    },
   }),
 );
 
@@ -23,7 +26,7 @@ export const Header: React.FunctionComponent = () => {
 
   return (
     <AppBar position='fixed' className={classes.appBar}>
-      <Toolbar>
+      <Toolbar className={classes.toolbar}>
         <Grid container alignItems='center'>
           <Grid item xs={10}>
             <Typography variant='h5' noWrap>

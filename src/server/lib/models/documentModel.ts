@@ -20,6 +20,9 @@ export default {
   schema,
   model: Model,
   actions: {
+    getNodeById: async (nodeId) => {
+      return await Model.findOne({ _id: nodeId });
+    },
     list: async () => {
       return await Model.find({});
     },
@@ -27,12 +30,14 @@ export default {
       const { _id, __v, createdAt, updatedAt, ...cleanDocument } = document;
       if (_id) {
         return await new Promise((resolve, reject) => {
+          console.log('persisting ', cleanDocument);
           Model.findOneAndUpdate({ _id }, cleanDocument, { upsert: true }, (nothing, document) => {
             console.log(document);
             resolve(document);
           });
         });
       } else {
+        console.log('New document ', _id, cleanDocument, document);
         return await new Model(cleanDocument).save();
       }
     },

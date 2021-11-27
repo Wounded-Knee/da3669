@@ -2,7 +2,6 @@
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom'; // Pages
 import { connect } from 'react-redux';
-import { core } from './core';
 import { routes } from './config';
 
 // MUI
@@ -95,8 +94,8 @@ export const App = connect(mapStateToProps)(({ webSocketConnected }) => {
           <main className={classes.main}>
             <div className={classes.toolbar} />
             <Routes>
-              {routes.map(({ route, component: Component }, index) => (
-                <Route key={index} path={route} element={<Component />} />
+              {routes.map(({ path, component: Component }, index) => (
+                <Route key={index} path={path} element={<Component />} />
               ))}
             </Routes>
           </main>

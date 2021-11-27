@@ -44,14 +44,17 @@ export const SideMenu: React.FunctionComponent = connect(mapStateToProps)(({ opt
     >
       <div className={classes.toolbar} />
       <List>
-        {routes.map(({ route, icon: Icon, text }, index) => (
-          <ListItem key={index} button component={NavLinkMui} to={route}>
-            <ListItemIcon>
-              <Icon />
-            </ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
+        {routes.map(
+          ({ route, icon: Icon, text }, index) =>
+            Icon && (
+              <ListItem key={index} button component={NavLinkMui} to={route}>
+                <ListItemIcon>
+                  <Icon />
+                </ListItemIcon>
+                <ListItemText primary={text} />
+              </ListItem>
+            ),
+        )}
       </List>
       <Divider />
     </Drawer>

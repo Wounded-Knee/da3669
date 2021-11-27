@@ -17,8 +17,9 @@ const clientReducer = (state, { type, payload }) => {
   const { entities } = state;
   switch (type) {
     case actionTypes.NODE_REPLACE:
+      if (payload === undefined) throw new Error(`${type}: Payload is undefined`);
       const newNodes = payload instanceof Array ? payload : [payload];
-      const nodeIds = newNodes.map(({ _id }) => _id);
+      const nodeIds = newNodes.filter(({ _id }) => _id !== undefined).map(({ _id }) => _id);
       return {
         ...state,
         nodes: [...state.nodes.filter(({ _id }) => nodeIds.indexOf(_id) === -1), ...newNodes],

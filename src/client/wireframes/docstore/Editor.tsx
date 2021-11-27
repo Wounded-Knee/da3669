@@ -24,17 +24,16 @@ const reducer = (document, { type, payload }) => {
   return newDocument;
 };
 
-export const Editor = ({ document: originalDocument = emptyDocument, onChange }) => {
-  const [document, dispatch] = useReducer(reducer, originalDocument);
-  const { text, _id, title } = document;
-  const { nodeId } = useParams();
+export const Editor = ({ onChange, document = emptyDocument }) => {
+  const [thisDoc, dispatch] = useReducer(reducer, document);
+  const { text, _id, title } = thisDoc;
 
   useEffect(() => {
     // Runs ONCE after initial rendering
     // and after every rendering ONLY IF `id` changes
     if (text || title) {
-      console.log('editor', document);
-      onChange(document);
+      console.log('editor signals onchange ', thisDoc);
+      onChange(thisDoc);
     }
   }, [text, title]);
 
@@ -61,7 +60,7 @@ export const Editor = ({ document: originalDocument = emptyDocument, onChange })
         />
       </div>
       <div>
-        <Button>Publish</Button>
+        <Button onClick={() => onChange(thisDoc)}>Publish</Button>
         <Button>Delete</Button>
       </div>
     </>

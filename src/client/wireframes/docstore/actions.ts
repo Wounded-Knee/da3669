@@ -1,25 +1,19 @@
 import { actionTypes } from '../../lib/redux/reducer';
-import server from '../../lib/server';
+import { call } from '../../lib/transport';
 
-export const setCurrentDoc = (currentDoc) => {
-  return async function setCurrentDocThunk(dispatch, getState) {
-    const doc = await server.document.persist(currentDoc);
-    console.log('scd', doc, currentDoc);
-    dispatch({ type: actionTypes.DOCSTORE_SET_CURRENT_DOC, payload: doc });
-  };
-};
-export const getCurrentDoc = (state) => state.ui.docStore.currentDoc;
-
-export const nodeReplace = (nodes) => {
-  return (dispatch) => {
-    return dispatch({ type: actionTypes.NODE_REPLACE, payload: nodes });
-  };
+const document = {
+  persist: (node) => call('document.persist', node),
+  list: async () => await call('document.list'),
+  getNodeById: async (nodeId) => await call('document.getNodeById', nodeId),
 };
 
-export const nodeList = () => {
-  return async function thunk(dispatch) {
-    const nodes = await server.document.list();
-    console.log('Found ' + nodes.length + ' nodes');
-    dispatch({ type: actionTypes.NODE_REPLACE, payload: nodes });
+export const persist = (node) => generic(document.persist, actionTypes.NODE_REPLACE, node);
+export const nodeList = () => generic(document.list, actionTypes.NODE_REPLACE);
+export const getNodeById = (nodeId) => generic(document.getNodeById, actionTypes.NODE_REPLACE, nodeId);
+
+export const generic = (remoteAction, localAction, ...args) => {
+  return async function generic(dispatch) {
+    const payload = await remoteAction(...args);
+    dispatch({ type: localAction, payload });
   };
 };
