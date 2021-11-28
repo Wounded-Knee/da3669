@@ -31,7 +31,7 @@ const reducer = (document, { type, payload }) => {
 
 const emptyDocument = { text: '', title: '' };
 
-export const Editor = ({ onChange: persist, document = emptyDocument }) => {
+export const Editor = ({ persist, document = emptyDocument }) => {
   const [thisDoc, dispatch] = useReducer(reducer, document);
   const [saved, setSaved] = useState(true);
   const { text, title } = thisDoc;
