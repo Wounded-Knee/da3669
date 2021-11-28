@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import { Editor } from './Editor';
 import { persist, nodeList, getNodeById } from './actions';
 import { Link } from 'react-router-dom';
+import { Button } from '../../components/Branded';
 import { useParams, Routes, Route } from 'react-router';
 
 const mapStateToProps = (state) => ({
@@ -40,11 +41,9 @@ export const DocStore = ({ nodeId: propNodeId, nodes, fetchNodeList, getNodeById
       <Editor key={thisId} onChange={persist} document={thisNode} />
       {nodes.map(({ _id, title }, index) => (
         <Link key={index} to={`/docstore/${_id}`}>
-          {title || _id}
-          {' | '}
+          <Button>{title || _id}</Button>
         </Link>
       ))}
-      <p>This ID {thisId}</p>
     </div>
   );
 };
