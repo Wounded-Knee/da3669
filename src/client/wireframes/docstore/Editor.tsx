@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect } from 'react';
+import React, { useReducer, useEffect, useState } from 'react';
 import { TextareaAutosize, Button, Input } from '../../components/Branded';
 
 const reducer = (document, { type, payload }) => {
@@ -33,11 +33,17 @@ const emptyDocument = { text: '', title: '' };
 
 export const Editor = ({ onChange: persist, document = emptyDocument }) => {
   const [thisDoc, dispatch] = useReducer(reducer, document);
+  const [saved, setSaved] = useState(true);
   const { text, title } = thisDoc;
 
   const onChange = () => {
-    console.log('Persisting Editor Changes as ', thisDoc);
-    persist(thisDoc).then((newDoc) => dispatch({ type: 'UPDATED_ID', payload: newDoc._id }));
+    if (!saved) {
+      console.log('Persisting Editor Changes as ', thisDoc);
+      persist(thisDoc).then((newDoc) => {
+        setSaved(true);
+        dispatch({ type: 'UPDATED_ID', payload: newDoc._id });
+      });
+    }
   };
 
   useEffect(() => {
@@ -48,6 +54,7 @@ export const Editor = ({ onChange: persist, document = emptyDocument }) => {
     const {
       target: { value: payload },
     } = event;
+    setSaved(false);
     return dispatch({ type: `UPDATED_${name.toUpperCase()}`, payload });
   };
 
