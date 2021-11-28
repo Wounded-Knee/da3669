@@ -1,7 +1,6 @@
 import React from 'react';
 import { Drawer as MuiDrawer } from '@material-ui/core';
 import { makeStyles, createStyles, Theme } from '@material-ui/core';
-import { core } from '../core';
 import { connect } from 'react-redux';
 
 const drawerWidth = 350;
@@ -15,8 +14,7 @@ const useStyles = makeStyles((theme: Theme) =>
       textAlign: 'right',
     },
     toolbar: {
-      ...theme.mixins.toolbar,
-      backgroundColor: 'green',
+      minHeight: 50,
     },
   }),
 );

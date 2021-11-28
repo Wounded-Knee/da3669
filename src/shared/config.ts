@@ -14,6 +14,6 @@ const initialState = {
 const entityModules = ['Entity', 'Image', 'Relationship', 'YouTube', 'User', 'Message'];
 const defaultEntityModule = entityModules[0];
 
-const appName = 'DA3669';
+const appName = 'D3';
 
 export { appName, entityModules, defaultEntityModule, initialState, HTTP_SERVER_PORT, WS_SERVER_HOST, WS_SERVER_PORT };

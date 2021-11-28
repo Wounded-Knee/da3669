@@ -3,8 +3,7 @@ import { List, ListItemText, ListItem, ListItemIcon, ListSubheader, Divider } fr
 import TouchAppIcon from '@mui/icons-material/TouchApp';
 import { Drawer } from './Drawer';
 
-export const InfoView: React.FunctionComponent<{ core: any }> = ({ core }) => {
-  const [selectedEntity, ...selectedEntityHistory] = core.uiGetSelectedEntityHistory();
+export const InfoView: React.FunctionComponent = () => {
   return (
     <Drawer drawerName='info'>
       <List
@@ -16,38 +15,15 @@ export const InfoView: React.FunctionComponent<{ core: any }> = ({ core }) => {
           </ListSubheader>
         }
       >
-        {selectedEntity ? (
-          <>
-            <Divider />
-            <ListItem>
-              <ListItemIcon>
-                <TouchAppIcon />
-              </ListItemIcon>
-              <ListItemText primary='Selected Entity' />
-            </ListItem>
-            <ListItem button>
-              <ListItemText primary={selectedEntity.text} />
-            </ListItem>
-          </>
-        ) : (
-          ''
-        )}
-
         <Divider />
         <ListItem>
           <ListItemIcon>
             <TouchAppIcon />
           </ListItemIcon>
-          <ListItemText primary='Recent Entities' secondary={`${selectedEntityHistory.length} entities`} />
+          <ListItemText primary='Recent Entities' secondary='?' />
         </ListItem>
 
         <Divider />
-
-        {selectedEntityHistory.map(({ text, id }, index) => (
-          <ListItem button key={index} onClick={() => core.ui.selectEntity(id)}>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
       </List>
     </Drawer>
   );

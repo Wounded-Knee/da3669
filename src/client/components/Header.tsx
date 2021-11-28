@@ -1,40 +1,39 @@
-import { AppBar, makeStyles, Toolbar, Typography, Grid, Button } from '@material-ui/core';
-import { createStyles, Theme } from '@material-ui/core/styles';
+/** @jsx jsx */
+import { css, jsx } from '@emotion/react';
+import { AppBar, Toolbar, Typography, Grid, Button } from '@material-ui/core';
 import StorageIcon from '@mui/icons-material/Storage';
 import InfoIcon from '@mui/icons-material/Info';
 import React from 'react';
 import { UserSelect } from './UserSelect';
-import { entityTypes } from '../../shared/lib/classes/entities';
+import { appName } from '../config';
+import { getAnimationCss } from './Branded';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    appBar: {
-      animation: 'background-color-change 720s linear infinite',
-      zIndex: theme.zIndex.drawer + 1,
-    },
-    dataButton: {
-      textAlign: 'right',
-    },
-  }),
-);
-
-export const Header: React.FunctionComponent<{ core: any }> = ({ core }) => {
-  const classes = useStyles({});
-  const users = core.getEntitiesByType(entityTypes.USER);
-  const currentUser = core.user;
+export const Header: React.FunctionComponent = () => {
+  const styles = {
+    appBar: css`
+      ${getAnimationCss('background-color')}
+      z-index: 10000;
+    `,
+    dataButton: css`
+      text-align: right;
+    `,
+    toolbar: css`
+      min-height: 50px;
+    `,
+  };
   return (
-    <AppBar position='fixed' className={classes.appBar}>
-      <Toolbar>
+    <AppBar position='fixed' css={styles.appBar}>
+      <Toolbar css={styles.toolbar}>
         <Grid container alignItems='center'>
           <Grid item xs={10}>
             <Typography variant='h5' noWrap>
-              🙃 DA3669 Prototype
+              🙃 {appName} Prototype
             </Typography>
           </Grid>
-          <Grid item xs={1} className={classes.dataButton}>
-            <UserSelect users={users} onSubmit={(userID) => (core.user = userID)} />
+          <Grid item xs={1} css={styles.dataButton}>
+            <UserSelect users={[]} onSubmit={console.log} />
           </Grid>
-          <Grid item xs={1} className={classes.dataButton}>
+          <Grid item xs={1} css={styles.dataButton}>
             <Button onClick={() => core.uiSetDrawer('info')}>
               <InfoIcon />
             </Button>

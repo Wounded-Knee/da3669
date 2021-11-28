@@ -9,36 +9,34 @@ export const actionTypes = {
   SELECT_ENTITY: 'SELECT_ENTITY',
   DRAWER: 'DRAWER',
   READY_WEBSOCKET: 'READY_WEBSOCKET',
+  DOCSTORE_SET_CURRENT_DOC: 'DOCSTORE_SET_CURRENT_DOC',
+  NODE_REPLACE: 'NODE_REPLACE',
 };
 
 const clientReducer = (state, { type, payload }) => {
   const { entities } = state;
   switch (type) {
-    case actionTypes.ADDED_ENTITY:
-      const extantEntity = entities.find(({ id }) => id === payload.id);
-      if (extantEntity) {
-        if (extantEntity.date.updated === payload.date.updated) {
-          // Cache is fresh; do nothing.
-          return state;
-        } else {
-          // Cache is stale; update entity.
-          return {
-            ...state,
-            entities: [...entities.filter(({ id }) => id === payload.id), payload],
-          };
-        }
-      } else {
-        // Cache is clean; insert entity.
-        return {
-          ...state,
-          entities: [...entities, payload],
-        };
-      }
-
-    case actionTypes.CLOBBER_ENTITIES:
+    case actionTypes.NODE_REPLACE:
+      if (payload === undefined) throw new Error(`${type}: Payload is undefined`);
+      const newNodes = payload instanceof Array ? payload : [payload];
+      const nodeIds = newNodes.filter(({ _id }) => _id !== undefined).map(({ _id }) => _id);
       return {
         ...state,
-        entities: payload,
+        nodes: [...state.nodes.filter(({ _id }) => nodeIds.indexOf(_id) === -1), ...newNodes],
+      };
+
+    case actionTypes.DOCSTORE_UPDATE:
+
+    case actionTypes.DOCSTORE_SET_CURRENT_DOC:
+      return {
+        ...state,
+        ui: {
+          ...state.ui,
+          docStore: {
+            ...state.ui.docStore,
+            currentDoc: payload,
+          },
+        },
       };
 
     case actionTypes.SET_USERID:
@@ -47,17 +45,6 @@ const clientReducer = (state, { type, payload }) => {
         user: {
           ...state.user,
           id: payload,
-        },
-      };
-
-    case actionTypes.SELECT_ENTITY:
-      const history = state.ui.selectedEntityHistory.filter((id) => id !== payload);
-      return {
-        ...state,
-        ui: {
-          ...state.ui,
-          selectedEntityIndex: 0,
-          selectedEntityHistory: [payload, ...history],
         },
       };
 

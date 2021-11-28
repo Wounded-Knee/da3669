@@ -1,8 +1,9 @@
-const mongoose = require('mongoose');
+import { model, Schema } from 'mongoose';
 
-const Schema = mongoose.Schema;
+const modelName = 'Document';
+const namespace = modelName.toLowerCase();
 
-const documentSchema = new Schema(
+const schema = new Schema(
   {
     text: String,
     title: String,
@@ -12,6 +13,38 @@ const documentSchema = new Schema(
   },
 );
 
-const Document = mongoose.model('Document', documentSchema);
+const Model = model(modelName, schema);
 
-export default Document;
+export default {
+  namespace,
+  schema,
+  model: Model,
+  actions: {
+    getNodeById: async (nodeId) => {
+      return await Model.findOne({ _id: nodeId });
+    },
+    list: async () => {
+      return await Model.find({});
+    },
+    persist: async (document) => {
+      const { _id, __v, createdAt, updatedAt, ...cleanDocument } = document;
+      if (_id) {
+        return await new Promise((resolve, reject) => {
+          console.log('persisting ', cleanDocument);
+          Model.findOneAndUpdate(
+            { _id },
+            cleanDocument,
+            { upsert: true, returnDocument: 'after' },
+            (nothing, document) => {
+              console.log('xyzzy ', nothing, document);
+              resolve(document);
+            },
+          );
+        });
+      } else {
+        console.log('New document ', _id, cleanDocument, document);
+        return await new Model(cleanDocument).save();
+      }
+    },
+  },
+};

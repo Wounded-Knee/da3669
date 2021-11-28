@@ -4,42 +4,32 @@ import React, { useState, useEffect } from 'react';
 import { css, jsx } from '@emotion/react';
 import { connect } from 'react-redux';
 import { Editor } from './Editor';
-import { actionTypes } from '../../lib/redux/reducer';
-import tx from '../../lib/redux/tx';
+import { persist, nodeList, getNodeById } from './actions';
+import { Link } from 'react-router-dom';
+import { Button } from '../../components/Branded';
+import { useParams, Routes, Route } from 'react-router';
 
-const mapStateToProps = (state: { documents: any[] }, { documentId }: any) => ({
-  document: (() => {
-    console.log(`Selecting ${documentId} from `, state.documents);
-    return state.documents.find(({ _id }) => _id === documentId);
-  })(),
+const mapStateToProps = (state) => ({
+  nodes: state.nodes,
+});
+const mapDispatchToProps = (dispatch) => ({
+  fetchNodeList: () => dispatch(nodeList()),
+  getNodeById: (nodeId) => dispatch(getNodeById(nodeId)),
+  persist: (node) => dispatch(persist(node)),
 });
 
-const mapDispatchToProps = (dispatch, ownProps) => ({
-  // getDocById: (docId: any) => {
-  //   return new Promise((resolve, reject) => {
-  //     const remoteAction = { type: actionTypes.DOCSTORE_GET_DOC_BY_ID, payload: docId };
-  //     dispatch(tx(remoteAction)).then((document) => {
-  //       console.log(`getDocById(${JSON.stringify(remoteAction)})`, document);
-  //     });
-  //   });
-  // },
-  persistDocument: (editorState: any) => {
-    const remoteAction = { type: actionTypes.DOCSTORE_UPDATE, payload: editorState };
-    return new Promise((resolve, reject) => {
-      dispatch(tx(remoteAction)).then(({ payload }) => resolve(payload));
-    });
-  },
-});
+export const DocStore = ({ nodeId: propNodeId, nodes, fetchNodeList, getNodeById, persist }) => {
+  const { nodeId } = useParams();
+  const thisNode = nodes.find(({ _id }) => _id === nodeId);
+  const thisId = thisNode ? thisNode._id : undefined;
 
-export const DocStore = ({ persistDocument }) => {
-  const [document, setDocument] = useState(undefined);
-  console.log('DocStore Document ', document);
-  // useEffect(() => {
-  //   // Runs ONCE after initial rendering
-  //   // and after every rendering ONLY IF `docId` changes
-  //   const { _id } = document;
-  //   if (_id) getDocById(_id);
-  // }, [docId]);
+  useEffect(() => {
+    fetchNodeList();
+  }, []);
+
+  useEffect(() => {
+    if (nodeId) getNodeById(nodeId);
+  }, [nodeId]);
 
   return (
     <div
@@ -48,16 +38,15 @@ export const DocStore = ({ persistDocument }) => {
       `}
     >
       <h1>Doc Store</h1>
-      <Editor
-        key={document}
-        document={document}
-        onChange={(document) => {
-          persistDocument(document).then((document) => {
-            console.log('Server-supplied document ', document);
-            setDocument(document);
-          });
-        }}
-      />
+      <Editor key={thisId} persist={persist} document={thisNode} />
+      {nodes.map((doc, index) => (
+        <div key={index}>
+          <Link to={`/docstore/${doc._id}`}>
+            <Button>{doc.title || doc._id}</Button>
+          </Link>
+          <Editor key={doc._id} persist={persist} document={doc} />
+        </div>
+      ))}
     </div>
   );
 };

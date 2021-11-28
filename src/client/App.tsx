@@ -2,7 +2,11 @@
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom'; // Pages
 import { connect } from 'react-redux';
-import { core } from './core';
+import { routes, appName } from './config';
+import transport from './lib/transport';
+import { set } from './lib/LocalStorage';
+import { store } from './lib/redux/store';
+import { actionTypes } from './lib/redux/reducer';
 
 // MUI
 import { CssBaseline, makeStyles } from '@material-ui/core';
@@ -11,11 +15,9 @@ import { createStyles, Theme } from '@material-ui/core/styles';
 // Components
 import { Header } from './components/Header';
 import { SideMenu } from './components/SideMenu';
-import { View } from './wireframes/simple3/view';
 import { DataView } from './components/DataView';
 import { InfoView } from './components/InfoView';
 import { Loading } from './components/Loading';
-import DocStore from './wireframes/docstore/DocStore';
 
 declare module '@material-ui/core/styles' {
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -50,6 +52,20 @@ const useStyles = makeStyles((theme: Theme) =>
         '100%': { color: 'rgba(255,0,0,1)' },
       },
 
+      '@keyframes border-change': {
+        '0%': { borderColor: 'rgba(255,0,0,1)' },
+        '10%': { borderColor: 'rgba(255,154,0,1)' },
+        '20%': { borderColor: 'rgba(208,222,33,1)' },
+        '30%': { borderColor: 'rgba(79,220,74,1)' },
+        '40%': { borderColor: 'rgba(63,218,216,1)' },
+        '50%': { borderColor: 'rgba(47,201,226,1)' },
+        '60%': { borderColor: 'rgba(28,127,238,1)' },
+        '70%': { borderColor: 'rgba(95,21,242,1)' },
+        '80%': { borderColor: 'rgba(186,12,248,1)' },
+        '90%': { borderColor: 'rgba(251,7,217,1)' },
+        '100%': { borderColor: 'rgba(255,0,0,1)' },
+      },
+
       '@keyframes background-color-change': {
         '0%': { backgroundColor: 'rgba(255,0,0,1)' },
         '10%': { backgroundColor: 'rgba(255,154,0,1)' },
@@ -75,29 +91,49 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
+store.subscribe(() => {
+  const { user, ui } = store.getState();
+  set(appName, { ui, user });
+});
+
 const mapStateToProps = (state) => {
   return {
     webSocketConnected: state.ui.ready.webSocket,
   };
 };
 
-export const App = connect(mapStateToProps)(({ webSocketConnected }) => {
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setWebSocketConnected: () => dispatch({ type: actionTypes.READY_WEBSOCKET }),
+  };
+};
+
+export const App = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(({ setWebSocketConnected, webSocketConnected }) => {
   const classes = useStyles({});
+
+  transport.on('open', () => {
+    console.log('WebSocket Connected.');
+    setWebSocketConnected();
+  });
 
   return (
     <BrowserRouter>
       {webSocketConnected ? (
         <div className={classes.root}>
           <CssBaseline />
-          <Header core={core} />
-          <SideMenu core={core} />
-          <DataView core={core} />
-          <InfoView core={core} />
+          <Header />
+          <SideMenu />
+          <DataView />
+          <InfoView />
           <main className={classes.main}>
             <div className={classes.toolbar} />
             <Routes>
-              <Route path='/:entityId' element={<View />} />
-              <Route path='/docstore' element={<DocStore />} />
+              {routes.map(({ path, component: Component }, index) => (
+                <Route key={index} path={path} element={<Component />} />
+              ))}
             </Routes>
           </main>
         </div>

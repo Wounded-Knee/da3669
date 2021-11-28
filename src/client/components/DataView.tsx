@@ -9,7 +9,7 @@ const mapStateToProps = (state) => ({
   state: state,
 });
 
-export const DataView: React.FunctionComponent<{ core: any }> = connect(mapStateToProps)(({ core, state }) => {
+export const DataView: React.FunctionComponent = connect(mapStateToProps)(({ state }) => {
   return (
     <Drawer drawerName='data'>
       <List>

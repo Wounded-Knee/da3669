@@ -1,10 +1,9 @@
 import React from 'react';
 import { Divider, Drawer, List, ListItem, ListItemIcon, ListItemText, makeStyles } from '@material-ui/core';
 import { createStyles, Theme } from '@material-ui/core/styles';
-import { NavLink, Link } from 'react-router-dom';
-import { getComponentByType } from '../components/entities';
+import { NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { QuestionAnswer, Article } from '@mui/icons-material';
+import { routes } from '../config';
 
 class NavLinkMui extends React.Component<any> {
   render() {
@@ -32,7 +31,7 @@ const mapStateToProps = (state) => ({
   options: state.entities.filter(({ type }) => type !== undefined),
 });
 
-export const SideMenu: React.FunctionComponent<{ core: any }> = connect(mapStateToProps)(({ core, options }) => {
+export const SideMenu: React.FunctionComponent = connect(mapStateToProps)(({ options }) => {
   const classes = useStyles({});
 
   return (
@@ -45,36 +44,19 @@ export const SideMenu: React.FunctionComponent<{ core: any }> = connect(mapState
     >
       <div className={classes.toolbar} />
       <List>
-        <ListItem button component={NavLinkMui} to='/docstore'>
-          <ListItemIcon>
-            <Article />
-          </ListItemIcon>
-          <ListItemText primary='Doc Store' />
-        </ListItem>
-
-        {options &&
-          options.map(({ id, text, type }, index) => (
-            <ListItem key={index} button component={NavLinkMui} to={`/${id}`}>
-              <ListItemIcon>{getComponentByType(type).icon}</ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
+        {routes.map(
+          ({ route, icon: Icon, text }, index) =>
+            Icon && (
+              <ListItem key={index} button component={NavLinkMui} to={route}>
+                <ListItemIcon>
+                  <Icon />
+                </ListItemIcon>
+                <ListItemText primary={text} />
+              </ListItem>
+            ),
+        )}
       </List>
-
       <Divider />
-
-      <List>
-        {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((id) => (
-          <Link to={`/${id}`} key={id}>
-            <ListItem button>
-              <ListItemIcon>
-                <QuestionAnswer />
-              </ListItemIcon>
-              <ListItemText primary={id} />
-            </ListItem>
-          </Link>
-        ))}
-      </List>
     </Drawer>
   );
 });
