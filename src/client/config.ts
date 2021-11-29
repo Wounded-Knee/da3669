@@ -1,11 +1,19 @@
 import { appName, WS_SERVER_HOST, WS_SERVER_PORT, initialState as sharedInitialState } from '../shared/config';
 import { get } from './lib/LocalStorage';
-import { Article } from '@mui/icons-material';
+import { Article, Chat as ChatIcon } from '@mui/icons-material';
 import DocStore from './wireframes/docstore/DocStore';
+import { Chat } from './wireframes/chat/Chat';
 
 const localState = get(appName) || { ui: { drawers: {} } };
 
 export const routes = [
+  {
+    route: '/chat',
+    path: '/chat',
+    icon: ChatIcon,
+    text: 'Chat',
+    component: Chat,
+  },
   {
     path: '/docstore/:nodeId',
     component: DocStore,

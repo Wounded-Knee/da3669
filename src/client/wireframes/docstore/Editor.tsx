@@ -29,7 +29,7 @@ const reducer = (document, { type, payload }) => {
   return newDocument;
 };
 
-const emptyDocument = { text: '', title: '' };
+const emptyDocument = { text: '', title: '', kind: 'Document' };
 
 export const Editor = ({ persist, document = emptyDocument }) => {
   const [thisDoc, dispatch] = useReducer(reducer, document);
