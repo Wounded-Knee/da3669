@@ -37,7 +37,7 @@ const nodeTypes = [
 const entityModules = ['Entity', 'Image', 'Relationship', 'YouTube', 'User', 'Message'];
 const defaultEntityModule = entityModules[0];
 
-const appName = 'D3';
+const appName = 'D³';
 
 export {
   nodeTypes,

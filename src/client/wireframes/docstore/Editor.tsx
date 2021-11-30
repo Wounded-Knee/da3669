@@ -15,8 +15,9 @@ export const Editor = ({ node: propNode = defaultNode }) => {
   const { text, title, checkbox } = node;
 
   return (
-    <>
+    <div style={{ width: '650px' }}>
       <h1>{title}</h1>
+      <p>{text}</p>
       <div>
         <Input
           placeholder='Title'
@@ -31,7 +32,7 @@ export const Editor = ({ node: propNode = defaultNode }) => {
           placeholder='Empty'
           value={text || ''}
           onChange={({ target: { value } }) => updatePath('text', value)}
-          style={{ width: '90%', height: '50vh' }}
+          style={{ height: '20vh', width: '100%' }}
         />
       </div>
       <div>
@@ -40,13 +41,11 @@ export const Editor = ({ node: propNode = defaultNode }) => {
       </div>
 
       <div>
-        <Button>Publish</Button>
-        <Button>Delete</Button>
         <span>{saved ? '' : 'not '} saved </span>
         <span>
           [ {persists.began.length} / {persists.finished.length} / {persists.error.length} ]
         </span>
       </div>
-    </>
+    </div>
   );
 };
