@@ -1,7 +1,6 @@
 import { useReducer, useCallback, useEffect } from 'react';
-import { persist as persistAction, getNodeById as getNodeByIdAction } from '../wireframes/docstore/actions';
-import { store } from './redux/store';
 import { useDebounce } from './useDebounce';
+import { call } from './transport';
 
 const reducer = (state, action) => {
   try {
@@ -46,6 +45,8 @@ const reducer = (state, action) => {
       case 'ERROR_LOAD':
         return {
           ...state,
+          loading: false,
+          loaded: false,
           loads: {
             ...state.loads,
             error: [new Date(), ...state.loads.error],
@@ -57,6 +58,7 @@ const reducer = (state, action) => {
         return {
           ...state,
           loaded: false,
+          loading: true,
           loads: {
             ...state.loads,
             began: [new Date(), ...state.loads.began],
@@ -64,9 +66,11 @@ const reducer = (state, action) => {
         };
 
       case 'FINISHED_LOAD':
+        console.log(type);
         return {
           ...state,
           loaded: true,
+          loading: false,
           loads: {
             ...state.loads,
             finished: [new Date(), ...state.loads.finished],
@@ -104,22 +108,18 @@ const defaultState = {
   },
   saved: true,
   loaded: false,
+  loading: false,
   node: undefined,
 };
 
-const persist = async function (node) {
-  return store.dispatch(persistAction(node));
-};
-
-const getNodeById = async function (_id) {
-  return store.dispatch(getNodeByIdAction(_id));
-};
+const persist = async (node) => await call('persist', node);
+const getNodeById = async (nodeId) => await call('getById', nodeId);
 
 export function useNode(nodeSeed) {
   const [state, dispatch] = useReducer(reducer, { ...defaultState, node: nodeSeed });
-  const { node, saved, loaded } = state;
+  const { node, saved, loaded, loading } = state;
   const { _id } = node;
-  const checksum = useDebounce(
+  const hash = useDebounce(
     Object.keys(nodeSeed).reduce((checksum, pathName) => `${checksum}/${pathName}=${node[pathName]}`, ''),
     250,
   );
@@ -139,10 +139,10 @@ export function useNode(nodeSeed) {
           dispatch({ type: 'ERROR_PERSIST', payload: undefined });
         });
     }
-  }, [checksum]);
+  }, [hash]);
 
   useEffect(() => {
-    if (_id && !loaded) {
+    if (_id && !loaded && !loading) {
       dispatch({ type: 'BEGAN_LOAD' });
       getNodeById(_id)
         .then((node) => {
