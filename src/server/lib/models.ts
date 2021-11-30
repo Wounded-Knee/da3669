@@ -11,15 +11,21 @@ const getModelByName = (soughtModelName) =>
 
 // @ts-ignore
 transport.register('persist', async ([node]) => {
-  // @ts-ignore
-  const { model } = getModelByNode(node);
-  console.log(
-    `Persist (as ${model.modelName})`,
-    node,
-    models.map(({ modelName }) => modelName),
-    node.kind,
-  );
-  return await model.persist(node);
+  const { kind } = node;
+  if (kind) {
+    // @ts-ignore
+    const { model } = getModelByNode(node);
+    console.log(
+      `Persist (as ${model.modelName})`,
+      node,
+      models.map(({ modelName }) => modelName),
+      node.kind,
+    );
+    return await model.persist(node);
+  } else {
+    console.error('Node has no "kind"', node);
+    return Promise.reject('No kind');
+  }
 });
 
 transport.register('list', async () => {

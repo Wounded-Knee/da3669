@@ -39,12 +39,12 @@ export const DocStore = ({ nodeId: propNodeId, nodes, fetchNodeList, getNodeById
     >
       <h1>Doc Store</h1>
       <Editor key={thisId} persist={persist} document={thisNode} />
-      {nodes.map((doc, index) => (
+      {nodes.map((node, index) => (
         <div key={index}>
-          <Link to={`/docstore/${doc._id}`}>
-            <Button>{doc.title || doc._id}</Button>
+          <Link to={`/docstore/${node._id}`}>
+            <Button>{node.title || node._id}</Button>
           </Link>
-          <Editor key={doc._id} persist={persist} document={doc} />
+          <Editor key={node._id} persist={persist} node={node} />
         </div>
       ))}
     </div>

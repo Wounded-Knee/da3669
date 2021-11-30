@@ -1,50 +1,114 @@
-import React, { useReducer, useEffect, useState } from 'react';
+import React, { useReducer, useEffect, useCallback } from 'react';
+import { debounce } from 'debounce';
 import { TextareaAutosize, Button, Input } from '../../components/Branded';
 
-const reducer = (document, { type, payload }) => {
-  let newDocument;
+const reducer = (state, { type, payload }) => {
   switch (type) {
-    case 'CLOBBER':
-      newDocument = payload;
-      break;
-    case 'UPDATED_ID':
-      newDocument = {
-        ...document,
-        _id: payload,
+    case 'ERROR_PERSIST':
+      return {
+        ...state,
+        persists: {
+          ...state.persists,
+          error: [new Date(), ...state.persists.error],
+        },
       };
-      break;
+
+    case 'BEGAN_PERSIST':
+      return {
+        ...state,
+        persists: {
+          ...state.persists,
+          began: [new Date(), ...state.persists.began],
+        },
+      };
+
+    case 'FINISHED_PERSIST':
+      const { _id, createdAt, updatedAt, __v } = payload;
+      return {
+        ...state,
+        saved: true,
+        persists: {
+          ...state.persists,
+          finished: [new Date(), ...state.persists.finished],
+        },
+        node: {
+          ...state.node,
+          _id,
+          createdAt,
+          updatedAt,
+          __v,
+        },
+      };
+
     case 'UPDATED_TEXT':
-      newDocument = {
-        ...document,
-        text: payload,
+      return {
+        ...state,
+        saved: false,
+        node: {
+          ...state.node,
+          text: payload,
+        },
       };
-      break;
+
     case 'UPDATED_TITLE':
-      newDocument = {
-        ...document,
-        title: payload,
+      return {
+        ...state,
+        saved: false,
+        node: {
+          ...state.node,
+          title: payload,
+        },
       };
-      break;
   }
-  return newDocument;
 };
 
 const emptyDocument = { text: '', title: '', kind: 'Document' };
+const defaultState = {
+  persists: {
+    began: [],
+    finished: [],
+    error: [],
+  },
+  saved: true,
+  node: {
+    text: '',
+    title: '',
+    kind: 'Document',
+  },
+};
 
-export const Editor = ({ persist, document = emptyDocument }) => {
-  const [thisDoc, dispatch] = useReducer(reducer, document);
-  const [saved, setSaved] = useState(true);
-  const { text, title } = thisDoc;
+export const Editor = ({ persist, node: propNode = defaultState.node }) => {
+  const [state, dispatch] = useReducer(reducer, { ...defaultState, node: propNode });
+  const { saved, persists, node } = state;
+  const { text, title } = node;
 
-  const onChange = () => {
-    if (!saved) {
-      console.log('Persisting Editor Changes as ', thisDoc);
-      persist(thisDoc).then((newDoc) => {
-        setSaved(true);
-        dispatch({ type: 'UPDATED_ID', payload: newDoc._id });
-      });
-    }
-  };
+  const onChange = useCallback(
+    debounce(() => {
+      // Don't persist until these conditions are met...
+      // Don't persist again until the first persist has completed or you will create multiple nodes...
+      // First persist is special.
+      const persistInProgress = persists.began > persists.finished.length + persists.error.length;
+      const doPersist = !saved && !persistInProgress;
+      if (doPersist) {
+        if (!persistInProgress) {
+          console.log('Persisting Editor Changes as ', node);
+          dispatch({ type: 'BEGAN_PERSIST', payload: undefined });
+          persist(node)
+            .then((node) => {
+              dispatch({ type: 'FINISHED_PERSIST', payload: node });
+            })
+            .catch(() => {
+              dispatch({ type: 'ERROR_PERSIST', payload: undefined });
+            });
+        } else {
+          console.log('Persist already in progress... ', persists);
+        }
+      } else {
+        console.log('Not persisting', doPersist, saved, persistInProgress);
+      }
+    }, 250),
+    [saved],
+  );
 
   useEffect(() => {
     onChange();
@@ -54,7 +118,6 @@ export const Editor = ({ persist, document = emptyDocument }) => {
     const {
       target: { value: payload },
     } = event;
-    setSaved(false);
     return dispatch({ type: `UPDATED_${name.toUpperCase()}`, payload });
   };
 
@@ -80,6 +143,10 @@ export const Editor = ({ persist, document = emptyDocument }) => {
       <div>
         <Button onClick={onChange}>Publish</Button>
         <Button>Delete</Button>
+        <span>{saved ? '' : 'not '} saved </span>
+        <span>
+          [ {persists.began.length} / {persists.finished.length} / {persists.error.length} ]
+        </span>
       </div>
     </>
   );
