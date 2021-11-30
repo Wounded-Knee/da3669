@@ -1,146 +1,21 @@
-import React, { useReducer, useEffect, useCallback } from 'react';
-import { debounce } from 'debounce';
+import React from 'react';
+import { useNode } from './useNode';
 import { TextareaAutosize, Button, Input } from '../../components/Branded';
+import { defaultState as defaultNode } from './DocumentEditor';
 
-const reducer = (state, { type, payload }) => {
-  switch (type) {
-    case 'ERROR_PERSIST':
-      return {
-        ...state,
-        persists: {
-          ...state.persists,
-          error: [new Date(), ...state.persists.error],
-        },
-      };
-
-    case 'BEGAN_PERSIST':
-      return {
-        ...state,
-        persists: {
-          ...state.persists,
-          began: [new Date(), ...state.persists.began],
-        },
-      };
-
-    case 'FINISHED_PERSIST':
-      const { _id, createdAt, updatedAt, __v } = payload;
-      return {
-        ...state,
-        saved: true,
-        persists: {
-          ...state.persists,
-          finished: [new Date(), ...state.persists.finished],
-        },
-        node: {
-          ...state.node,
-          _id,
-          createdAt,
-          updatedAt,
-          __v,
-        },
-      };
-
-    case 'UPDATED_TEXT':
-      return {
-        ...state,
-        saved: false,
-        node: {
-          ...state.node,
-          text: payload,
-        },
-      };
-
-    case 'UPDATED_CHECKBOX':
-      console.log(type, payload);
-      return {
-        ...state,
-        saved: false,
-        node: {
-          ...state.node,
-          checkbox: !state.node.checkbox,
-        },
-      };
-
-    case 'UPDATED_TITLE':
-      return {
-        ...state,
-        saved: false,
-        node: {
-          ...state.node,
-          title: payload,
-        },
-      };
-  }
-};
-
-const emptyDocument = { text: '', title: '', kind: 'Document' };
-const defaultState = {
-  persists: {
-    began: [],
-    finished: [],
-    error: [],
-  },
-  saved: true,
-  node: {
-    checkbox: false,
-    text: '',
-    title: '',
-    kind: 'Document',
-  },
-};
-
-export const Editor = ({ persist, node: propNode = defaultState.node }) => {
-  const [state, dispatch] = useReducer(reducer, { ...defaultState, node: propNode });
+export const Editor = () => {
+  const [state, updatePath] = useNode(defaultNode);
   const { saved, persists, node } = state;
   const { text, title, checkbox } = node;
 
-  const onChange = useCallback(
-    debounce(() => {
-      // Don't persist until these conditions are met...
-      // Don't persist again until the first persist has completed or you will create multiple nodes...
-      // First persist is special.
-      const persistInProgress = persists.began > persists.finished.length + persists.error.length;
-      const doPersist = !saved && !persistInProgress;
-      if (doPersist) {
-        if (!persistInProgress) {
-          console.log('Persisting Editor Changes as ', node);
-          dispatch({ type: 'BEGAN_PERSIST', payload: undefined });
-          persist(node)
-            .then((node) => {
-              dispatch({ type: 'FINISHED_PERSIST', payload: node });
-            })
-            .catch(() => {
-              dispatch({ type: 'ERROR_PERSIST', payload: undefined });
-            });
-        } else {
-          console.log('Persist already in progress... ', persists);
-        }
-      } else {
-        console.log('Not persisting', doPersist, saved, persistInProgress);
-      }
-    }, 250),
-    [saved],
-  );
-
-  useEffect(() => {
-    onChange();
-  }, [text, title, checkbox]);
-
-  const updateValue = (name, event) => {
-    const {
-      target: { value: payload },
-    } = event;
-    console.log('Updating value ', name, event.target.value, event.target.checked);
-    return dispatch({ type: `UPDATED_${name.toUpperCase()}`, payload });
-  };
-
   return (
     <>
+      <h1>{title}</h1>
       <div>
         <Input
           placeholder='Title'
           value={title || ''}
-          onChange={(event) => updateValue('TITLE', event)}
+          onChange={({ target: { value } }) => updatePath('title', value)}
           style={{ color: '#fff', width: '100%' }}
         />
       </div>
@@ -149,17 +24,17 @@ export const Editor = ({ persist, node: propNode = defaultState.node }) => {
           aria-label='Document Contents'
           placeholder='Empty'
           value={text || ''}
-          onChange={(event) => updateValue('TEXT', event)}
+          onChange={({ target: { value } }) => updatePath('text', value)}
           style={{ width: '90%', height: '50vh' }}
         />
       </div>
       <div>
-        <input type='checkbox' checked={checkbox} onChange={(event) => updateValue('CHECKBOX', event)} />
+        <input type='checkbox' checked={checkbox} onChange={() => updatePath('checkbox', !checkbox)} />
         {checkbox} {checkbox ? 'checked' : 'unchecked'}
       </div>
 
       <div>
-        <Button onClick={onChange}>Publish</Button>
+        <Button>Publish</Button>
         <Button>Delete</Button>
         <span>{saved ? '' : 'not '} saved </span>
         <span>

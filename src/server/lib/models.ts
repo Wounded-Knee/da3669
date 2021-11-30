@@ -33,8 +33,9 @@ transport.register('list', async () => {
   return await model.find({});
 });
 
-transport.register('getById', async (node) => {
-  console.log('getById', node);
+transport.register('getById', async (_id) => {
+  const { model } = getModelByName('Node');
+  return await model.findById(_id);
 });
 
 export default models;
