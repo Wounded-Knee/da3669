@@ -50,6 +50,17 @@ const reducer = (state, { type, payload }) => {
         },
       };
 
+    case 'UPDATED_CHECKBOX':
+      console.log(type, payload);
+      return {
+        ...state,
+        saved: false,
+        node: {
+          ...state.node,
+          checkbox: !state.node.checkbox,
+        },
+      };
+
     case 'UPDATED_TITLE':
       return {
         ...state,
@@ -71,6 +82,7 @@ const defaultState = {
   },
   saved: true,
   node: {
+    checkbox: false,
     text: '',
     title: '',
     kind: 'Document',
@@ -80,7 +92,7 @@ const defaultState = {
 export const Editor = ({ persist, node: propNode = defaultState.node }) => {
   const [state, dispatch] = useReducer(reducer, { ...defaultState, node: propNode });
   const { saved, persists, node } = state;
-  const { text, title } = node;
+  const { text, title, checkbox } = node;
 
   const onChange = useCallback(
     debounce(() => {
@@ -112,12 +124,13 @@ export const Editor = ({ persist, node: propNode = defaultState.node }) => {
 
   useEffect(() => {
     onChange();
-  }, [text, title]);
+  }, [text, title, checkbox]);
 
   const updateValue = (name, event) => {
     const {
       target: { value: payload },
     } = event;
+    console.log('Updating value ', name, event.target.value, event.target.checked);
     return dispatch({ type: `UPDATED_${name.toUpperCase()}`, payload });
   };
 
@@ -140,6 +153,11 @@ export const Editor = ({ persist, node: propNode = defaultState.node }) => {
           style={{ width: '90%', height: '50vh' }}
         />
       </div>
+      <div>
+        <input type='checkbox' checked={checkbox} onChange={(event) => updateValue('CHECKBOX', event)} />
+        {checkbox} {checkbox ? 'checked' : 'unchecked'}
+      </div>
+
       <div>
         <Button onClick={onChange}>Publish</Button>
         <Button>Delete</Button>

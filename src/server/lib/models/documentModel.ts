@@ -6,6 +6,7 @@ const modelName = 'Document';
 const namespace = modelName.toLowerCase();
 const schema = new Schema(
   {
+    checkbox: Boolean,
     title: { type: String, required: true },
     text: { type: String, required: true },
   },
