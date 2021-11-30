@@ -2,9 +2,9 @@ import { actionTypes } from '../../lib/redux/reducer';
 import { call } from '../../lib/transport';
 
 const document = {
-  persist: (node) => call('document.persist', node),
-  list: () => call('document.list'),
-  getNodeById: (nodeId) => call('document.getNodeById', nodeId),
+  persist: (node) => call('persist', node),
+  list: () => call('list'),
+  getNodeById: (nodeId) => call('getById', nodeId),
 };
 
 export const persist = (node) => generic(document.persist, actionTypes.NODE_REPLACE, node);

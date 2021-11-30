@@ -1,70 +1,28 @@
-import React, { useReducer, useEffect, useState } from 'react';
+import React from 'react';
+import { useNode } from '../../lib/useNode';
 import { TextareaAutosize, Button, Input } from '../../components/Branded';
 
-const reducer = (document, { type, payload }) => {
-  let newDocument;
-  switch (type) {
-    case 'CLOBBER':
-      newDocument = payload;
-      break;
-    case 'UPDATED_ID':
-      newDocument = {
-        ...document,
-        _id: payload,
-      };
-      break;
-    case 'UPDATED_TEXT':
-      newDocument = {
-        ...document,
-        text: payload,
-      };
-      break;
-    case 'UPDATED_TITLE':
-      newDocument = {
-        ...document,
-        title: payload,
-      };
-      break;
-  }
-  return newDocument;
+export const defaultNode = {
+  checkbox: false,
+  text: '',
+  title: '',
+  kind: 'Document',
 };
 
-const emptyDocument = { text: '', title: '' };
-
-export const Editor = ({ persist, document = emptyDocument }) => {
-  const [thisDoc, dispatch] = useReducer(reducer, document);
-  const [saved, setSaved] = useState(true);
-  const { text, title } = thisDoc;
-
-  const onChange = () => {
-    if (!saved) {
-      console.log('Persisting Editor Changes as ', thisDoc);
-      persist(thisDoc).then((newDoc) => {
-        setSaved(true);
-        dispatch({ type: 'UPDATED_ID', payload: newDoc._id });
-      });
-    }
-  };
-
-  useEffect(() => {
-    onChange();
-  }, [text, title]);
-
-  const updateValue = (name, event) => {
-    const {
-      target: { value: payload },
-    } = event;
-    setSaved(false);
-    return dispatch({ type: `UPDATED_${name.toUpperCase()}`, payload });
-  };
+export const Editor = ({ node: propNode = defaultNode }) => {
+  const [state, updatePath] = useNode(propNode);
+  const { saved, persists, node } = state;
+  const { text, title, checkbox } = node;
 
   return (
-    <>
+    <div style={{ width: '650px' }}>
+      <h1>{title}</h1>
+      <p>{text}</p>
       <div>
         <Input
           placeholder='Title'
           value={title || ''}
-          onChange={(event) => updateValue('TITLE', event)}
+          onChange={({ target: { value } }) => updatePath('title', value)}
           style={{ color: '#fff', width: '100%' }}
         />
       </div>
@@ -73,14 +31,21 @@ export const Editor = ({ persist, document = emptyDocument }) => {
           aria-label='Document Contents'
           placeholder='Empty'
           value={text || ''}
-          onChange={(event) => updateValue('TEXT', event)}
-          style={{ width: '90%', height: '50vh' }}
+          onChange={({ target: { value } }) => updatePath('text', value)}
+          style={{ height: '20vh', width: '100%' }}
         />
       </div>
       <div>
-        <Button onClick={onChange}>Publish</Button>
-        <Button>Delete</Button>
+        <input type='checkbox' checked={checkbox} onChange={() => updatePath('checkbox', !checkbox)} />
+        {checkbox} {checkbox ? 'checked' : 'unchecked'}
       </div>
-    </>
+
+      <div>
+        <span>{saved ? '' : 'not '} saved </span>
+        <span>
+          [ {persists.began.length} / {persists.finished.length} / {persists.error.length} ]
+        </span>
+      </div>
+    </div>
   );
 };

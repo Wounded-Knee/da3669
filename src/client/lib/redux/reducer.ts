@@ -1,6 +1,28 @@
 import { reducer as rootReducer, actionTypes as rootActionTypes } from '../../../shared/lib/redux/reducer';
 import { action } from '../../../shared/all';
-import { initialState } from '../../config';
+
+export const initialState = {
+  entities: [],
+  nodes: [],
+  documents: [],
+  user: {
+    id: null,
+  },
+  ui: {
+    drawers: {
+      info: false,
+      data: false,
+    },
+    ready: {
+      webSocket: false,
+    },
+    docStore: {
+      currentDoc: {},
+    },
+    selectedEntityIndex: null,
+    selectedEntityHistory: [],
+  },
+};
 
 export const actionTypes = {
   ...rootActionTypes,
