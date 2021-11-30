@@ -25,4 +25,20 @@ export default {
   namespace,
   model: Node,
   options,
+  extend: ({ name, schemaPaths = {}, schemaOptions = {} }) => {
+    const namespace = name.toLowerCase();
+    const extendedOptions = {
+      ...options,
+      ...schemaOptions,
+    };
+    const schema = new Schema(schemaPaths, extendedOptions);
+    const model = Node.discriminator(name, schema);
+
+    return {
+      modelName: name,
+      namespace,
+      model,
+      options: extendedOptions,
+    };
+  },
 };
