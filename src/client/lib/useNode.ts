@@ -1,5 +1,5 @@
 import { useReducer, useCallback, useEffect } from 'react';
-import { persist as persistAction } from '../wireframes/docstore/actions';
+import { persist as persistAction, getNodeById as getNodeByIdAction } from '../wireframes/docstore/actions';
 import { store } from './redux/store';
 import { useDebounce } from './useDebounce';
 
@@ -43,6 +43,37 @@ const reducer = (state, action) => {
           },
         };
 
+      case 'ERROR_LOAD':
+        return {
+          ...state,
+          loads: {
+            ...state.loads,
+            error: [new Date(), ...state.loads.error],
+          },
+        };
+
+      case 'BEGAN_LOAD':
+        console.log(type);
+        return {
+          ...state,
+          loaded: false,
+          loads: {
+            ...state.loads,
+            began: [new Date(), ...state.loads.began],
+          },
+        };
+
+      case 'FINISHED_LOAD':
+        return {
+          ...state,
+          loaded: true,
+          loads: {
+            ...state.loads,
+            finished: [new Date(), ...state.loads.finished],
+          },
+          node: payload,
+        };
+
       case 'UPDATE_PATH':
         const { path, value } = payload;
         return {
@@ -66,18 +97,28 @@ const defaultState = {
     finished: [],
     error: [],
   },
+  loads: {
+    began: [],
+    finished: [],
+    error: [],
+  },
   saved: true,
+  loaded: false,
   node: undefined,
 };
 
 const persist = async function (node) {
-  console.log('Persisting ', node);
   return store.dispatch(persistAction(node));
+};
+
+const getNodeById = async function (_id) {
+  return store.dispatch(getNodeByIdAction(_id));
 };
 
 export function useNode(nodeSeed) {
   const [state, dispatch] = useReducer(reducer, { ...defaultState, node: nodeSeed });
-  const { node, saved } = state;
+  const { node, saved, loaded } = state;
+  const { _id } = node;
   const checksum = useDebounce(
     Object.keys(nodeSeed).reduce((checksum, pathName) => `${checksum}/${pathName}=${node[pathName]}`, ''),
     250,
@@ -99,6 +140,19 @@ export function useNode(nodeSeed) {
         });
     }
   }, [checksum]);
+
+  useEffect(() => {
+    if (_id && !loaded) {
+      dispatch({ type: 'BEGAN_LOAD' });
+      getNodeById(_id)
+        .then((node) => {
+          dispatch({ type: 'FINISHED_LOAD', payload: node });
+        })
+        .catch(() => {
+          dispatch({ type: 'ERROR_LOAD' });
+        });
+    }
+  }, [_id]);
 
   return [state, updatePath];
 }

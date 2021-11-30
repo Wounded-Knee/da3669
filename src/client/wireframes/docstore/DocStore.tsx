@@ -44,7 +44,7 @@ export const DocStore = ({ nodeId: propNodeId, nodes, fetchNodeList, getNodeById
           <Link to={`/docstore/${node._id}`}>
             <Button>{node.title || node._id}</Button>
           </Link>
-          <Editor key={node._id} persist={persist} node={node} />
+          <Editor key={node._id} node={node} />
         </div>
       ))}
     </div>

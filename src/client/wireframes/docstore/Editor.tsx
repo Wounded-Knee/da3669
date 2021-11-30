@@ -9,8 +9,8 @@ export const defaultNode = {
   kind: 'Document',
 };
 
-export const Editor = () => {
-  const [state, updatePath] = useNode(defaultNode);
+export const Editor = ({ node: propNode = defaultNode }) => {
+  const [state, updatePath] = useNode(propNode);
   const { saved, persists, node } = state;
   const { text, title, checkbox } = node;
 
