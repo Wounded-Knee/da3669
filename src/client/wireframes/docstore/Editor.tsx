@@ -41,7 +41,7 @@ export const Editor = ({ node: propNode = defaultNode }) => {
       </div>
 
       <div>
-        <span>{saved ? '' : 'not '} saved </span>
+        <span>{saved ? '' : 'un'}saved </span>
         <span>
           [ {persists.began.length} / {persists.finished.length} / {persists.error.length} ]
         </span>

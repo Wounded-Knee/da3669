@@ -4,7 +4,6 @@ import { AppBar, Toolbar, Typography, Grid, Button } from '@material-ui/core';
 import StorageIcon from '@mui/icons-material/Storage';
 import InfoIcon from '@mui/icons-material/Info';
 import React from 'react';
-import { UserSelect } from './UserSelect';
 import { appName } from '../config';
 import { getAnimationCss } from './Branded';
 
@@ -31,7 +30,7 @@ export const Header: React.FunctionComponent = () => {
             </Typography>
           </Grid>
           <Grid item xs={1} css={styles.dataButton}>
-            <UserSelect users={[]} onSubmit={console.log} />
+            {/* User Select */}
           </Grid>
           <Grid item xs={1} css={styles.dataButton}>
             <Button onClick={() => core.uiSetDrawer('info')}>

@@ -1,5 +1,5 @@
 // HTTP Server
-const HTTP_SERVER_PORT = 3000;
+const HTTP_SERVER_PORT = 8080;
 
 // WS Server
 const WS_SERVER_PORT = 8081;
@@ -33,19 +33,6 @@ const nodeTypes = [
   },
 ];
 
-// Entities
-const entityModules = ['Entity', 'Image', 'Relationship', 'YouTube', 'User', 'Message'];
-const defaultEntityModule = entityModules[0];
-
 const appName = 'D³';
 
-export {
-  nodeTypes,
-  appName,
-  entityModules,
-  defaultEntityModule,
-  initialState,
-  HTTP_SERVER_PORT,
-  WS_SERVER_HOST,
-  WS_SERVER_PORT,
-};
+export { nodeTypes, appName, initialState, HTTP_SERVER_PORT, WS_SERVER_HOST, WS_SERVER_PORT };
