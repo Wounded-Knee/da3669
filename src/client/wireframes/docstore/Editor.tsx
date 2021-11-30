@@ -1,7 +1,13 @@
 import React from 'react';
-import { useNode } from './useNode';
+import { useNode } from '../../lib/useNode';
 import { TextareaAutosize, Button, Input } from '../../components/Branded';
-import { defaultState as defaultNode } from './DocumentEditor';
+
+export const defaultNode = {
+  checkbox: false,
+  text: '',
+  title: '',
+  kind: 'Document',
+};
 
 export const Editor = () => {
   const [state, updatePath] = useNode(defaultNode);
