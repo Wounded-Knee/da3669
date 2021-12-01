@@ -54,10 +54,10 @@ transport.register('persist', async ([node, relations = []]) => {
 
 // @ts-ignore
 transport.register('relate', async ([type, node1id, node2id]) => {
-  const pathName = relationTypes.find(({ name }) => name === type).name;
+  const pathName = relationTypes.find(({ name }) => name === type).path;
   if (pathName) {
     const parentNode = await DefaultModel.findById(node1id);
-    if (parentNode[pathName] instanceof Array) {
+    if (pathName in parentNode && !isNaN(parentNode[pathName].length)) {
       parentNode[pathName].push(node2id);
       return await parentNode.save();
     } else {

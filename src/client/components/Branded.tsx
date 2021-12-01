@@ -4,15 +4,6 @@ import { useRainbow } from '../lib/useRainbow';
 import { css, jsx } from '@emotion/react';
 import { TextareaAutosize as MuiTextareaAutosize, Button as MuiButton, Input as MuiInput } from '@mui/material';
 
-const changeLength = 700;
-export const getAnimationCss = (type) => {
-  return css`
-    animation: ${type}-change ${changeLength}s linear infinite;
-  `;
-};
-
-export const getRotationColor = () => `hsl(${Date.now() % 360},80%,50%)`;
-
 export const Input = ({ ...props }) => <MuiInput {...props} />;
 
 export const Button = ({ children, ...props }) => {

@@ -148,14 +148,18 @@ export function useNode(nodeSeed) {
     if (!saved) {
       dispatch({ type: 'BEGAN_PERSIST', payload: undefined });
       persist(node)
-        .then(
-          (node) =>
-            new Promise((resolve, reject) => {
-              console.log('Dealing with ' + pendingRelations.length + ' new relationships');
-              Promise.all(pendingRelations.map(({ type, nodeId }) => relate(type, _id, nodeId))).then(() =>
-                resolve(node),
-              );
-            }),
+        .then((node) =>
+          pendingRelations.length
+            ? new Promise((resolve, reject) => {
+                console.log(
+                  'Dealing with ' + pendingRelations.length + ' new relationships and here they are ',
+                  pendingRelations,
+                );
+                Promise.all(pendingRelations.map(({ type, nodeId }) => relate(type, _id, nodeId))).then(() =>
+                  resolve(node),
+                );
+              })
+            : node,
         )
         .then((node) => {
           dispatch({ type: 'FINISHED_PERSIST', payload: node });
