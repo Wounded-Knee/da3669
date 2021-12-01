@@ -5,6 +5,12 @@ import { HTTP_SERVER_PORT } from './config';
 import { defaultNodeType, getNodeTypeByNodeData } from './lib/nodeTypes';
 
 const { model: DefaultModel } = defaultNodeType;
+const relationTypes = [
+  {
+    name: 'reply',
+    path: 'replies',
+  },
+];
 
 const mongoDB = {
   url: process.env.MONGODB_URL,
@@ -31,16 +37,34 @@ const httpServer = new HTTPServer({
 // JSON-RPC 2.0 WebSocket Server methods
 // ...this is the API
 // @ts-ignore
-transport.register('persist', async ([node]) => {
+transport.register('persist', async ([node, relations = []]) => {
   const { kind } = node;
   if (kind) {
     // @ts-ignore
     const { model } = getNodeTypeByNodeData(node);
     console.log(`Persist (as ${model.modelName})`);
-    return await model.persist(node);
+    const primaryNode = await model.persist(node);
+    relations.forEach((relation) => {});
+    return primaryNode;
   } else {
     console.error('Node has no "kind"', node);
     return Promise.reject('No kind');
+  }
+});
+
+// @ts-ignore
+transport.register('relate', async ([type, node1id, node2id]) => {
+  const pathName = relationTypes.find(({ name }) => name === type).path;
+  if (pathName) {
+    const parentNode = await DefaultModel.findById(node1id);
+    if (pathName in parentNode && !isNaN(parentNode[pathName].length)) {
+      parentNode[pathName].push(node2id);
+      return await parentNode.save();
+    } else {
+      return Promise.reject(`Node #${node1id} has no ${type} collection path.`);
+    }
+  } else {
+    return Promise.reject(`Can't handle relation type ${type}.`);
   }
 });
 
@@ -49,7 +73,8 @@ transport.register('list', async () => {
 });
 
 transport.register('getById', async (_id) => {
-  return await DefaultModel.findById(_id);
+  const populatePaths = relationTypes.map(({ path }) => path).join(' ');
+  return await DefaultModel.findById(_id).populate(populatePaths);
 });
 
 Promise.all([mongoosePromise, httpServer.initialize()]).then(() => {

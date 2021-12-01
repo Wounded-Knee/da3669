@@ -37,49 +37,6 @@ declare module '@material-ui/core/styles' {
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    '@global': {
-      '@keyframes color-change': {
-        '0%': { color: 'rgba(255,0,0,1)' },
-        '10%': { color: 'rgba(255,154,0,1)' },
-        '20%': { color: 'rgba(208,222,33,1)' },
-        '30%': { color: 'rgba(79,220,74,1)' },
-        '40%': { color: 'rgba(63,218,216,1)' },
-        '50%': { color: 'rgba(47,201,226,1)' },
-        '60%': { color: 'rgba(28,127,238,1)' },
-        '70%': { color: 'rgba(95,21,242,1)' },
-        '80%': { color: 'rgba(186,12,248,1)' },
-        '90%': { color: 'rgba(251,7,217,1)' },
-        '100%': { color: 'rgba(255,0,0,1)' },
-      },
-
-      '@keyframes border-change': {
-        '0%': { borderColor: 'rgba(255,0,0,1)' },
-        '10%': { borderColor: 'rgba(255,154,0,1)' },
-        '20%': { borderColor: 'rgba(208,222,33,1)' },
-        '30%': { borderColor: 'rgba(79,220,74,1)' },
-        '40%': { borderColor: 'rgba(63,218,216,1)' },
-        '50%': { borderColor: 'rgba(47,201,226,1)' },
-        '60%': { borderColor: 'rgba(28,127,238,1)' },
-        '70%': { borderColor: 'rgba(95,21,242,1)' },
-        '80%': { borderColor: 'rgba(186,12,248,1)' },
-        '90%': { borderColor: 'rgba(251,7,217,1)' },
-        '100%': { borderColor: 'rgba(255,0,0,1)' },
-      },
-
-      '@keyframes background-color-change': {
-        '0%': { backgroundColor: 'rgba(255,0,0,1)' },
-        '10%': { backgroundColor: 'rgba(255,154,0,1)' },
-        '20%': { backgroundColor: 'rgba(208,222,33,1)' },
-        '30%': { backgroundColor: 'rgba(79,220,74,1)' },
-        '40%': { backgroundColor: 'rgba(63,218,216,1)' },
-        '50%': { backgroundColor: 'rgba(47,201,226,1)' },
-        '60%': { backgroundColor: 'rgba(28,127,238,1)' },
-        '70%': { backgroundColor: 'rgba(95,21,242,1)' },
-        '80%': { backgroundColor: 'rgba(186,12,248,1)' },
-        '90%': { backgroundColor: 'rgba(251,7,217,1)' },
-        '100%': { backgroundColor: 'rgba(255,0,0,1)' },
-      },
-    },
     root: {
       display: 'flex',
     },
@@ -87,7 +44,12 @@ const useStyles = makeStyles((theme: Theme) =>
       flexGrow: 1,
       height: '100vh',
     },
-    toolbar: theme.mixins.toolbar,
+    vignette: {
+      boxShadow: 'inset 0 0 100px black',
+    },
+    toolbar: {
+      minHeight: 50,
+    },
   }),
 );
 
@@ -130,11 +92,13 @@ export const App = connect(
           <InfoView />
           <main className={classes.main}>
             <div className={classes.toolbar} />
-            <Routes>
-              {routes.map(({ path, component: Component }, index) => (
-                <Route key={index} path={path} element={<Component />} />
-              ))}
-            </Routes>
+            <div className={classes.vignette}>
+              <Routes>
+                {routes.map(({ path, component: Component }, index) => (
+                  <Route key={index} path={path} element={<Component />} />
+                ))}
+              </Routes>
+            </div>
           </main>
         </div>
       ) : (

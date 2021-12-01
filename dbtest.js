@@ -1,50 +1,28 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const mongoose = require('mongoose');
 const cfg = require('./dist/server/config');
 const { MONGODB_URL } = process.env;
 const { Schema } = mongoose;
+const NodeModel = require('./dist/server/lib/models/NodeModel').default;
+const { extend } = NodeModel;
+
+const { model: Message } = extend({
+  name: 'Message',
+  schemaPaths: {
+    text: { type: String, required: true },
+    replies: [{ type: Schema.Types.ObjectId, ref: 'Message' }],
+  },
+});
 
 mongoose.connect(MONGODB_URL.replace('development', 'test'), () => {
   console.log('Connected.');
 
-  const options = { discriminatorKey: 'kind', timestamps: true };
-
-  const Node = mongoose.model(
-    'Node',
-    new mongoose.Schema(
-      {
-        time: {
-          type: Date,
-          default: Date.now,
-        },
-      },
-      options,
-    ),
-  );
-
-  // ClickedLinkEvent
-  const Document = Node.discriminator(
-    'Document',
-    new mongoose.Schema(
-      {
-        title: { type: String, required: true },
-        text: { type: String, required: true },
-      },
-      options,
-    ),
-  );
-
-  /*
-  var rawNode = new Node({});
-  rawNode.save();
-
-  var docNode = new Document({
-    title: 'Doc Title',
-    text: 'zxcvb',
+  new Message({ text: 'What is the airspeed velocity of an unladen swallow?' }).save().then((parentMessage) => {
+    new Message({ text: 'African or European?' }).save().then((replyMessage) => {
+      parentMessage.replies.push(replyMessage._id);
+      parentMessage.save().then((parentMessage) => {
+        parentMessage.populate('replies').then(console.log);
+      });
+    });
   });
-  docNode.save();
-  */
-
-  console.log(Document.prototype);
-
-  //Document.find({}).then(console.log);
 });

@@ -5,12 +5,14 @@ import StorageIcon from '@mui/icons-material/Storage';
 import InfoIcon from '@mui/icons-material/Info';
 import React from 'react';
 import { appName } from '../config';
-import { getAnimationCss } from './Branded';
+import { useRainbow } from '../lib/useRainbow';
 
 export const Header: React.FunctionComponent = () => {
   const styles = {
     appBar: css`
-      ${getAnimationCss('background-color')}
+      background-color: ${useRainbow()};
+      text-shadow: black 1px 1px 3px;
+      font-weight: bold;
       z-index: 10000;
     `,
     dataButton: css`

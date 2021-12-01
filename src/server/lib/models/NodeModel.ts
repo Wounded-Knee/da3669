@@ -4,7 +4,7 @@ const modelName = 'Node';
 const namespace = modelName.toLowerCase();
 const options = { discriminatorKey: 'kind', timestamps: true };
 const schema = new Schema({}, options);
-schema.statics.persist = async function (node) {
+schema.statics.persist = async function (node, relations = []) {
   const { _id, __v, createdAt, updatedAt, ...cleanNode } = node;
   if (_id) {
     return await new Promise((resolve, reject) => {
