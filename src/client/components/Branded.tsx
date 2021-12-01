@@ -1,5 +1,6 @@
 /** @jsx jsx */
 import React from 'react';
+import { useRainbow } from '../lib/useRainbow';
 import { css, jsx } from '@emotion/react';
 import { TextareaAutosize as MuiTextareaAutosize, Button as MuiButton, Input as MuiInput } from '@mui/material';
 
@@ -10,13 +11,14 @@ export const getAnimationCss = (type) => {
   `;
 };
 
+export const getRotationColor = () => `hsl(${Date.now() % 360},80%,50%)`;
+
 export const Input = ({ ...props }) => <MuiInput {...props} />;
 
 export const Button = ({ children, ...props }) => {
   const styles = {
     button: css`
-      ${getAnimationCss('color')}
-      color: #ffff00;
+      color: ${useRainbow(100, 70)};
     `,
   };
 
@@ -30,10 +32,14 @@ export const Button = ({ children, ...props }) => {
 export const TextareaAutosize = ({ ...props }) => {
   const styles = {
     textareaautosize: css`
-      ${getAnimationCss('border')}
+      border: 1px solid ${useRainbow()};
       color: #ffffff;
       background-color: #303030;
-      border: 1px solid black;
+
+      &:focus,
+      &:active {
+        outline: 1px dotted ${useRainbow(100, 70)};
+      }
     `,
   };
 
