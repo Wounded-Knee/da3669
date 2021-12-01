@@ -34,7 +34,7 @@ export const TextareaAutosize = ({ ...props }) => {
     textareaautosize: css`
       border: 1px solid ${useRainbow()};
       color: #ffffff;
-      background-color: #303030;
+      background-color: transparent;
 
       &:focus,
       &:active {

@@ -54,16 +54,17 @@ transport.register('persist', async ([node, relations = []]) => {
 
 // @ts-ignore
 transport.register('relate', async ([type, node1id, node2id]) => {
-  switch (type) {
-    case 'reply':
-      // For now, node1id refers to the parent,
-      // node2id refers to the child.
-      const parentNode = await DefaultModel.findById(node1id);
-      console.log('Found ', parentNode);
-      parentNode.replies.push(node2id);
+  const pathName = relationTypes.find(({ name }) => name === type).name;
+  if (pathName) {
+    const parentNode = await DefaultModel.findById(node1id);
+    if (parentNode[pathName] instanceof Array) {
+      parentNode[pathName].push(node2id);
       return await parentNode.save();
-    default:
-      return Promise.reject(`Can't handle relation type ${type}.`);
+    } else {
+      return Promise.reject(`Node #${node1id} has no ${type} collection path.`);
+    }
+  } else {
+    return Promise.reject(`Can't handle relation type ${type}.`);
   }
 });
 
@@ -72,7 +73,8 @@ transport.register('list', async () => {
 });
 
 transport.register('getById', async (_id) => {
-  return await DefaultModel.findById(_id).populate('replies');
+  const populatePaths = relationTypes.map(({ path }) => path).join(' ');
+  return await DefaultModel.findById(_id).populate(populatePaths);
 });
 
 Promise.all([mongoosePromise, httpServer.initialize()]).then(() => {
