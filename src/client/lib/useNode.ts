@@ -1,6 +1,7 @@
 import { useReducer, useCallback, useEffect } from 'react';
 import { useDebounce } from './useDebounce';
 import { call } from './transport';
+import { resolve } from 'path';
 
 const reducer = (state, action) => {
   try {
@@ -29,6 +30,7 @@ const reducer = (state, action) => {
         return {
           ...state,
           saved: true,
+          pendingRelations: [],
           persists: {
             ...state.persists,
             finished: [new Date(), ...state.persists.finished],
@@ -78,7 +80,7 @@ const reducer = (state, action) => {
           node: payload,
         };
 
-      case 'UPDATE_PATH':
+      case 'UPDATED_PATH':
         const { path, value } = payload;
         return {
           ...state,
@@ -88,11 +90,18 @@ const reducer = (state, action) => {
             [path]: value,
           },
         };
+
+      case 'ADDED_RELATION':
+        return {
+          ...state,
+          saved: false,
+          pendingRelations: [...state.pendingRelations, payload],
+        };
     }
   } catch (e) {
     console.error(`Reducer Error ${e.message} on action `, action);
-    return state;
   }
+  return state;
 };
 
 const defaultState = {
@@ -106,32 +115,48 @@ const defaultState = {
     finished: [],
     error: [],
   },
+  pendingRelations: [],
   saved: true,
   loaded: false,
   loading: false,
   node: undefined,
 };
 
+const relate = async (type, node1id, node2id) => await call('relate', type, node1id, node2id);
 const persist = async (node) => await call('persist', node);
 const getNodeById = async (nodeId) => await call('getById', nodeId);
 
 export function useNode(nodeSeed) {
   const [state, dispatch] = useReducer(reducer, { ...defaultState, node: nodeSeed });
-  const { node, saved, loaded, loading } = state;
+  const { node, saved, loaded, loading, pendingRelations } = state;
   const { _id } = node;
   const hash = useDebounce(
-    Object.keys(nodeSeed).reduce((checksum, pathName) => `${checksum}/${pathName}=${node[pathName]}`, ''),
+    Object.keys(nodeSeed).reduce((checksum, pathName) => `${checksum}/${pathName}=${node[pathName]}`, '') +
+      JSON.stringify(pendingRelations),
     250,
   );
 
   const updatePath = (path, value) => {
-    dispatch({ type: 'UPDATE_PATH', payload: { path, value } });
+    dispatch({ type: 'UPDATED_PATH', payload: { path, value } });
+  };
+
+  const addRelation = (type, nodeId) => {
+    dispatch({ type: 'ADDED_RELATION', payload: { type, nodeId } });
   };
 
   useEffect(() => {
     if (!saved) {
       dispatch({ type: 'BEGAN_PERSIST', payload: undefined });
       persist(node)
+        .then(
+          (node) =>
+            new Promise((resolve, reject) => {
+              console.log('Dealing with ' + pendingRelations.length + ' new relationships');
+              Promise.all(pendingRelations.map(({ type, nodeId }) => relate(type, _id, nodeId))).then(() =>
+                resolve(node),
+              );
+            }),
+        )
         .then((node) => {
           dispatch({ type: 'FINISHED_PERSIST', payload: node });
         })
@@ -154,5 +179,5 @@ export function useNode(nodeSeed) {
     }
   }, [_id]);
 
-  return [state, updatePath];
+  return [state, { updatePath, addRelation }];
 }

@@ -10,9 +10,9 @@ export const defaultNode = {
 };
 
 export const Editor = ({ node: propNode = defaultNode }) => {
-  const [state, updatePath] = useNode(propNode);
-  const { saved, persists, node } = state;
-  const { text, title, checkbox } = node;
+  const [state, { updatePath, addRelation }] = useNode(propNode);
+  const { saved, persists, node, pendingRelations } = state;
+  const { text, title, checkbox, _id } = node;
 
   return (
     <div style={{ width: '650px' }}>
@@ -36,14 +36,22 @@ export const Editor = ({ node: propNode = defaultNode }) => {
         />
       </div>
       <div>
+        <Input
+          placeholder='Relate as Reply'
+          value={''}
+          onChange={({ target: { value } }) => addRelation('reply', value)}
+          style={{ color: '#fff', width: '100%' }}
+        />
+      </div>
+      <div>
         <input type='checkbox' checked={checkbox} onChange={() => updatePath('checkbox', !checkbox)} />
-        {checkbox} {checkbox ? 'checked' : 'unchecked'}
+        {checkbox} {checkbox ? 'checked' : 'unchecked'} | {_id}
       </div>
 
       <div>
         <span>{saved ? '' : 'un'}saved </span>
         <span>
-          [ {persists.began.length} / {persists.finished.length} / {persists.error.length} ]
+          [ {persists.began.length} / {persists.finished.length} / {persists.error.length} : {pendingRelations.length} ]
         </span>
       </div>
     </div>
