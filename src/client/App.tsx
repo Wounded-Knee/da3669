@@ -1,5 +1,8 @@
+/** @jsxFrag React.Fragment */
+/** @jsx jsx */
 // App
 import React from 'react';
+import { css, jsx } from '@emotion/react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom'; // Pages
 import { connect } from 'react-redux';
 import { routes, appName } from './config';
@@ -46,6 +49,8 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     vignette: {
       boxShadow: 'inset 0 0 100px black',
+      padding: '3em',
+      minHeight: '100vh',
     },
     toolbar: {
       minHeight: 50,

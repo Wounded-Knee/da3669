@@ -1,12 +1,16 @@
+import NodeModel from './models/NodeModel';
 import { nodeTypes as sharedNodeTypes } from '../../shared/config';
+const { extend } = NodeModel;
 
 const nodeTypes = sharedNodeTypes.reduce((acc, nodeType) => {
-  const filename = `./models/${nodeType.name}Model`;
   const definition = {
     ...nodeType,
-    filename,
-    // @ts-ignore
-    ...require(filename).default,
+    ...(nodeType.default
+      ? NodeModel
+      : extend({
+          name: nodeType.name,
+          schemaPaths: nodeType.schemaPaths,
+        })),
   };
   return [...acc, definition];
 }, []);

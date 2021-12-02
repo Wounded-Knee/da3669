@@ -4,7 +4,7 @@ import { AppBar, Toolbar, Typography, Grid, Button } from '@material-ui/core';
 import StorageIcon from '@mui/icons-material/Storage';
 import InfoIcon from '@mui/icons-material/Info';
 import React from 'react';
-import { appName } from '../config';
+import { headerText } from '../config';
 import { useRainbow } from '../lib/useRainbow';
 
 export const Header: React.FunctionComponent = () => {
@@ -13,6 +13,7 @@ export const Header: React.FunctionComponent = () => {
       background-color: ${useRainbow()};
       text-shadow: black 1px 1px 3px;
       font-weight: bold;
+      letter-spacing: 1em;
       z-index: 10000;
     `,
     dataButton: css`
@@ -28,7 +29,7 @@ export const Header: React.FunctionComponent = () => {
         <Grid container alignItems='center'>
           <Grid item xs={10}>
             <Typography variant='h5' noWrap>
-              🙃 {appName} Prototype
+              {headerText}
             </Typography>
           </Grid>
           <Grid item xs={1} css={styles.dataButton}>

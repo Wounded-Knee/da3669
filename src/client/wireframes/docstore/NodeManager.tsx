@@ -32,11 +32,7 @@ export const NodeManager = ({ nodeId: propNodeId, nodes, fetchNodeList, getNodeB
   }, [nodeId]);
 
   return (
-    <div
-      css={css`
-        padding: 3em;
-      `}
-    >
+    <>
       <h1>Node Manager</h1>
       <Editor />
       {nodes.map((node, index) => (
@@ -47,7 +43,7 @@ export const NodeManager = ({ nodeId: propNodeId, nodes, fetchNodeList, getNodeB
           <Editor key={node._id} node={node} />
         </div>
       ))}
-    </div>
+    </>
   );
 };
 

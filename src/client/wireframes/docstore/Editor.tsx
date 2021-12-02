@@ -9,8 +9,8 @@ export const defaultNode = {
   kind: 'Document',
 };
 
-export const Editor = ({ node: propNode = defaultNode }) => {
-  const [state, { updatePath, addRelation }] = useNode(propNode);
+export const Editor = ({ node: propNode = defaultNode, relations = [] }) => {
+  const [state, { updatePath, addRelation }] = useNode(propNode, relations);
   const { saved, persists, node, pendingRelations } = state;
   const { text, title, checkbox, _id } = node;
 
@@ -54,6 +54,13 @@ export const Editor = ({ node: propNode = defaultNode }) => {
           [ {persists.began.length} / {persists.finished.length} / {persists.error.length} : {pendingRelations.length} ]
         </span>
       </div>
+
+      {_id && (
+        <div style={{ paddingLeft: '2em' }}>
+          <h2>Reply</h2>
+          <Editor relations={[['reply', _id]]} />
+        </div>
+      )}
     </div>
   );
 };

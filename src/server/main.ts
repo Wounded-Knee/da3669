@@ -1,16 +1,10 @@
 import transport from './transport';
 import mongoose from 'mongoose';
 import HTTPServer from './lib/classes/HttpServer';
-import { HTTP_SERVER_PORT } from './config';
+import { relationTypes, HTTP_SERVER_PORT } from './config';
 import { defaultNodeType, getNodeTypeByNodeData } from './lib/nodeTypes';
 
 const { model: DefaultModel } = defaultNodeType;
-const relationTypes = [
-  {
-    name: 'reply',
-    path: 'replies',
-  },
-];
 
 const mongoDB = {
   url: process.env.MONGODB_URL,

@@ -11,8 +11,10 @@ export const call = (methodName, ...args) => {
       console.log(' Server Call: ', methodName, ...args, '\n', 'Server Response: ', rv, '\n');
       return rv;
     })
-    .catch((...err) => {
-      console.error(' Server Call: ', methodName, ...args, '\n', 'Server Error: ', ...err, '\n');
+    .catch((err) => {
+      const errorMessage = `${err.message}: ${err.data} [${err.code}]`;
+      console.error(' Server Call: ', methodName, ...args, '\n', 'Server Error: ', errorMessage, '\n');
+      return Promise.reject(errorMessage);
     });
 };
 
