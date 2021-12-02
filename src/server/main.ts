@@ -63,7 +63,7 @@ transport.register('relate', async ([type, node1id, node2id]) => {
 });
 
 transport.register('list', async () => {
-  return await DefaultModel.find({});
+  return await DefaultModel.find({}, '_id');
 });
 
 transport.register('getById', async (_id) => {
