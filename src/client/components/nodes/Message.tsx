@@ -1,6 +1,9 @@
-import React from 'react';
+/** @jsxFrag React.Fragment */
+/** @jsx jsx */
+import React, { useEffect } from 'react';
+import { css, jsx } from '@emotion/react';
 import { useNode } from '../../lib/useNode';
-import { Input } from '../Branded';
+import { Input, Link } from '../Branded';
 
 const nodeTypeName = 'Message';
 export const defaultNode = {
@@ -8,16 +11,32 @@ export const defaultNode = {
   kind: nodeTypeName,
 };
 
-const Message = ({ mode = 'view', node: propNode = defaultNode, relations = [] }) => {
+const Message = ({ mode = 'view', onCreate, node: propNode = defaultNode, relations = [] }) => {
   const [state, { updatePath, addRelation }] = useNode(propNode, relations);
-  const { node, loaded } = state;
-  const { text } = node;
+  const { node, loaded, persists } = state;
+  const { text, _id, upstreams } = node;
+
+  useEffect(() => {
+    if (persists.finished.length && onCreate) onCreate(state);
+  }, [persists.finished]);
 
   switch (mode) {
     case 'view':
+    case 'link':
       return (
         <>
-          <div>{loaded ? text : 'Loading...'}</div>
+          {/* Upstreams */}
+          {upstreams && upstreams.length && <Message mode='link' node={{ _id: upstreams[0]._id }} />}
+
+          {/* Content */}
+          <Link to={`/atmosphere/${_id}/`}>{loaded ? text : '...'} </Link>
+
+          {/* Reply Editor */}
+          {mode !== 'link' && (
+            <div title={mode}>
+              <Message mode='edit' relations={[['upstream', _id]]} onCreate={onCreate} />
+            </div>
+          )}
         </>
       );
     case 'edit':
@@ -29,7 +48,7 @@ const Message = ({ mode = 'view', node: propNode = defaultNode, relations = [] }
         </>
       );
     default:
-      return <p>Unknown mode ${mode}</p>;
+      return <p>Unknown mode {mode}</p>;
   }
 };
 

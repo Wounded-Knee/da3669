@@ -45,6 +45,10 @@ export const routes = [
     component: Atmosphere,
   },
   {
+    path: '/atmosphere/:nodeId',
+    component: Atmosphere,
+  },
+  {
     route: '/office',
     path: '/office',
     icon: OfficeIcon,
