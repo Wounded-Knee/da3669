@@ -1,6 +1,6 @@
 /** @jsx jsx */
 import { css, jsx } from '@emotion/react';
-import { AppBar, Toolbar, Typography, Grid, Button } from '@material-ui/core';
+import { AppBar, Toolbar, Typography, Grid, Button } from '@mui/material';
 import StorageIcon from '@mui/icons-material/Storage';
 import InfoIcon from '@mui/icons-material/Info';
 import React from 'react';

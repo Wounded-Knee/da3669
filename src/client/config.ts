@@ -11,7 +11,7 @@ import NodeManager from './wireframes/docstore/NodeManager';
 import { Chat } from './wireframes/chat/Chat';
 import { Office } from './components/Office';
 import AtmosphereIcon from '@mui/icons-material/Language';
-import OfficeIcon from '@mui/icons-material/HomeWork';
+import JudgementIcon from '@mui/icons-material/Gavel';
 import Atmosphere from './components/Atmosphere';
 import SavingsIcon from '@mui/icons-material/Savings';
 import { Bank } from './components/Banksy';
@@ -49,10 +49,10 @@ export const routes = [
     component: Atmosphere,
   },
   {
-    route: '/office',
-    path: '/office',
-    icon: OfficeIcon,
-    text: 'Office',
+    route: '/judgement',
+    path: '/judgement',
+    icon: JudgementIcon,
+    text: 'Judgement',
     component: Office,
   },
   {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { List, ListItemText, ListItem, ListItemIcon } from '@material-ui/core';
+import { List, ListItemText, ListItem, ListItemIcon } from '@mui/material';
 import StorageIcon from '@mui/icons-material/Storage';
 import { JSON } from './JSON';
 import { Drawer } from './Drawer';

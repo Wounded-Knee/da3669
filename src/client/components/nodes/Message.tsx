@@ -26,7 +26,7 @@ const Message = ({ mode = 'view', onCreate, node: propNode = defaultNode, relati
       return (
         <>
           {/* Upstreams */}
-          {upstreams && upstreams.length && <Message mode='link' node={{ _id: upstreams[0]._id }} />}
+          {upstreams && upstreams.length ? <Message mode='link' node={{ _id: upstreams[0]._id }} /> : ''}
 
           {/* Content */}
           <Link to={`/atmosphere/${_id}/`}>{loaded ? text : '...'} </Link>
