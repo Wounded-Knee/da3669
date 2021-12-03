@@ -68,7 +68,14 @@ transport.register('list', async () => {
 
 transport.register('getById', async (_id) => {
   const populatePaths = relationTypes.map(({ path }) => path).join(' ');
-  return await DefaultModel.findById(_id).populate(populatePaths);
+  const gotById = await DefaultModel.findById(_id).populate(populatePaths);
+  const { model } = getNodeTypeByNodeData(gotById);
+  const downStreams = await model.find({ upstreams: _id });
+
+  return {
+    ...gotById._doc,
+    downstreams: downStreams,
+  };
 });
 
 Promise.all([mongoosePromise, httpServer.initialize()]).then(() => {

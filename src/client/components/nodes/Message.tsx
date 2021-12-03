@@ -14,7 +14,7 @@ export const defaultNode = {
 const Message = ({ mode = 'view', onCreate, node: propNode = defaultNode, relations = [] }) => {
   const [state, { updatePath, addRelation }] = useNode(propNode, relations);
   const { node, loaded, persists } = state;
-  const { text, _id, upstreams } = node;
+  const { text, _id, upstreams, downstreams } = node;
 
   useEffect(() => {
     if (persists.finished.length && onCreate) onCreate(state);
@@ -37,6 +37,13 @@ const Message = ({ mode = 'view', onCreate, node: propNode = defaultNode, relati
               <Message mode='edit' relations={[['upstream', _id]]} onCreate={onCreate} />
             </div>
           )}
+
+          {/* Downstreams */}
+          {mode === 'view' && downstreams && downstreams.length
+            ? downstreams.map((downstream) => {
+                return <Message mode='link' node={downstream} />;
+              })
+            : ''}
         </>
       );
     case 'edit':
