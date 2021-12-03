@@ -20,7 +20,7 @@ export const Header: React.FunctionComponent = () => {
       text-align: right;
     `,
     toolbar: css`
-      min-height: 50px;
+      min-height: 50px !important;
     `,
   };
   return (

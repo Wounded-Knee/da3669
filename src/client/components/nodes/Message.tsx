@@ -34,7 +34,7 @@ const Message = ({ mode = 'view', onCreate, node: propNode = defaultNode, relati
           {/* Reply Editor */}
           {mode !== 'link' && (
             <div title={mode}>
-              <Message mode='edit' relations={[['upstream', _id]]} onCreate={onCreate} />
+              <Message mode='edit' relations={[['stream', _id]]} onCreate={onCreate} />
             </div>
           )}
 
