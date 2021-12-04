@@ -1,9 +1,9 @@
 /** @jsx jsx */
+import React from 'react';
 import { css, jsx } from '@emotion/react';
 import { AppBar, Toolbar, Typography, Grid, Button } from '@mui/material';
 import StorageIcon from '@mui/icons-material/Storage';
 import InfoIcon from '@mui/icons-material/Info';
-import React from 'react';
 import { headerText } from '../config';
 import { useRainbow } from '../lib/useRainbow';
 
@@ -13,8 +13,10 @@ export const Header: React.FunctionComponent = () => {
       background-color: ${useRainbow()};
       text-shadow: black 1px 1px 3px;
       font-weight: bold;
-      letter-spacing: 1em;
       z-index: 10000;
+    `,
+    title: css`
+      letter-spacing: 0.5em;
     `,
     dataButton: css`
       text-align: right;
@@ -28,7 +30,7 @@ export const Header: React.FunctionComponent = () => {
       <Toolbar css={styles.toolbar}>
         <Grid container alignItems='center'>
           <Grid item xs={10}>
-            <Typography variant='h5' noWrap>
+            <Typography variant='h5' noWrap css={styles.title}>
               {headerText}
             </Typography>
           </Grid>

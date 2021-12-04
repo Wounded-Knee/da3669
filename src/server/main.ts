@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import HTTPServer from './lib/classes/HttpServer';
 import { relationTypes, HTTP_SERVER_PORT } from './config';
 import { getNonVirtualPaths, getNonVirtualPathsByName } from '../shared/relations/all';
-import { getNodeTypeByName, defaultNodeType } from '../shared/nodes/all';
+import { getNodeTypeByName, defaultNodeType } from './lib/nodes/all';
 
 const { model: DefaultModel } = defaultNodeType;
 
@@ -72,9 +72,13 @@ transport.register('list', async () => {
 });
 
 transport.register('getById', async (_id) => {
-  const populatePaths = getNonVirtualPaths().join(' ');
+  const populatePaths = getNonVirtualPaths();
+  console.log('populatePaths:', populatePaths);
+  console.log('DefaultModel', DefaultModel);
   const gotById = await DefaultModel.findById(_id).populate(populatePaths);
+  console.log('gotById', gotById);
   const { model } = getNodeTypeByName(gotById.kind);
+  console.log('model', model);
   const downStreams = await model.find({ upstreams: _id });
 
   return {
