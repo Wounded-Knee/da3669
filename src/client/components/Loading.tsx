@@ -34,11 +34,11 @@ export const Loading: React.FunctionComponent = () => {
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
 
-          -webkit-animation: AnimationName 1.5s linear infinite;
-          -moz-animation: AnimationName 1.5s linear infinite;
-          animation: AnimationName 1.5s linear infinite;
+          -webkit-animation: RainbowFuckery 1.5s linear infinite;
+          -moz-animation: RainbowFuckery 1.5s linear infinite;
+          animation: RainbowFuckery 1.5s linear infinite;
 
-          @keyframes AnimationName {
+          @keyframes RainbowFuckery {
             0% {
               background-position: 0% 0%;
             }
@@ -55,6 +55,22 @@ export const Loading: React.FunctionComponent = () => {
         css={css`
           font-size: 2em;
           color: #fff;
+
+          -webkit-animation: pulsate 0.5s linear;
+          -webkit-animation-iteration-count: infinite;
+          opacity: 0.5;
+
+          @-webkit-keyframes pulsate {
+            0% {
+              opacity: 0.25;
+            }
+            50% {
+              opacity: 1;
+            }
+            100% {
+              opacity: 0.25;
+            }
+          }
         `}
       >
         Loading...
