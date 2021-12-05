@@ -13,8 +13,6 @@ import { actionTypes } from './lib/redux/reducer';
 
 // MUI
 import { CssBaseline } from '@mui/material';
-import { makeStyles } from '@mui/styles';
-import { createStyles, Theme } from '@mui/material/styles';
 
 // Components
 import { Header } from './components/Header';
@@ -67,6 +65,8 @@ export const App: FC = connect(
     console.log('WebSocket Connected.');
     setWebSocketConnected();
   });
+
+  window.transport = transport;
 
   return (
     <BrowserRouter>
