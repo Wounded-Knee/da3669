@@ -26,7 +26,7 @@ export const Atmosphere = () => {
     <>
       <h1>Atmosphere</h1>
       {nodeId ? (
-        <Message onCreate={onCreate} key={nodeId} mode='view' node={{ _id: nodeId }} />
+        <Message onCreate={onCreate} key={nodeId} mode='view' id={nodeId} />
       ) : (
         <Message mode='edit' onCreate={onCreate} />
       )}

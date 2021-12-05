@@ -89,4 +89,6 @@ export const initialState = {
   },
 };
 
+export const clownTitle = true;
+
 export { appName, headerText, WS_SERVER_PORT, WS_SERVER_HOST };

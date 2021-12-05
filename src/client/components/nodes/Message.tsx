@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 import { css, jsx } from '@emotion/react';
 import { useNode } from '../../lib/useNode';
 import { Input, Link } from '../Branded';
+import { useDocTitle } from '../../lib/useDocTitle';
 
 const nodeTypeName = 'Message';
 const defaultNode = {
@@ -12,10 +13,14 @@ const defaultNode = {
   kind: nodeTypeName,
 };
 
-const Message = ({ mode = 'view', onCreate = (state) => {}, node: propNode = defaultNode, relations = [] }) => {
-  const [state, { updatePath, addRelation }] = useNode(propNode, relations);
+const Message = ({ mode = 'view', onCreate = (state) => {}, id, relations = [] }) => {
+  const [state, { updatePath, addRelation }] = useNode({ id, kind: nodeTypeName, relations });
   const { node, loaded, persists } = state;
-  const { text, _id } = node;
+  const { text, _id } = node || {};
+
+  if (mode === 'view') {
+    useDocTitle(`${text} : Atmosphere`);
+  }
 
   const Relations = ({ type }) => {
     let relations = [];
@@ -29,10 +34,10 @@ const Message = ({ mode = 'view', onCreate = (state) => {}, node: propNode = def
     }
     return (
       <>
-        {relations.map((relation, index) => {
+        {relations.map(({ _id }, index) => {
           return (
             <div key={index}>
-              <Message mode={type} node={relation} />
+              <Message mode={type} id={_id} />
             </div>
           );
         })}
@@ -51,7 +56,7 @@ const Message = ({ mode = 'view', onCreate = (state) => {}, node: propNode = def
   const LinkedSelf = () => {
     return (
       <Link title={_id} to={`/atmosphere/${_id}/`}>
-        {loaded ? text : '...'}{' '}
+        {text}{' '}
       </Link>
     );
   };
