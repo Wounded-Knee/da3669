@@ -4,7 +4,7 @@ import { css, jsx } from '@emotion/react';
 import { AppBar, Toolbar, Typography, Grid, Button } from '@mui/material';
 import StorageIcon from '@mui/icons-material/Storage';
 import InfoIcon from '@mui/icons-material/Info';
-import { headerText } from '../config';
+import { headerText, clownTitle } from '../config';
 import { useRainbow } from '../lib/useRainbow';
 
 const headerTextArray = headerText.split('');
@@ -34,23 +34,24 @@ export const Header: React.FunctionComponent = () => {
         <Grid container alignItems='center'>
           <Grid item xs={10}>
             <Typography variant='h5' noWrap css={styles.title}>
-              {/*headerTextArray.map((char, index) => {
-                const len = headerTextArray.length;
-                const range = 100;
-                const perChar = range / len;
-                const firstChar = -range * 0.5;
-                return (
-                  <span
-                    key={index}
-                    css={css`
-                      color: ${useRainbow(100, 70, firstChar + perChar * index)};
-                    `}
-                  >
-                    {char}
-                  </span>
-                );
-              })*/}
-              {headerText}
+              {clownTitle
+                ? headerTextArray.map((char, index) => {
+                    const len = headerTextArray.length;
+                    const range = 200;
+                    const perChar = range / len;
+                    const firstChar = -range * 0.5;
+                    return (
+                      <span
+                        key={index}
+                        css={css`
+                          color: ${useRainbow(100, 70, firstChar + perChar * index)};
+                        `}
+                      >
+                        {char}
+                      </span>
+                    );
+                  })
+                : headerText}
             </Typography>
           </Grid>
           <Grid item xs={1}>

@@ -40,12 +40,19 @@ const clientReducer = (state, { type, payload }) => {
   switch (type) {
     case actionTypes.NODE_REPLACE:
       if (payload === undefined) throw new Error(`${type}: Payload is undefined`);
-      const newNodes = payload instanceof Array ? payload : [payload];
-      const nodeIds = newNodes.filter(({ _id }) => _id !== undefined).map(({ _id }) => _id);
-      return {
-        ...state,
-        nodes: [...state.nodes.filter(({ _id }) => nodeIds.indexOf(_id) === -1), ...newNodes],
-      };
+      const newNodes = (payload instanceof Array ? payload : [payload]).filter((newNode) => {
+        const oldNode = state.nodes.find(({ _id }) => _id === newNode._id);
+        return oldNode === undefined || newNode.updatedAt !== oldNode.updatedAt || oldNode.updatedAt === undefined;
+      });
+      if (newNodes.length) {
+        const nodeIds = newNodes.filter(({ _id }) => _id !== undefined).map(({ _id }) => _id);
+        return {
+          ...state,
+          nodes: [...state.nodes.filter(({ _id }) => nodeIds.indexOf(_id) === -1), ...newNodes],
+        };
+      } else {
+        return state;
+      }
 
     case actionTypes.DOCSTORE_UPDATE:
 

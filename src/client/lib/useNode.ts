@@ -4,6 +4,7 @@ import { useOnMount } from './useOnMount';
 import { useDebounce } from './useDebounce';
 import { call } from './transport';
 import { getNodeTypeByName } from '../../shared/nodes/all';
+import { store } from './redux/store';
 
 const reducer = (state, action) => {
   try {
@@ -58,7 +59,6 @@ const reducer = (state, action) => {
         };
 
       case 'BEGAN_LOAD':
-        console.log(type);
         return {
           ...state,
           loaded: false,
@@ -70,7 +70,6 @@ const reducer = (state, action) => {
         };
 
       case 'FINISHED_LOAD':
-        console.log(type);
         return {
           ...state,
           loaded: true,
@@ -178,6 +177,10 @@ export function useNode(nodeSeed, relations = []) {
                 : node,
             )
             .then((node) => {
+              setTimeout(() => {
+                // Why does this terminate flow? Ugly fix.
+                store.dispatch({ type: 'NODE_REPLACE', payload: node });
+              }, 1);
               dispatch({ type: 'FINISHED_PERSIST', payload: node });
             })
             .catch(() => {
@@ -195,6 +198,10 @@ export function useNode(nodeSeed, relations = []) {
       dispatch({ type: 'BEGAN_LOAD' });
       getNodeById(_id)
         .then((node) => {
+          setTimeout(() => {
+            // Why does this terminate flow? Ugly fix.
+            store.dispatch({ type: 'NODE_REPLACE', payload: node });
+          }, 1);
           dispatch({ type: 'FINISHED_LOAD', payload: node });
         })
         .catch(() => {
