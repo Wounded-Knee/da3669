@@ -1,9 +1,15 @@
+import mongoose from 'mongoose';
 import express from 'express';
 import path from 'path';
 import { pagesRouter } from '../../routes/pages-router';
 import { staticsRouter } from '../../routes/statics-router';
 import Kernel from '../../../shared/lib/classes/Kernel';
 import { App as uWS } from 'uWebSockets.js';
+import { relationTypes, HTTP_SERVER_PORT, WS_SERVER_PORT } from '../../config';
+import { getNonVirtualPaths, getNonVirtualPathsByName } from '../../../shared/relations/all';
+import { getNodeTypeByName, defaultNodeType } from '../../../shared/nodes/all';
+
+const { model: DefaultModel } = defaultNodeType;
 
 //@ts-ignore
 const decoder = new TextDecoder('utf-8');
@@ -14,6 +20,8 @@ const MESSAGE_ENUM = Object.freeze({
   CLIENT_CONNECTED: 'CLIENT_CONNECTED',
   CLIENT_DISCONNECTED: 'CLIENT_DISCONNECTED',
   CLIENT_MESSAGE: 'CLIENT_MESSAGE',
+
+  GETNODEBYID: 'GETNODEBYID',
 });
 
 class D3Server extends Kernel {
@@ -58,10 +66,33 @@ class D3Server extends Kernel {
                 this.log('How about we FUCK ON???');
               },
 
-              message: (ws, message, isBinary) => {
+              message: async (ws, message, isBinary) => {
                 // called when a client sends a message
                 const { type, payload } = JSON.parse(decoder.decode(message));
                 this.log('Message for you, sir: ', type, payload);
+                switch (type) {
+                  case MESSAGE_ENUM.GETNODEBYID:
+                    const _id = payload;
+                    const populatePaths = getNonVirtualPaths();
+                    console.log('populatePaths:', populatePaths);
+                    console.log('DefaultModel', DefaultModel);
+                    const gotById = await DefaultModel.findById(_id).populate(populatePaths);
+                    console.log('gotById', gotById);
+                    const { model } = getNodeTypeByName(gotById.kind);
+                    console.log('model', model);
+                    const downStreams = await model.find({ upstreams: _id });
+
+                    ws.send(
+                      JSON.stringify({
+                        type: MESSAGE_ENUM.GETNODEBYID,
+                        payload: {
+                          ...gotById._doc,
+                          downstreams: downStreams,
+                        },
+                      }),
+                    );
+                    break;
+                }
               },
 
               close: (ws, code, message) => {

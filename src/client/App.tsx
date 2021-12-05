@@ -71,27 +71,23 @@ export const App: FC = connect(
 
   return (
     <BrowserRouter>
-      {webSocketConnected ? (
-        <div css={styles.root}>
-          <CssBaseline />
-          <Header />
-          <SideMenu />
-          <DataView />
-          <InfoView />
-          <main css={styles.main}>
-            <div css={styles.toolbar} />
-            <div css={styles.vignette}>
-              <Routes>
-                {routes.map(({ path, component: Component }, index) => (
-                  <Route key={index} path={path} element={<Component />} />
-                ))}
-              </Routes>
-            </div>
-          </main>
-        </div>
-      ) : (
-        <Loading />
-      )}
+      <div css={styles.root}>
+        <CssBaseline />
+        <Header />
+        <SideMenu />
+        <DataView />
+        <InfoView />
+        <main css={styles.main}>
+          <div css={styles.toolbar} />
+          <div css={styles.vignette}>
+            <Routes>
+              {routes.map(({ path, component: Component }, index) => (
+                <Route key={index} path={path} element={<Component />} />
+              ))}
+            </Routes>
+          </div>
+        </main>
+      </div>
     </BrowserRouter>
   );
 });

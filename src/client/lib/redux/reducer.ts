@@ -35,8 +35,8 @@ export const actionTypes = {
   NODE_REPLACE: 'NODE_REPLACE',
 };
 
-const clientReducer = (state, { type, payload }) => {
-  const { entities } = state;
+const clientReducer = (state = initialState, { type, payload }) => {
+  console.log(type, payload);
   switch (type) {
     case actionTypes.NODE_REPLACE:
       if (payload === undefined) throw new Error(`${type}: Payload is undefined`);
@@ -46,11 +46,13 @@ const clientReducer = (state, { type, payload }) => {
       });
       if (newNodes.length) {
         const nodeIds = newNodes.filter(({ _id }) => _id !== undefined).map(({ _id }) => _id);
+        console.log('Inserting ', nodeIds);
         return {
           ...state,
           nodes: [...state.nodes.filter(({ _id }) => nodeIds.indexOf(_id) === -1), ...newNodes],
         };
       } else {
+        console.log('No new nodes remain, so, noop');
         return state;
       }
 
@@ -102,6 +104,7 @@ const clientReducer = (state, { type, payload }) => {
         },
       };
   }
+  console.error('Unhandled action type: ', type);
   return state;
 };
 
