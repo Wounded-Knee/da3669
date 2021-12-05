@@ -1,6 +1,6 @@
 import transport from './transport';
 import mongoose from 'mongoose';
-import HTTPServer from './lib/classes/HttpServer';
+import Server from './lib/classes/D3Server';
 import { relationTypes, HTTP_SERVER_PORT } from './config';
 import { getNonVirtualPaths, getNonVirtualPathsByName } from '../shared/relations/all';
 import { getNodeTypeByName, defaultNodeType } from '../shared/nodes/all';
@@ -25,7 +25,7 @@ const mongoosePromise = mongoose
     }
   });
 
-const httpServer = new HTTPServer({
+const server = new Server({
   port: HTTP_SERVER_PORT,
 });
 
@@ -87,6 +87,6 @@ transport.register('getById', async (_id) => {
   };
 });
 
-Promise.all([mongoosePromise, httpServer.initialize()]).then(() => {
+Promise.all([mongoosePromise, server.initialize()]).then(() => {
   console.log('Ready');
 });
