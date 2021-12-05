@@ -17,7 +17,7 @@ const relationTypes = ['Reply', 'Stream'];
 const nodeTypes = ['Base', 'Document', 'User', 'Message'];
 
 const appName = 'D³';
-const headerText = `merge℠`;
+const headerText = `${appName}℠`;
 
 export {
   relationTypes,
