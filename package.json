@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "engines": {
-    "node": "15.4.0",
+    "node": "13.14.0",
     "npm": "7.9.0"
   },
   "scripts": {
@@ -13,6 +13,7 @@
     "lint": "eslint 'src/**/*.{ts,tsx}'",
     "start": "node index.js",
     "dbtest": "nodemon ./dbtest.js",
+    "uwebsockets:clone": "git clone --depth 1 --recursive --single-branch --branch \"v20.8.0\" https://github.com/uNetworking/uWebSockets.js.git ./src/server/lib/x",
     "start:prod": "cross-env NODE_ENV=production node index.js",
     "type-check-client": "tsc -p ./src/client/tsconfig.json",
     "build-client": "cross-env NODE_ENV=production TS_NODE_PROJECT=\"tsconfig-for-webpack-config.json\" webpack --mode production",
@@ -78,11 +79,10 @@
     "react-router-dom": "^6.0.2",
     "redux-devtools-extension": "^2.13.9",
     "redux-thunk": "^2.4.0",
-    "rpc-websockets": "^7.4.15",
     "searchable-react-json-view": "^0.0.8",
     "styled-components": "^5.2.1",
     "tslib": "^2.1.0",
-    "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.8.0"
+    "uWebSockets.js": "github:uNetworking/uWebSockets.js#v17.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.10",
