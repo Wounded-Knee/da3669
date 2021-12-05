@@ -1,7 +1,9 @@
 import { useReducer, useCallback, useEffect } from 'react';
+import mongoose from 'mongoose';
 import { useOnMount } from './useOnMount';
 import { useDebounce } from './useDebounce';
 import { call } from './transport';
+import { getNodeTypeByName } from '../../shared/nodes/all';
 
 const reducer = (state, action) => {
   try {
@@ -156,27 +158,35 @@ export function useNode(nodeSeed, relations = []) {
 
   useEffect(() => {
     if (!saved) {
-      dispatch({ type: 'BEGAN_PERSIST', payload: undefined });
-      persist(node)
-        .then((node) =>
-          pendingRelations.length
-            ? new Promise((resolve, reject) => {
-                console.log(
-                  'Dealing with ' + pendingRelations.length + ' new relationships and here they are ',
-                  pendingRelations,
-                );
-                Promise.all(pendingRelations.map(({ type, nodeId }) => relate(type, node._id, nodeId))).then(() =>
-                  resolve(node),
-                );
-              })
-            : node,
-        )
-        .then((node) => {
-          dispatch({ type: 'FINISHED_PERSIST', payload: node });
-        })
-        .catch(() => {
-          dispatch({ type: 'ERROR_PERSIST', payload: undefined });
-        });
+      const { schema } = getNodeTypeByName(nodeSeed.kind);
+      const validatorNode = new mongoose.Document(node, schema);
+      validatorNode.validate((error) => {
+        if (!error) {
+          dispatch({ type: 'BEGAN_PERSIST', payload: undefined });
+          persist(node)
+            .then((node) =>
+              pendingRelations.length
+                ? new Promise((resolve, reject) => {
+                    console.log(
+                      'Dealing with ' + pendingRelations.length + ' new relationships and here they are ',
+                      pendingRelations,
+                    );
+                    Promise.all(pendingRelations.map(({ type, nodeId }) => relate(type, node._id, nodeId))).then(() =>
+                      resolve(node),
+                    );
+                  })
+                : node,
+            )
+            .then((node) => {
+              dispatch({ type: 'FINISHED_PERSIST', payload: node });
+            })
+            .catch(() => {
+              dispatch({ type: 'ERROR_PERSIST', payload: undefined });
+            });
+        } else {
+          console.error(error);
+        }
+      });
     }
   }, [hash]);
 

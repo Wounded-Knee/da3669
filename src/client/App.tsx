@@ -49,6 +49,7 @@ const styles = {
     height: 100vh;
   `,
   vignette: css`
+    background: #222;
     box-shadow: inset 0 0 100px black;
     padding: 3em;
     min-height: 100vh;

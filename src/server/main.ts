@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import HTTPServer from './lib/classes/HttpServer';
 import { relationTypes, HTTP_SERVER_PORT } from './config';
 import { getNonVirtualPaths, getNonVirtualPathsByName } from '../shared/relations/all';
-import { getNodeTypeByName, defaultNodeType } from './lib/nodes/all';
+import { getNodeTypeByName, defaultNodeType } from '../shared/nodes/all';
 
 const { model: DefaultModel } = defaultNodeType;
 
