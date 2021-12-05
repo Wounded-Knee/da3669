@@ -8,6 +8,7 @@ import { persist, nodeList, getNodeById } from './actions';
 import { Link } from 'react-router-dom';
 import { Button } from '../../components/Branded';
 import { useParams, Routes, Route } from 'react-router';
+import AtmosphereIcon from '@mui/icons-material/Language';
 
 const mapStateToProps = (state) => ({
   nodes: state.nodes,
@@ -32,22 +33,20 @@ export const NodeManager = ({ nodeId: propNodeId, nodes, fetchNodeList, getNodeB
   }, [nodeId]);
 
   return (
-    <div
-      css={css`
-        padding: 3em;
-      `}
-    >
+    <>
       <h1>Node Manager</h1>
       <Editor />
       {nodes.map((node, index) => (
         <div key={index}>
-          <Link to={`/nodemanager/${node._id}`}>
-            <Button>{node.title || node._id}</Button>
+          <Link to={`/atmosphere/${node._id}`}>
+            <Button>
+              <AtmosphereIcon /> {node.title || node.text || node._id}
+            </Button>
           </Link>
           <Editor key={node._id} node={node} />
         </div>
       ))}
-    </div>
+    </>
   );
 };
 

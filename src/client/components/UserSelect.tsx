@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FormControl, InputLabel, Select, MenuItem } from '@material-ui/core';
+import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { connect } from 'react-redux';
 import { entityTypes } from '../../shared/lib/classes/entities';
 

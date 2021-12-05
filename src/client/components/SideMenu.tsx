@@ -1,6 +1,8 @@
+/** @jsxFrag React.Fragment */
+/** @jsx jsx */
 import React from 'react';
-import { Divider, Drawer, List, ListItem, ListItemIcon, ListItemText, makeStyles } from '@material-ui/core';
-import { createStyles, Theme } from '@material-ui/core/styles';
+import { css, jsx } from '@emotion/react';
+import { Divider, Drawer, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
 import { NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { routes } from '../config';
@@ -14,40 +16,35 @@ class NavLinkMui extends React.Component<any> {
 
 const drawerWidth = 240;
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    drawer: {
-      width: drawerWidth,
-      flexShrink: 0,
-    },
-    drawerPaper: {
-      width: drawerWidth,
-    },
-    toolbar: theme.mixins.toolbar,
-  }),
-);
-
 const mapStateToProps = (state) => ({
   options: state.entities.filter(({ type }) => type !== undefined),
 });
 
 export const SideMenu: React.FunctionComponent = connect(mapStateToProps)(({ options }) => {
-  const classes = useStyles({});
+  const styles = {
+    toolbar: css`
+      height: 50px;
+    `,
+  };
 
   return (
     <Drawer
-      className={classes.drawer}
-      variant='permanent'
-      classes={{
-        paper: classes.drawerPaper,
+      sx={{
+        width: drawerWidth,
+        flexShrink: 0,
+        '& .MuiDrawer-paper': {
+          width: drawerWidth,
+          boxSizing: 'border-box',
+        },
       }}
+      variant='permanent'
     >
-      <div className={classes.toolbar} />
+      <div css={styles.toolbar} />
       <List>
         {routes.map(
           ({ route, icon: Icon, text }, index) =>
             Icon && (
-              <ListItem key={index} button component={NavLinkMui} to={route}>
+              <ListItem key={index} button component={NavLink} to={route}>
                 <ListItemIcon>
                   <Icon />
                 </ListItemIcon>

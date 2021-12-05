@@ -3,11 +3,11 @@ import ReactDOM from 'react-dom';
 import { App } from './App';
 import { Provider } from 'react-redux';
 import { store } from './lib/redux/store';
-import { createTheme, ThemeProvider } from '@material-ui/core/styles';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const theme = createTheme({
   palette: {
-    type: 'dark',
+    mode: 'dark',
   },
 });
 

@@ -1,5 +1,7 @@
+import { Schema } from 'mongoose';
+
 // HTTP Server
-const HTTP_SERVER_PORT = 8080;
+const HTTP_SERVER_PORT = 3000;
 
 // WS Server
 const WS_SERVER_PORT = 8081;
@@ -10,29 +12,20 @@ const initialState = {
   entities: [],
 };
 
-// Node Types
-const nodeTypes = [
-  {
-    name: 'Node',
-    default: true,
-    schemaPaths: {},
-  },
-  {
-    name: 'Document',
-    schemaPaths: {
-      checkbox: Boolean,
-      title: { type: String, required: true },
-      text: { type: String, required: true },
-    },
-  },
-  {
-    name: 'User',
-    schemaPaths: {
-      name: { type: String, required: true },
-    },
-  },
-];
+//Types
+const relationTypes = ['Reply', 'Stream'];
+const nodeTypes = ['Base', 'Document', 'User', 'Message'];
 
 const appName = 'D³';
+const headerText = `merge℠`;
 
-export { nodeTypes, appName, initialState, HTTP_SERVER_PORT, WS_SERVER_HOST, WS_SERVER_PORT };
+export {
+  relationTypes,
+  nodeTypes,
+  headerText,
+  appName,
+  initialState,
+  HTTP_SERVER_PORT,
+  WS_SERVER_HOST,
+  WS_SERVER_PORT,
+};

@@ -1,7 +1,9 @@
 import { useReducer, useCallback, useEffect } from 'react';
+import mongoose from 'mongoose';
+import { useOnMount } from './useOnMount';
 import { useDebounce } from './useDebounce';
 import { call } from './transport';
-import { resolve } from 'path';
+import { getNodeTypeByName } from '../../shared/nodes/all';
 
 const reducer = (state, action) => {
   try {
@@ -97,6 +99,12 @@ const reducer = (state, action) => {
           saved: false,
           pendingRelations: [...state.pendingRelations, payload],
         };
+
+      case 'QUEUED_RELATION':
+        return {
+          ...state,
+          pendingRelations: [...state.pendingRelations, payload],
+        };
     }
   } catch (e) {
     console.error(`Reducer Error ${e.message} on action `, action);
@@ -126,7 +134,7 @@ const relate = async (type, node1id, node2id) => await call('relate', type, node
 const persist = async (node) => await call('persist', node);
 const getNodeById = async (nodeId) => await call('getById', nodeId);
 
-export function useNode(nodeSeed) {
+export function useNode(nodeSeed, relations = []) {
   const [state, dispatch] = useReducer(reducer, { ...defaultState, node: nodeSeed });
   const { node, saved, loaded, loading, pendingRelations } = state;
   const { _id } = node;
@@ -144,29 +152,41 @@ export function useNode(nodeSeed) {
     dispatch({ type: 'ADDED_RELATION', payload: { type, nodeId } });
   };
 
+  useOnMount(() => {
+    relations.map(([type, nodeId]) => dispatch({ type: 'QUEUED_RELATION', payload: { type, nodeId } }));
+  });
+
   useEffect(() => {
     if (!saved) {
-      dispatch({ type: 'BEGAN_PERSIST', payload: undefined });
-      persist(node)
-        .then((node) =>
-          pendingRelations.length
-            ? new Promise((resolve, reject) => {
-                console.log(
-                  'Dealing with ' + pendingRelations.length + ' new relationships and here they are ',
-                  pendingRelations,
-                );
-                Promise.all(pendingRelations.map(({ type, nodeId }) => relate(type, _id, nodeId))).then(() =>
-                  resolve(node),
-                );
-              })
-            : node,
-        )
-        .then((node) => {
-          dispatch({ type: 'FINISHED_PERSIST', payload: node });
-        })
-        .catch(() => {
-          dispatch({ type: 'ERROR_PERSIST', payload: undefined });
-        });
+      const { schema } = getNodeTypeByName(nodeSeed.kind);
+      const validatorNode = new mongoose.Document(node, schema);
+      validatorNode.validate((error) => {
+        if (!error) {
+          dispatch({ type: 'BEGAN_PERSIST', payload: undefined });
+          persist(node)
+            .then((node) =>
+              pendingRelations.length
+                ? new Promise((resolve, reject) => {
+                    console.log(
+                      'Dealing with ' + pendingRelations.length + ' new relationships and here they are ',
+                      pendingRelations,
+                    );
+                    Promise.all(pendingRelations.map(({ type, nodeId }) => relate(type, node._id, nodeId))).then(() =>
+                      resolve(node),
+                    );
+                  })
+                : node,
+            )
+            .then((node) => {
+              dispatch({ type: 'FINISHED_PERSIST', payload: node });
+            })
+            .catch(() => {
+              dispatch({ type: 'ERROR_PERSIST', payload: undefined });
+            });
+        } else {
+          console.error(error);
+        }
+      });
     }
   }, [hash]);
 

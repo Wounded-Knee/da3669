@@ -1,6 +1,7 @@
 import React from 'react';
-import { Drawer as MuiDrawer } from '@material-ui/core';
-import { makeStyles, createStyles, Theme } from '@material-ui/core';
+import { Drawer as MuiDrawer } from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import { createStyles, Theme } from '@mui/material';
 import { connect } from 'react-redux';
 
 const drawerWidth = 350;
