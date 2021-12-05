@@ -1,4 +1,3 @@
-import transport from './transport';
 import mongoose from 'mongoose';
 import Server from './lib/classes/D3Server';
 import { relationTypes, HTTP_SERVER_PORT } from './config';
@@ -29,6 +28,7 @@ const server = new Server({
   port: HTTP_SERVER_PORT,
 });
 
+/*
 // JSON-RPC 2.0 WebSocket Server methods
 // ...this is the API
 // @ts-ignore
@@ -86,6 +86,7 @@ transport.register('getById', async (_id) => {
     downstreams: downStreams,
   };
 });
+*/
 
 Promise.all([mongoosePromise, server.initialize()]).then(() => {
   console.log('Ready');
