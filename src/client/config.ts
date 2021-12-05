@@ -23,6 +23,8 @@ import ExperimentIcon from '@mui/icons-material/Science';
 
 const localState = get(appName) || { ui: { drawers: {} } };
 
+export const WS_URL = `ws://${WS_SERVER_HOST}:${WS_SERVER_PORT}`;
+
 export const routes = [
   {
     route: '/panic',

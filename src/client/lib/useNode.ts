@@ -1,10 +1,11 @@
-import { useReducer, useEffect } from 'react';
 import mongoose from 'mongoose';
+import { useReducer, useEffect } from 'react';
 import { useOnMount } from './useOnMount';
 import { useDebounce } from './useDebounce';
-import { call } from './transport';
 import { getNodeTypeByName, defaultNodeType } from '../../shared/nodes/all';
 import { useDispatch, useSelector } from 'react-redux';
+import useWebSocket, { ReadyState } from 'react-use-websocket';
+import { WS_URL } from '../config';
 
 const reducer = (state, action) => {
   try {
@@ -135,6 +136,7 @@ const persist = async (node) => await call('persist', node);
 const getNodeById = async (nodeId) => await call('getById', nodeId);
 
 export function useNode({ id, kind: propKind = defaultNodeType.name, relations = [] }) {
+  const { sendJsonMessage, lastMessage, readyState } = useWebSocket(WS_URL);
   const reduxDispatch = useDispatch();
   const reduxNode = useSelector(({ nodes }) => nodes.find(({ _id }) => _id === id));
   const preNode = {

@@ -6,7 +6,6 @@ import { css, jsx } from '@emotion/react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom'; // Pages
 import { connect } from 'react-redux';
 import { routes, appName } from './config';
-import transport from './lib/transport';
 import { set } from './lib/LocalStorage';
 import { store } from './lib/redux/store';
 import { actionTypes } from './lib/redux/reducer';
@@ -61,12 +60,14 @@ export const App: FC = connect(
   mapStateToProps,
   mapDispatchToProps,
 )(({ setWebSocketConnected, webSocketConnected }) => {
+  /*
   transport.on('open', () => {
     console.log('WebSocket Connected.');
     setWebSocketConnected();
   });
 
   window.transport = transport;
+*/
 
   return (
     <BrowserRouter>
