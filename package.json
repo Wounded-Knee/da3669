@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "engines": {
-    "node": "13.14.0",
+    "node": "16.13.1",
     "npm": "7.9.0"
   },
   "scripts": {
@@ -82,7 +82,7 @@
     "searchable-react-json-view": "^0.0.8",
     "styled-components": "^5.2.1",
     "tslib": "^2.1.0",
-    "uWebSockets.js": "github:uNetworking/uWebSockets.js#v17.3.0"
+    "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.10",
