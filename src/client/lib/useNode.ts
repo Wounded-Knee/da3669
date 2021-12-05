@@ -1,14 +1,15 @@
-import { useReducer, useCallback, useEffect } from 'react';
+import { useReducer, useEffect } from 'react';
 import mongoose from 'mongoose';
 import { useOnMount } from './useOnMount';
 import { useDebounce } from './useDebounce';
 import { call } from './transport';
-import { getNodeTypeByName } from '../../shared/nodes/all';
-import { store } from './redux/store';
+import { getNodeTypeByName, defaultNodeType } from '../../shared/nodes/all';
+import { useDispatch, useSelector } from 'react-redux';
 
 const reducer = (state, action) => {
   try {
     const { type, payload } = action;
+    console.log(type, payload);
     switch (type) {
       case 'ERROR_PERSIST':
         return {
@@ -133,13 +134,21 @@ const relate = async (type, node1id, node2id) => await call('relate', type, node
 const persist = async (node) => await call('persist', node);
 const getNodeById = async (nodeId) => await call('getById', nodeId);
 
-export function useNode(nodeSeed, relations = []) {
-  const [state, dispatch] = useReducer(reducer, { ...defaultState, node: nodeSeed });
+export function useNode({ id, kind: propKind = defaultNodeType.name, relations = [] }) {
+  const reduxDispatch = useDispatch();
+  const reduxNode = useSelector(({ nodes }) => nodes.find(({ _id }) => _id === id));
+  const preNode = {
+    _id: id,
+    kind: propKind,
+    ...reduxNode,
+  };
+  const [state, dispatch] = useReducer(reducer, { ...defaultState, node: preNode });
   const { node, saved, loaded, loading, pendingRelations } = state;
-  const { _id } = node;
+  const kind = node ? node.kind || propKind : propKind;
+
   const hash = useDebounce(
-    Object.keys(nodeSeed).reduce((checksum, pathName) => `${checksum}/${pathName}=${node[pathName]}`, '') +
-      JSON.stringify(pendingRelations),
+    //Object.keys(nodeSeed).reduce((checksum, pathName) => `${checksum}/${pathName}=${node[pathName]}`, '') +
+    JSON.stringify(node) + JSON.stringify(pendingRelations),
     250,
   );
 
@@ -155,9 +164,29 @@ export function useNode(nodeSeed, relations = []) {
     relations.map(([type, nodeId]) => dispatch({ type: 'QUEUED_RELATION', payload: { type, nodeId } }));
   });
 
+  // Node load
+  useEffect(() => {
+    console.log('node load', id);
+    if (id && !loaded && !loading) {
+      dispatch({ type: 'BEGAN_LOAD' });
+      getNodeById(id)
+        .then((node) => {
+          setTimeout(() => {
+            // Why does this terminate flow? Ugly fix.
+            reduxDispatch({ type: 'NODE_REPLACE', payload: node });
+          }, 1);
+          dispatch({ type: 'FINISHED_LOAD', payload: node });
+        })
+        .catch(() => {
+          dispatch({ type: 'ERROR_LOAD' });
+        });
+    }
+  }, [id]);
+
+  // Node persist
   useEffect(() => {
     if (!saved) {
-      const { schema } = getNodeTypeByName(nodeSeed.kind);
+      const { schema } = getNodeTypeByName(kind);
       const validatorNode = new mongoose.Document(node, schema);
       validatorNode.validate((error) => {
         if (!error) {
@@ -179,7 +208,7 @@ export function useNode(nodeSeed, relations = []) {
             .then((node) => {
               setTimeout(() => {
                 // Why does this terminate flow? Ugly fix.
-                store.dispatch({ type: 'NODE_REPLACE', payload: node });
+                reduxDispatch({ type: 'NODE_REPLACE', payload: node });
               }, 1);
               dispatch({ type: 'FINISHED_PERSIST', payload: node });
             })
@@ -192,23 +221,6 @@ export function useNode(nodeSeed, relations = []) {
       });
     }
   }, [hash]);
-
-  useEffect(() => {
-    if (_id && !loaded && !loading) {
-      dispatch({ type: 'BEGAN_LOAD' });
-      getNodeById(_id)
-        .then((node) => {
-          setTimeout(() => {
-            // Why does this terminate flow? Ugly fix.
-            store.dispatch({ type: 'NODE_REPLACE', payload: node });
-          }, 1);
-          dispatch({ type: 'FINISHED_LOAD', payload: node });
-        })
-        .catch(() => {
-          dispatch({ type: 'ERROR_LOAD' });
-        });
-    }
-  }, [_id]);
 
   return [state, { updatePath, addRelation }];
 }

@@ -9,10 +9,10 @@ export const defaultNode = {
   kind: 'Document',
 };
 
-export const Editor = ({ node: propNode = defaultNode, relations = [] }) => {
-  const [state, { updatePath, addRelation }] = useNode(propNode, relations);
+export const Editor = ({ id, relations = [] }) => {
+  const [state, { updatePath, addRelation }] = useNode({ id, relations });
   const { saved, persists, node, pendingRelations } = state;
-  const { text, title, checkbox, _id } = node;
+  const { text, title, checkbox, _id } = node || {};
 
   return (
     <div style={{ width: '650px' }}>

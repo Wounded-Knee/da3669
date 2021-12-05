@@ -43,7 +43,7 @@ export const NodeManager = ({ nodeId: propNodeId, nodes, fetchNodeList, getNodeB
               <AtmosphereIcon /> {node.title || node.text || node._id}
             </Button>
           </Link>
-          <Editor key={node._id} node={node} />
+          <Editor key={node._id} id={node._id} />
         </div>
       ))}
     </>
