@@ -16,15 +16,15 @@ const reducer = (state, { type, payload }) => {
 
     case 'SET_HTML':
       const Wrapper = payload;
-      const Old = state.html;
-      const Inner = ({ children }) => (
+      const OldWrapper = state.html;
+      const NewHTML = ({ children }) => (
         <Wrapper>
-          <Old>{children}</Old>
+          <OldWrapper>{children}</OldWrapper>
         </Wrapper>
       );
       return {
         ...state,
-        html: ({ children }) => <Inner>{children}</Inner>,
+        html: ({ children }) => <NewHTML>{children}</NewHTML>,
       };
 
     case 'CHAT':
@@ -56,6 +56,10 @@ export const ContextStacker = ({ state }) => {
     case 12:
       var html = (props) => <div id='oopser'>{props.children}</div>;
       newState = reducer(newState, { type: 'SET_HTML', payload: html });
+      break;
+    case 23:
+      newState = reducer(newState, { type: 'SET_TITLE', payload: 'Reduced Context' });
+      break;
   }
   // @ts-ignore
   const { title, html: Html, text, recursionIndex, chatLog, recursionLimit } = newState;
