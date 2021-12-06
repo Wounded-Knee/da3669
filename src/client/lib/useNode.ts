@@ -7,9 +7,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { WS_URL } from '../config';
 
+const debugReducer = true;
 const reducer = (state, action) => {
   try {
     const { type, payload } = action;
+    if (debugReducer) console.log('useNode Reducer: ', type, payload);
     switch (type) {
       case 'ERROR_PERSIST':
         return {
@@ -131,19 +133,17 @@ const defaultState = {
 };
 
 export function useNode({ id, kind: propKind = defaultNodeType.name, relations = [] }) {
-  const { sendJsonMessage, lastMessage, readyState } = useWebSocket(WS_URL);
+  const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(WS_URL, { share: true });
   const reduxDispatch = useDispatch();
-  const reduxNode = useSelector(({ nodes }) => {
-    console.log('Current Redux Nodes: ', nodes);
-    return nodes.find(({ _id }) => _id === id);
+  const reduxNode = useSelector(({ nodes }) => nodes.find(({ _id }) => _id === id)) || {};
+  const [state, dispatch] = useReducer(reducer, {
+    ...defaultState,
+    node: {
+      _id: id,
+      kind: propKind,
+      ...reduxNode,
+    },
   });
-  console.log('ReduxNode ', id, reduxNode);
-  const preNode = {
-    _id: id,
-    kind: propKind,
-    ...reduxNode,
-  };
-  const [state, dispatch] = useReducer(reducer, { ...defaultState, node: preNode });
   const { node, saved, loaded, loading, pendingRelations } = state;
   const kind = node ? node.kind || propKind : propKind;
 
@@ -162,12 +162,13 @@ export function useNode({ id, kind: propKind = defaultNodeType.name, relations =
   };
 
   useOnMount(() => {
+    console.log('Mounted');
     relations.map(([type, nodeId]) => dispatch({ type: 'QUEUED_RELATION', payload: { type, nodeId } }));
   });
 
   useEffect(() => {
-    if (lastMessage) {
-      const { type, payload } = JSON.parse(lastMessage.data);
+    if (lastJsonMessage) {
+      const { type, payload } = lastJsonMessage;
       switch (type) {
         case 'GETNODEBYID':
           dispatch({ type: 'FINISHED_LOAD', payload });
@@ -178,11 +179,10 @@ export function useNode({ id, kind: propKind = defaultNodeType.name, relations =
           break;
       }
     }
-  }, [lastMessage]);
+  }, [lastJsonMessage]);
 
   // Node load
   useEffect(() => {
-    if (id) console.log('node load', id);
     if (id && !loaded && !loading) {
       dispatch({ type: 'BEGAN_LOAD' });
       sendJsonMessage({ type: 'GETNODEBYID', payload: id });

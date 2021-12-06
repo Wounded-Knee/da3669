@@ -1,6 +1,7 @@
 import { reducer as rootReducer, actionTypes as rootActionTypes } from '../../../shared/lib/redux/reducer';
 import { action } from '../../../shared/all';
 
+const debugReducer = true;
 export const initialState = {
   entities: [],
   nodes: [],
@@ -36,7 +37,10 @@ export const actionTypes = {
 };
 
 const clientReducer = (state = initialState, { type, payload }) => {
-  console.log(type, payload);
+  const reduxInit = type.indexOf('@@redux/INIT') !== -1;
+  if (!reduxInit && debugReducer) {
+    console.log(type, payload);
+  }
   switch (type) {
     case actionTypes.NODE_REPLACE:
       if (payload === undefined) throw new Error(`${type}: Payload is undefined`);
@@ -104,7 +108,9 @@ const clientReducer = (state = initialState, { type, payload }) => {
         },
       };
   }
-  console.error('Unhandled action type: ', type);
+  if (!reduxInit) {
+    console.error('Unhandled action type: ', type);
+  }
   return state;
 };
 

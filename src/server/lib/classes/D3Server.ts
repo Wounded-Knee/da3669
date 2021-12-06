@@ -69,8 +69,13 @@ class D3Server extends Kernel {
               message: async (ws, message, isBinary) => {
                 // called when a client sends a message
                 const { type, payload } = JSON.parse(decoder.decode(message));
-                this.log('Message for you, sir: ', type, payload);
                 switch (type) {
+                  case MESSAGE_ENUM.CLIENT_CONNECTED:
+                    break;
+
+                  case MESSAGE_ENUM.CLIENT_DISCONNECTED:
+                    break;
+
                   case MESSAGE_ENUM.GETNODEBYID:
                     const _id = payload;
                     const populatePaths = getNonVirtualPaths();
@@ -92,12 +97,17 @@ class D3Server extends Kernel {
                       }),
                     );
                     break;
+                  default:
+                    this.log('Un-handled message type: ', type, payload);
+                    break;
                 }
               },
 
               close: (ws, code, message) => {
                 // called when a ws connection is closed
-                this.log('Somebody fucked off.', ws);
+                const before = this.sockets.length;
+                this.sockets = this.sockets.filter((socket) => socket !== ws);
+                this.log(`${before - this.sockets.length} of ${before} users fucked off.`, ws);
               },
             })
             .listen(wsPort, (token) => {

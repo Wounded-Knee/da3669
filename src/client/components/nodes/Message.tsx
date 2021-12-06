@@ -5,6 +5,7 @@ import { css, jsx } from '@emotion/react';
 import { useNode } from '../../lib/useNode';
 import { Input, Link } from '../Branded';
 import { useDocTitle } from '../../lib/useDocTitle';
+import { useOnMount } from '../../lib/useOnMount';
 
 const nodeTypeName = 'Message';
 const defaultNode = {
@@ -18,6 +19,9 @@ const Message = ({ mode = 'view', onCreate = (state) => {}, id, relations = [] }
   const { node, loaded, persists } = state;
   const { text, _id } = node || {};
 
+  useOnMount(() => {
+    console.log('Mounted Message', mode);
+  });
   if (mode === 'view') {
     useDocTitle(`${text} : Atmosphere`);
   }
@@ -46,6 +50,7 @@ const Message = ({ mode = 'view', onCreate = (state) => {}, id, relations = [] }
   };
 
   const Reply = () => {
+    return <div>Dummy Reply Field</div>;
     return (
       <div title={mode}>
         <Message mode='edit' relations={[['stream', _id]]} onCreate={onCreate} />
