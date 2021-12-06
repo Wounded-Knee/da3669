@@ -1,4 +1,7 @@
+/** @jsxFrag React.Fragment */
+/** @jsx jsx */
 import React from 'react';
+import { css, jsx } from '@emotion/react';
 
 const reducer = (state, { type, payload }) => {
   switch (type) {
@@ -6,6 +9,12 @@ const reducer = (state, { type, payload }) => {
       return {
         ...state,
         title: payload,
+      };
+
+    case 'SET_TITLE_COLOR':
+      return {
+        ...state,
+        titleColor: payload,
       };
 
     case 'SET_TEXT':
@@ -54,15 +63,33 @@ export const ContextStacker = ({ state }) => {
       newState = reducer(newState, { type: 'SET_HTML', payload: html });
       break;
     case 12:
-      var html = (props) => <div id='oopser'>{props.children}</div>;
+      var html = (props) => (
+        <div id='oopser'>
+          {text}
+          {props.children}
+        </div>
+      );
       newState = reducer(newState, { type: 'SET_HTML', payload: html });
+      newState = reducer(newState, { type: 'SET_TITLE_COLOR', payload: 'red' });
+      break;
+    case 15:
+      newState = reducer(newState, { type: 'SET_TITLE_COLOR', payload: 'orange' });
+      break;
+    case 16:
+      newState = reducer(newState, { type: 'SET_TITLE_COLOR', payload: 'yellow' });
+      break;
+    case 17:
+      newState = reducer(newState, { type: 'SET_TITLE_COLOR', payload: 'green' });
+      break;
+    case 18:
+      newState = reducer(newState, { type: 'SET_TITLE_COLOR', payload: 'cyan' });
       break;
     case 23:
       newState = reducer(newState, { type: 'SET_TITLE', payload: 'Reduced Context' });
       break;
   }
   // @ts-ignore
-  const { title, html: Html, text, recursionIndex, chatLog, recursionLimit } = newState;
+  const { title, html: Html, text, titleColor, recursionIndex, chatLog, recursionLimit } = newState;
 
   return (
     <>
@@ -70,7 +97,13 @@ export const ContextStacker = ({ state }) => {
         <ContextStacker key={recursionIndex} state={newState} />
       ) : (
         <Html>
-          <h1>{title}</h1>
+          <h1
+            css={css`
+              color: ${titleColor || 'white'};
+            `}
+          >
+            {title}
+          </h1>
           {chatLog.map((line, index) => (
             <p key={index}>{line}</p>
           ))}

@@ -6,7 +6,7 @@ import {
   initialState as sharedInitialState,
 } from '../shared/config';
 import { get } from './lib/LocalStorage';
-import { Article, Chat as ChatIcon } from '@mui/icons-material';
+import { Article, ReportGmailerrorred as PanicIcon } from '@mui/icons-material';
 import NodeManager from './wireframes/docstore/NodeManager';
 import { Chat } from './wireframes/chat/Chat';
 import { Office } from './components/Office';
@@ -31,8 +31,8 @@ export const routes = [
   {
     route: '/chat',
     path: '/chat',
-    icon: ChatIcon,
-    text: 'Chat',
+    icon: PanicIcon,
+    text: 'Panic',
     component: Chat,
   },
   {
