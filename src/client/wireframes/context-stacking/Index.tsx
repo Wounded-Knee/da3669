@@ -1,6 +1,13 @@
 import React, { useState } from 'react';
-import { ContextStacker, initialState } from './ContextStacker';
+import { ContextStacker } from './ContextStacker';
 import { Slider } from '@mui/material';
+
+export const initialState = {
+  text: 'Untitled',
+  chatLog: [],
+  recursionIndex: 0,
+  recursionLimit: 50,
+};
 
 export const Index = () => {
   const [depth, setDepth] = useState(0);

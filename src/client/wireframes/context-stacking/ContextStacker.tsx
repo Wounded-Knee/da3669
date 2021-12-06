@@ -1,13 +1,6 @@
 import React from 'react';
 
-export const initialState = {
-  text: 'Untitled',
-  chatLog: [],
-  recursionIndex: 0,
-  recursionLimit: 50,
-};
-
-const reducer = (state = initialState, { type, payload }) => {
+const reducer = (state, { type, payload }) => {
   switch (type) {
     case 'SET_TITLE':
       return {
@@ -30,9 +23,7 @@ const reducer = (state = initialState, { type, payload }) => {
   return state;
 };
 
-const dispatch = (state, action) => reducer(state, action);
-
-export const ContextStacker = ({ state = initialState }) => {
+export const ContextStacker = ({ state }) => {
   let newState = { ...state, recursionIndex: state.recursionIndex + 1 };
   switch (state.recursionIndex) {
     case 3:
