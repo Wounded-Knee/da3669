@@ -14,6 +14,19 @@ const reducer = (state, { type, payload }) => {
         text: payload,
       };
 
+    case 'SET_HTML':
+      const Wrapper = payload;
+      const Old = state.html;
+      const Inner = ({ children }) => (
+        <Wrapper>
+          <Old>{children}</Old>
+        </Wrapper>
+      );
+      return {
+        ...state,
+        html: ({ children }) => <Inner>{children}</Inner>,
+      };
+
     case 'CHAT':
       return {
         ...state,
@@ -36,23 +49,28 @@ export const ContextStacker = ({ state }) => {
       newState = reducer(newState, { type: 'CHAT', payload: 'This is cool!' });
       break;
     case 9:
+      var html = (props) => <div id='outer'>{props.children}</div>;
       newState = reducer(newState, { type: 'CHAT', payload: 'Yep!' });
+      newState = reducer(newState, { type: 'SET_HTML', payload: html });
       break;
+    case 12:
+      var html = (props) => <div id='oopser'>{props.children}</div>;
+      newState = reducer(newState, { type: 'SET_HTML', payload: html });
   }
   // @ts-ignore
-  const { title, text, recursionIndex, chatLog, recursionLimit } = newState;
+  const { title, html: Html, text, recursionIndex, chatLog, recursionLimit } = newState;
 
   return (
     <>
       {recursionIndex < recursionLimit ? (
         <ContextStacker key={recursionIndex} state={newState} />
       ) : (
-        <>
+        <Html>
           <h1>{title}</h1>
           {chatLog.map((line, index) => (
             <p key={index}>{line}</p>
           ))}
-        </>
+        </Html>
       )}
     </>
   );

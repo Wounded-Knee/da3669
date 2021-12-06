@@ -4,6 +4,7 @@ import { Slider } from '@mui/material';
 
 export const initialState = {
   text: 'Untitled',
+  html: (props) => <>{props.children}</>,
   chatLog: [],
   recursionIndex: 0,
   recursionLimit: 50,
@@ -14,7 +15,7 @@ export const Index = () => {
   return (
     <>
       <Slider
-        aria-label='Temperature'
+        aria-label='Depth'
         defaultValue={0}
         getAriaValueText={() => depth}
         onChange={(event, val) => {
