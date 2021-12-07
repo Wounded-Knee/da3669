@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ContextStacker } from './ContextStacker';
 import { Slider } from '@mui/material';
+import { getTopLevelNodes } from '../experiment1/data';
 
 export const initialState = {
   text: 'Untitled',

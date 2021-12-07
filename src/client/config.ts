@@ -18,6 +18,8 @@ import SavingsIcon from '@mui/icons-material/Savings';
 import { Bank } from './components/Banksy';
 import { Index as ContextStacker } from './wireframes/context-stacking/Index';
 import { Loading } from './components/Loading';
+import { Index as Experiment1 } from './wireframes/experiment1/Index';
+import ExperimentIcon from '@mui/icons-material/Science';
 
 const localState = get(appName) || { ui: { drawers: {} } };
 
@@ -35,6 +37,17 @@ export const routes = [
     icon: ContextStackerIcon,
     text: 'Context Stacker',
     component: ContextStacker,
+  },
+  {
+    path: '/experiment1/:nodeId',
+    component: Experiment1,
+  },
+  {
+    route: '/experiment1',
+    path: '/experiment1',
+    icon: ExperimentIcon,
+    text: 'Experiment 1',
+    component: Experiment1,
   },
   {
     path: '/nodemanager/:nodeId',
