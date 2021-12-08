@@ -1,11 +1,9 @@
-import mongoose from 'mongoose';
 import express from 'express';
 import path from 'path';
 import { pagesRouter } from '../../routes/pages-router';
 import { staticsRouter } from '../../routes/statics-router';
 import Kernel from '../../../shared/lib/classes/Kernel';
 import { App as uWS } from 'uWebSockets.js';
-import { relationTypes, HTTP_SERVER_PORT, WS_SERVER_PORT } from '../../config';
 import { getNonVirtualPaths, getNonVirtualPathsByName } from '../../../shared/relations/all';
 import { getNodeTypeByName, defaultNodeType } from '../../../shared/nodes/all';
 import { server, client } from '../../../shared/lib/redux/actionTypes';
@@ -18,14 +16,6 @@ const debug = {
 
 //@ts-ignore
 const decoder = new TextDecoder('utf-8');
-
-// add an enum with Object.freeze for code safety
-const MESSAGE_ENUM = Object.freeze({
-  SELF_CONNECTED: 'SELF_CONNECTED',
-  CLIENT_CONNECTED: 'CLIENT_CONNECTED',
-  CLIENT_DISCONNECTED: 'CLIENT_DISCONNECTED',
-  CLIENT_MESSAGE: 'CLIENT_MESSAGE',
-});
 
 class D3Server extends Kernel {
   express;
@@ -45,12 +35,6 @@ class D3Server extends Kernel {
     const { type, payload } = JSON.parse(decoder.decode(message));
     if (debug.messages) this.log('MSG ', type, payload);
     switch (type) {
-      case MESSAGE_ENUM.CLIENT_CONNECTED:
-        break;
-
-      case MESSAGE_ENUM.CLIENT_DISCONNECTED:
-        break;
-
       case server.GET_NODE_BY_ID:
         const _id = payload;
         const populatePaths = getNonVirtualPaths();
@@ -58,12 +42,11 @@ class D3Server extends Kernel {
         const { model } = getNodeTypeByName(gotById.kind);
         const downStreams = await model.find({ upstreams: _id });
 
-        respondWith({
-          type: client.REPLACE_NODE,
-          payload: {
-            ...gotById._doc,
-            downstreams: downStreams,
-          },
+        [...downStreams, gotById._doc].forEach((node) => {
+          respondWith({
+            type: client.REPLACE_NODE,
+            payload: node,
+          });
         });
         break;
 

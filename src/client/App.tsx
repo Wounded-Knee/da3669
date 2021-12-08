@@ -5,10 +5,11 @@ import React, { FC } from 'react';
 import { css, jsx } from '@emotion/react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom'; // Pages
 import { connect } from 'react-redux';
-import { routes, appName } from './config';
+import { appName } from './config';
 import { set } from './lib/LocalStorage';
 import { store } from './lib/redux/store';
 import { actionTypes } from './lib/redux/reducer';
+import { routes } from './routes';
 
 // MUI
 import { CssBaseline } from '@mui/material';

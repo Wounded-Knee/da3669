@@ -17,11 +17,6 @@ export const ws = new WebsocketBuilder(WS_URL)
   })
   .build();
 
-// ws.addEventListener('message', ({ data }) => {
-//   const action = JSON.parse(data);
-//   store.dispatch(action);
-// });
-
 export const send = (data) => {
   if (debug.send) console.info('WS SEND ', data);
   ws.send(data);
