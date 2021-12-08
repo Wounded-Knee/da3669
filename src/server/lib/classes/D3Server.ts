@@ -30,6 +30,52 @@ class D3Server extends Kernel {
   uws;
   sockets = [];
 
+  open(ws) {
+    // this handler is called when a client opens a ws connection with the server
+    this.sockets.push(ws);
+    this.log('How about we FUCK ON???');
+  }
+
+  async message(ws, message, isBinary) {
+    // called when a client sends a message
+    const respondWith = (data) => ws.send(JSON.stringify(data));
+    const { type, payload } = JSON.parse(decoder.decode(message));
+    switch (type) {
+      case MESSAGE_ENUM.CLIENT_CONNECTED:
+        break;
+
+      case MESSAGE_ENUM.CLIENT_DISCONNECTED:
+        break;
+
+      case MESSAGE_ENUM.GETNODEBYID:
+        const _id = payload;
+        const populatePaths = getNonVirtualPaths();
+        const gotById = await DefaultModel.findById(_id).populate(populatePaths);
+        const { model } = getNodeTypeByName(gotById.kind);
+        const downStreams = await model.find({ upstreams: _id });
+
+        respondWith({
+          type: MESSAGE_ENUM.GETNODEBYID,
+          payload: {
+            ...gotById._doc,
+            downstreams: downStreams,
+          },
+        });
+        break;
+
+      default:
+        this.log('Un-handled message type: ', type, payload);
+        break;
+    }
+  }
+
+  close(ws, code, message) {
+    // called when a ws connection is closed
+    const before = this.sockets.length;
+    this.sockets = this.sockets.filter((socket) => socket !== ws);
+    this.log(`${before - this.sockets.length} of ${before} users fucked off.`, ws);
+  }
+
   constructor({ httpPort, wsPort }: { wsPort: number; httpPort: number }) {
     super();
 
@@ -59,56 +105,9 @@ class D3Server extends Kernel {
               compression: 0,
               maxPayloadLength: 16 * 1024 * 1024,
               idleTimeout: 60,
-
-              open: (ws) => {
-                // this handler is called when a client opens a ws connection with the server
-                this.sockets.push(ws);
-                this.log('How about we FUCK ON???');
-              },
-
-              message: async (ws, message, isBinary) => {
-                // called when a client sends a message
-                const { type, payload } = JSON.parse(decoder.decode(message));
-                switch (type) {
-                  case MESSAGE_ENUM.CLIENT_CONNECTED:
-                    break;
-
-                  case MESSAGE_ENUM.CLIENT_DISCONNECTED:
-                    break;
-
-                  case MESSAGE_ENUM.GETNODEBYID:
-                    const _id = payload;
-                    const populatePaths = getNonVirtualPaths();
-                    console.log('populatePaths:', populatePaths);
-                    console.log('DefaultModel', DefaultModel);
-                    const gotById = await DefaultModel.findById(_id).populate(populatePaths);
-                    console.log('gotById', gotById);
-                    const { model } = getNodeTypeByName(gotById.kind);
-                    console.log('model', model);
-                    const downStreams = await model.find({ upstreams: _id });
-
-                    ws.send(
-                      JSON.stringify({
-                        type: MESSAGE_ENUM.GETNODEBYID,
-                        payload: {
-                          ...gotById._doc,
-                          downstreams: downStreams,
-                        },
-                      }),
-                    );
-                    break;
-                  default:
-                    this.log('Un-handled message type: ', type, payload);
-                    break;
-                }
-              },
-
-              close: (ws, code, message) => {
-                // called when a ws connection is closed
-                const before = this.sockets.length;
-                this.sockets = this.sockets.filter((socket) => socket !== ws);
-                this.log(`${before - this.sockets.length} of ${before} users fucked off.`, ws);
-              },
+              open: this.open.bind(this),
+              message: this.message.bind(this),
+              close: this.close.bind(this),
             })
             .listen(wsPort, (token) => {
               token ? this.log(`WS Listening @ port ${wsPort}`) : this.log(`WS Failed to listen @ port ${wsPort}`);
