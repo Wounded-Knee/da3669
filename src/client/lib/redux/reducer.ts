@@ -1,5 +1,6 @@
 import { reducer as rootReducer, actionTypes as rootActionTypes } from '../../../shared/lib/redux/reducer';
 import { action } from '../../../shared/all';
+import { client } from '../../../shared/lib/redux/actionTypes';
 
 const debugReducer = true;
 export const initialState = {
@@ -42,7 +43,7 @@ const clientReducer = (state = initialState, { type, payload }) => {
     console.log(type, payload);
   }
   switch (type) {
-    case actionTypes.NODE_REPLACE:
+    case client.REPLACE_NODE:
       if (payload === undefined) throw new Error(`${type}: Payload is undefined`);
       const newNodes = (payload instanceof Array ? payload : [payload]).filter((newNode) => {
         const oldNode = state.nodes.find(({ _id }) => _id === newNode._id);

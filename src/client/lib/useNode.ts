@@ -5,7 +5,8 @@ import { useDebounce } from './useDebounce';
 import { getNodeTypeByName, defaultNodeType } from '../../shared/nodes/all';
 import { useDispatch, useSelector } from 'react-redux';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
-import { WS_URL } from '../config';
+import { WS_SERVER_HOST, WS_SERVER_PORT } from '../config';
+const WS_URL = `ws://${WS_SERVER_HOST}:${WS_SERVER_PORT}`;
 
 const debugReducer = true;
 const reducer = (state, action) => {

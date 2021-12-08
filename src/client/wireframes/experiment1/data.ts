@@ -110,7 +110,7 @@ export const getNodeById = (id) =>
         downstreams,
       };
       resolve(node);
-    }, 30);
+    }, 300);
   });
 
 export const getTopLevelNodes = () =>

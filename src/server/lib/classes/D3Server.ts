@@ -8,8 +8,13 @@ import { App as uWS } from 'uWebSockets.js';
 import { relationTypes, HTTP_SERVER_PORT, WS_SERVER_PORT } from '../../config';
 import { getNonVirtualPaths, getNonVirtualPathsByName } from '../../../shared/relations/all';
 import { getNodeTypeByName, defaultNodeType } from '../../../shared/nodes/all';
+import { server, client } from '../../../shared/lib/redux/actionTypes';
 
 const { model: DefaultModel } = defaultNodeType;
+
+const debug = {
+  messages: true,
+};
 
 //@ts-ignore
 const decoder = new TextDecoder('utf-8');
@@ -20,8 +25,6 @@ const MESSAGE_ENUM = Object.freeze({
   CLIENT_CONNECTED: 'CLIENT_CONNECTED',
   CLIENT_DISCONNECTED: 'CLIENT_DISCONNECTED',
   CLIENT_MESSAGE: 'CLIENT_MESSAGE',
-
-  GETNODEBYID: 'GETNODEBYID',
 });
 
 class D3Server extends Kernel {
@@ -40,6 +43,7 @@ class D3Server extends Kernel {
     // called when a client sends a message
     const respondWith = (data) => ws.send(JSON.stringify(data));
     const { type, payload } = JSON.parse(decoder.decode(message));
+    if (debug.messages) this.log('MSG ', type, payload);
     switch (type) {
       case MESSAGE_ENUM.CLIENT_CONNECTED:
         break;
@@ -47,7 +51,7 @@ class D3Server extends Kernel {
       case MESSAGE_ENUM.CLIENT_DISCONNECTED:
         break;
 
-      case MESSAGE_ENUM.GETNODEBYID:
+      case server.GET_NODE_BY_ID:
         const _id = payload;
         const populatePaths = getNonVirtualPaths();
         const gotById = await DefaultModel.findById(_id).populate(populatePaths);
@@ -55,7 +59,7 @@ class D3Server extends Kernel {
         const downStreams = await model.find({ upstreams: _id });
 
         respondWith({
-          type: MESSAGE_ENUM.GETNODEBYID,
+          type: client.REPLACE_NODE,
           payload: {
             ...gotById._doc,
             downstreams: downStreams,

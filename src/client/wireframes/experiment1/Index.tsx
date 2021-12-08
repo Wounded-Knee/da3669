@@ -6,8 +6,13 @@ import { TextField } from '@mui/material';
 
 export const Index = ({ id, as = 'master' }) => {
   const [inputValue, setInputValue] = useState('');
-  const nodeId = id || '' + useParams().nodeId;
+  const propNodeId = id;
+  const urlNodeId = useParams().nodeId;
+  const nodeId = propNodeId || '' + urlNodeId;
   const { node } = useNode(nodeId);
+
+  if (!node) return <Loading />;
+
   const { text = '', upstreams = [], downstreams = [] } = node;
 
   const onCommit = (value) => {
@@ -16,19 +21,18 @@ export const Index = ({ id, as = 'master' }) => {
   };
 
   console.info('Debug Index.tsx', {
-    id,
+    propNodeId,
     nodeId,
     node,
     inputValue,
     downstreams,
-    params: useParams(),
   });
 
   switch (as) {
     case 'master':
       return (
         <>
-          <Index as='upstream' id={id} />
+          <Index as='upstream' id={nodeId} />
 
           <Autocomplete
             freeSolo
@@ -80,4 +84,8 @@ export const Index = ({ id, as = 'master' }) => {
 const View = ({ node, note }) => {
   const { text } = node;
   return <div title={note}>{text}</div>;
+};
+
+const Loading = () => {
+  return <div>Loading...</div>;
 };
