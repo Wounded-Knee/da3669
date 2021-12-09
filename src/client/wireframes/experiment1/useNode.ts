@@ -3,14 +3,17 @@ import { action } from './webSocket';
 import { server } from '../../../shared/lib/redux/actionTypes';
 import { store } from '../../lib/redux/store';
 import { useOnMount } from '../../lib/useOnMount';
-import { getNodeById } from './selectors';
+import { getNodeById, getTopLevelNodes } from './selectors';
 
 export const useNode = (id) => {
   const [node, setNode] = useState(getNodeById(id));
+  const [topLevelNodes, setTopLevelNodes] = useState([]);
 
   useOnMount(() => {
+    action(server.GET_TOP_LEVEL_NODES, undefined);
     return store.subscribe(() => {
       setNode(getNodeById(id));
+      setTopLevelNodes(getTopLevelNodes());
     });
   });
 
@@ -19,11 +22,13 @@ export const useNode = (id) => {
   };
 
   useEffect(() => {
-    !node && action(server.GET_NODE_BY_ID, id);
+    !node && id && action(server.GET_NODE_BY_ID, id);
   }, [id]);
 
   return {
     node,
+    topLevelNodes,
     createNode,
+    getTopLevelNodes,
   };
 };

@@ -36,6 +36,16 @@ class D3Server extends Kernel {
     if (debug.messages) this.log('MSG ', type, payload);
     try {
       switch (type) {
+        case server.GET_TOP_LEVEL_NODES:
+          const nodes = await DefaultModel.find({ upstreams: { $eq: [] } });
+          console.log(nodes);
+          nodes.forEach((node) => {
+            respondWith({
+              type: client.ABSORB_NODE,
+              payload: node,
+            });
+          });
+
         case server.GET_NODE_BY_ID:
           const _id = payload;
           const populatePaths = getNonVirtualPaths();
@@ -73,10 +83,13 @@ class D3Server extends Kernel {
           this.log('Un-handled message type: ', type, payload);
           break;
       }
-    } catch (e) {
+    } catch ({ message }) {
       respondWith({
         type: client.ERROR,
-        payload: e.message,
+        payload: {
+          message,
+          action: { type, payload },
+        },
       });
     }
   }

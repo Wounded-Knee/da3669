@@ -17,13 +17,11 @@ export const reducer = (state = initialState, { type, payload }) => {
       });
       if (newNodes.length) {
         const nodeIds = newNodes.filter(({ _id }) => _id !== undefined).map(({ _id }) => _id);
-        if (debugReducer) console.log('Inserting ', nodeIds);
         return {
           ...state,
           nodes: [...state.nodes.filter(({ _id }) => nodeIds.indexOf(_id) === -1), ...newNodes],
         };
       } else {
-        if (debugReducer) console.log('No new nodes remain, so, noop');
         return state;
       }
 

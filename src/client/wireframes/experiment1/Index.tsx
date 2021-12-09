@@ -16,9 +16,16 @@ export const Index = ({ id, as = 'master' }) => {
   const propNodeId = id;
   const urlNodeId = useParams().nodeId;
   const nodeId = propNodeId || '' + urlNodeId;
-  const { node, createNode } = useNode(nodeId);
+  const { node, createNode, topLevelNodes } = useNode(nodeId);
 
-  if (!node) return <Loading />;
+  if (!node)
+    return (
+      <>
+        {topLevelNodes.map(({ text }, index) => (
+          <p key={index}>{text}</p>
+        ))}
+      </>
+    );
 
   const { text = '', parents = [], downstreams = [] } = node;
 
@@ -81,7 +88,7 @@ export const Index = ({ id, as = 'master' }) => {
             <Index key={index} as='upstream' id={_id} />
           ))}
 
-          <View note='subject' node={node} />
+          <View note='upstream' node={node} />
         </>
       );
 
@@ -98,6 +105,6 @@ const View = ({ node, note }) => {
   return <div title={note}>{text}</div>;
 };
 
-const Loading = () => {
-  return <div>Loading...</div>;
+const Stalled = () => {
+  return <div>Stalled...</div>;
 };
