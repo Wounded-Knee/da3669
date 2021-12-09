@@ -1,31 +1,16 @@
-import { Schema } from 'mongoose';
+// Webpack
+export const WEBPACK_PORT = 3001;
 
 // HTTP Server
-const HTTP_SERVER_PORT = 3000;
+export const HTTP_SERVER_PORT = 3000;
 
 // WS Server
-const WS_SERVER_PORT = 3669;
-const WS_SERVER_HOST = 'localhost';
-
-// Store
-const initialState = {
-  entities: [],
-};
+export const WS_SERVER_PORT = 3669;
+export const WS_SERVER_HOST = 'localhost';
 
 //Types
-const relationTypes = ['Reply', 'Stream'];
-const nodeTypes = ['Base', 'Document', 'User', 'Message'];
+export const relationTypes = ['Reply', 'Stream'];
+export const nodeTypes = ['Base', 'Document', 'User', 'Message'];
 
-const appName = 'D³';
-const headerText = `merge℠`;
-
-export {
-  relationTypes,
-  nodeTypes,
-  headerText,
-  appName,
-  initialState,
-  HTTP_SERVER_PORT,
-  WS_SERVER_HOST,
-  WS_SERVER_PORT,
-};
+export const appName = 'D³';
+export const headerText = `merge℠`;

@@ -4,7 +4,6 @@ import React from 'react';
 import { css, jsx } from '@emotion/react';
 import { Divider, Drawer, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
 import { NavLink } from 'react-router-dom';
-import { connect } from 'react-redux';
 import { routes } from '../routes';
 
 class NavLinkMui extends React.Component<any> {
@@ -16,11 +15,7 @@ class NavLinkMui extends React.Component<any> {
 
 const drawerWidth = 240;
 
-const mapStateToProps = (state) => ({
-  options: state.entities.filter(({ type }) => type !== undefined),
-});
-
-export const SideMenu: React.FunctionComponent = connect(mapStateToProps)(({ options }) => {
+export const SideMenu: React.FunctionComponent = () => {
   const styles = {
     toolbar: css`
       height: 50px;
@@ -56,4 +51,4 @@ export const SideMenu: React.FunctionComponent = connect(mapStateToProps)(({ opt
       <Divider />
     </Drawer>
   );
-});
+};

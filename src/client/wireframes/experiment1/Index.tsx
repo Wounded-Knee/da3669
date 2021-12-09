@@ -6,21 +6,40 @@ import { useNode } from './useNode';
 import { useParams } from 'react-router';
 import Autocomplete from '@mui/material/Autocomplete';
 import { TextField } from '@mui/material';
+import { getNonVirtualPathsByName } from '../../../shared/relations/all';
+import { Link } from '../../components/Branded';
+
+const nodeType = 'Message';
+const upstreamPath = getNonVirtualPathsByName('stream');
 
 export const Index = ({ id, as = 'master' }) => {
   const [inputValue, setInputValue] = useState('');
   const propNodeId = id;
   const urlNodeId = useParams().nodeId;
-  const nodeId = propNodeId || '' + urlNodeId;
-  const { node } = useNode(nodeId);
+  const nodeId = propNodeId || urlNodeId;
+  const { node, createNode, topLevelNodes } = useNode(nodeId);
 
-  if (!node) return <Loading />;
+  if (!node || !nodeId)
+    return (
+      <>
+        {topLevelNodes.map((node, index) => (
+          <div key={node._id}>
+            <View node={node} />
+          </div>
+        ))}
+      </>
+    );
 
-  const { text = '', upstreams = [], downstreams = [] } = node;
+  const { text = '', parents = [], downstreams = [] } = node;
 
   const onCommit = (value) => {
     console.log('User Commit ', value);
     setInputValue('');
+    createNode({
+      text: value,
+      kind: nodeType,
+      [upstreamPath]: nodeId ? [nodeId] : [],
+    });
   };
 
   console.info('Debug Index.tsx', {
@@ -68,27 +87,28 @@ export const Index = ({ id, as = 'master' }) => {
     case 'upstream':
       return (
         <>
-          {upstreams.map(({ _id }, index) => (
+          {parents.map(({ _id }, index) => (
             <Index key={index} as='upstream' id={_id} />
           ))}
 
-          <View note='subject' node={node} />
+          <View note='upstream' node={node} />
         </>
       );
-
-    case 'downstream':
-      return <View note='downstream' node={node} />;
 
     default:
       return <div>Invalid view as {as}</div>;
   }
 };
 
-const View = ({ node, note }) => {
-  const { text } = node;
-  return <div title={note}>{text}</div>;
+const View = ({ node, note = '?' }) => {
+  const { text, _id } = node;
+  return (
+    <Link to={`/experiment1/${_id}`} title={note}>
+      {text}
+    </Link>
+  );
 };
 
-const Loading = () => {
-  return <div>Loading...</div>;
+const Stalled = () => {
+  return <div>Stalled...</div>;
 };
