@@ -2,10 +2,9 @@
 /** @jsx jsx */
 import React, { useState } from 'react';
 import { css, jsx } from '@emotion/react';
-import { useNode } from './useNode';
+import { useNodes } from './useNodes';
 import { useParams } from 'react-router';
-import Autocomplete from '@mui/material/Autocomplete';
-import { TextField } from '@mui/material';
+import { NodePicker } from './NodePicker';
 import { getNonVirtualPathsByName } from '../../../shared/relations/all';
 import { Link } from '../../components/Branded';
 
@@ -13,15 +12,17 @@ const nodeType = 'Message';
 const upstreamPath = getNonVirtualPathsByName('stream');
 
 export const Index = ({ id, as = 'master' }) => {
-  const [inputValue, setInputValue] = useState('');
   const propNodeId = id;
   const urlNodeId = useParams().nodeId;
   const nodeId = propNodeId || urlNodeId;
-  const { node, createNode, topLevelNodes } = useNode(nodeId);
+  const { nodes, createNode, topLevelNodes } = useNodes([nodeId]);
+  const [node] = nodes;
 
   if (!node || !nodeId)
     return (
       <>
+        <NodePicker />
+
         {topLevelNodes.map((node, index) => (
           <div key={node._id}>
             <View node={node} />
@@ -32,21 +33,10 @@ export const Index = ({ id, as = 'master' }) => {
 
   const { text = '', parents = [], downstreams = [] } = node;
 
-  const onCommit = (value) => {
-    console.log('User Commit ', value);
-    setInputValue('');
-    createNode({
-      text: value,
-      kind: nodeType,
-      [upstreamPath]: nodeId ? [nodeId] : [],
-    });
-  };
-
   console.info('Debug Index.tsx', {
     propNodeId,
     nodeId,
     node,
-    inputValue,
     downstreams,
   });
 
@@ -56,31 +46,7 @@ export const Index = ({ id, as = 'master' }) => {
         <>
           <Index as='upstream' id={nodeId} />
 
-          <Autocomplete
-            freeSolo
-            id='downstreamSelector'
-            disableClearable
-            autoComplete
-            autoSelect
-            onKeyDown={({ key }) => key === 'Enter' && onCommit(inputValue)}
-            inputValue={inputValue}
-            onInputChange={(event, value) => setInputValue(value)}
-            options={downstreams}
-            getOptionLabel={(option) => option.text || option}
-            isOptionEqualToValue={({ text }, value) =>
-              value.toLowerCase ? value.toLowerCase() === text.toLowerCase() : false
-            }
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label='Reply'
-                InputProps={{
-                  ...params.InputProps,
-                  type: 'search',
-                }}
-              />
-            )}
-          />
+          <NodePicker />
         </>
       );
 
