@@ -5,4 +5,9 @@ import { reducer } from './reducer';
 
 export const store = createStore(reducer, composeWithDevTools(applyMiddleware(thunkMiddleware)));
 
-window.store = store;
+window.d3 = {
+  ...(window.d3 || {}),
+  redux: {
+    store,
+  },
+};
