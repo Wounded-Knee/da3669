@@ -7,6 +7,7 @@ import { useParams } from 'react-router';
 import Autocomplete from '@mui/material/Autocomplete';
 import { TextField } from '@mui/material';
 import { getNonVirtualPathsByName } from '../../../shared/relations/all';
+import { Link } from '../../components/Branded';
 
 const nodeType = 'Message';
 const replyPath = getNonVirtualPathsByName('reply');
@@ -18,11 +19,13 @@ export const Index = ({ id, as = 'master' }) => {
   const nodeId = propNodeId || '' + urlNodeId;
   const { node, createNode, topLevelNodes } = useNode(nodeId);
 
-  if (!node)
+  if (!node || !nodeId)
     return (
       <>
-        {topLevelNodes.map(({ text }, index) => (
-          <p key={index}>{text}</p>
+        {topLevelNodes.map((node, index) => (
+          <div key={node._id}>
+            <View node={node} />
+          </div>
         ))}
       </>
     );
@@ -92,17 +95,18 @@ export const Index = ({ id, as = 'master' }) => {
         </>
       );
 
-    case 'downstream':
-      return <View note='downstream' node={node} />;
-
     default:
       return <div>Invalid view as {as}</div>;
   }
 };
 
-const View = ({ node, note }) => {
-  const { text } = node;
-  return <div title={note}>{text}</div>;
+const View = ({ node, note = '?' }) => {
+  const { text, _id } = node;
+  return (
+    <Link to={`/experiment1/${_id}`} title={note}>
+      {text}
+    </Link>
+  );
 };
 
 const Stalled = () => {

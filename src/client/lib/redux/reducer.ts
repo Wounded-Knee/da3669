@@ -1,7 +1,7 @@
 import { client } from '../../../shared/lib/redux/actionTypes';
 import { initialState } from '../../config';
 
-const debugReducer = true;
+const debugReducer = false;
 
 export const reducer = (state = initialState, { type, payload }) => {
   const reduxInit = type.indexOf('@@redux/INIT') !== -1;

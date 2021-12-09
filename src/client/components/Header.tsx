@@ -13,7 +13,7 @@ export const Header: React.FunctionComponent = () => {
     appBar: css`
       background-color: ${useRainbow()};
       border-top: 2px solid ${useRainbow(100, 60)};
-      box-shadow: -1px 29px 34px -19px rgba(0, 0, 0, 0.75) inset;
+      box-shadow: -1px 22px 7px -19px rgba(0, 0, 0, 0.75) inset;
       text-shadow: black 1px 1px 3px;
       font-weight: bold;
       z-index: 10000;
