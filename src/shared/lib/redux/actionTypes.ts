@@ -9,5 +9,8 @@ export const server = Object.freeze({
 
 export const client = Object.freeze({
   ...shared,
+  SET_USERID: 'SET_USERID',
   ERROR: 'ERROR',
+  DRAWER: 'DRAWER',
+  READY_WEBSOCKET: 'READY_WEBSOCKET',
 });

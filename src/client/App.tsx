@@ -4,11 +4,9 @@
 import React, { FC } from 'react';
 import { css, jsx } from '@emotion/react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom'; // Pages
-import { connect } from 'react-redux';
 import { appName } from './config';
 import { set } from './lib/LocalStorage';
 import { store } from './lib/redux/store';
-import { actionTypes } from './lib/redux/reducer';
 import { routes } from './routes';
 
 // MUI
@@ -19,24 +17,11 @@ import { Header } from './components/Header';
 import { SideMenu } from './components/SideMenu';
 import { DataView } from './components/DataView';
 import { InfoView } from './components/InfoView';
-import { Loading } from './components/Loading';
 
 store.subscribe(() => {
   const { user, ui } = store.getState();
   set(appName, { ui, user });
 });
-
-const mapStateToProps = (state) => {
-  return {
-    webSocketConnected: state.ui.ready.webSocket,
-  };
-};
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    setWebSocketConnected: () => dispatch({ type: actionTypes.READY_WEBSOCKET }),
-  };
-};
 
 const styles = {
   root: css`
@@ -57,19 +42,7 @@ const styles = {
   `,
 };
 
-export const App: FC = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(({ setWebSocketConnected, webSocketConnected }) => {
-  /*
-  transport.on('open', () => {
-    console.log('WebSocket Connected.');
-    setWebSocketConnected();
-  });
-
-  window.transport = transport;
-*/
-
+export const App: FC = () => {
   return (
     <BrowserRouter>
       <div css={styles.root}>
@@ -91,4 +64,4 @@ export const App: FC = connect(
       </div>
     </BrowserRouter>
   );
-});
+};

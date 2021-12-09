@@ -1,22 +1,9 @@
-import { reducer as rootReducer, actionTypes as rootActionTypes } from '../../../shared/lib/redux/reducer';
-import { action } from '../../../shared/all';
 import { client } from '../../../shared/lib/redux/actionTypes';
 import { initialState } from '../../config';
 
 const debugReducer = true;
 
-export const actionTypes = {
-  ...rootActionTypes,
-  CLOBBER_ENTITIES: 'CLOBBER_ENTITIES',
-  SET_USERID: 'SET_USERID',
-  SELECT_ENTITY: 'SELECT_ENTITY',
-  DRAWER: 'DRAWER',
-  READY_WEBSOCKET: 'READY_WEBSOCKET',
-  DOCSTORE_SET_CURRENT_DOC: 'DOCSTORE_SET_CURRENT_DOC',
-  NODE_REPLACE: 'NODE_REPLACE',
-};
-
-const clientReducer = (state = initialState, { type, payload }) => {
+export const reducer = (state = initialState, { type, payload }) => {
   const reduxInit = type.indexOf('@@redux/INIT') !== -1;
   if (!reduxInit && debugReducer) {
     console.log(type, payload);
@@ -40,7 +27,7 @@ const clientReducer = (state = initialState, { type, payload }) => {
         return state;
       }
 
-    case actionTypes.SET_USERID:
+    case client.SET_USERID:
       return {
         ...state,
         user: {
@@ -49,7 +36,7 @@ const clientReducer = (state = initialState, { type, payload }) => {
         },
       };
 
-    case actionTypes.DRAWER:
+    case client.DRAWER:
       const [drawerName, open] = payload;
       return {
         ...state,
@@ -62,7 +49,7 @@ const clientReducer = (state = initialState, { type, payload }) => {
         },
       };
 
-    case actionTypes.READY_WEBSOCKET:
+    case client.READY_WEBSOCKET:
       return {
         ...state,
         ui: {
@@ -78,8 +65,4 @@ const clientReducer = (state = initialState, { type, payload }) => {
     console.error('Unhandled action type: ', type);
   }
   return state;
-};
-
-export const reducer = (state = initialState, action: action): any => {
-  return rootReducer(clientReducer(state, action), action);
 };
