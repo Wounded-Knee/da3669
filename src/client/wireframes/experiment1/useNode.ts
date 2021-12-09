@@ -29,6 +29,5 @@ export const useNode = (id) => {
     node,
     topLevelNodes,
     createNode,
-    getTopLevelNodes,
   };
 };

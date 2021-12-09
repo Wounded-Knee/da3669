@@ -12,6 +12,7 @@ const { model: DefaultModel } = defaultNodeType;
 
 const debug = {
   messages: true,
+  errors: true,
 };
 
 //@ts-ignore
@@ -38,13 +39,13 @@ class D3Server extends Kernel {
       switch (type) {
         case server.GET_TOP_LEVEL_NODES:
           const nodes = await DefaultModel.find({ upstreams: { $eq: [] } });
-          console.log(nodes);
           nodes.forEach((node) => {
             respondWith({
               type: client.ABSORB_NODE,
               payload: node,
             });
           });
+          break;
 
         case server.GET_NODE_BY_ID:
           const _id = payload;
@@ -83,11 +84,12 @@ class D3Server extends Kernel {
           this.log('Un-handled message type: ', type, payload);
           break;
       }
-    } catch ({ message }) {
+    } catch (e) {
+      if (debug.errors) console.error(e);
       respondWith({
         type: client.ERROR,
         payload: {
-          message,
+          message: e.message,
           action: { type, payload },
         },
       });

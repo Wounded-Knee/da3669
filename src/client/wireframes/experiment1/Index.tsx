@@ -10,13 +10,13 @@ import { getNonVirtualPathsByName } from '../../../shared/relations/all';
 import { Link } from '../../components/Branded';
 
 const nodeType = 'Message';
-const replyPath = getNonVirtualPathsByName('reply');
+const upstreamPath = getNonVirtualPathsByName('stream');
 
 export const Index = ({ id, as = 'master' }) => {
   const [inputValue, setInputValue] = useState('');
   const propNodeId = id;
   const urlNodeId = useParams().nodeId;
-  const nodeId = propNodeId || '' + urlNodeId;
+  const nodeId = propNodeId || urlNodeId;
   const { node, createNode, topLevelNodes } = useNode(nodeId);
 
   if (!node || !nodeId)
@@ -38,7 +38,7 @@ export const Index = ({ id, as = 'master' }) => {
     createNode({
       text: value,
       kind: nodeType,
-      [replyPath]: [nodeId],
+      [upstreamPath]: nodeId ? [nodeId] : [],
     });
   };
 
