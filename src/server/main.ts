@@ -1,7 +1,6 @@
-import transport from './transport';
 import mongoose from 'mongoose';
-import HTTPServer from './lib/classes/HttpServer';
-import { relationTypes, HTTP_SERVER_PORT } from './config';
+import Server from './lib/classes/D3Server';
+import { relationTypes, HTTP_SERVER_PORT, WS_SERVER_PORT } from './config';
 import { getNonVirtualPaths, getNonVirtualPathsByName } from '../shared/relations/all';
 import { getNodeTypeByName, defaultNodeType } from '../shared/nodes/all';
 
@@ -25,10 +24,12 @@ const mongoosePromise = mongoose
     }
   });
 
-const httpServer = new HTTPServer({
-  port: HTTP_SERVER_PORT,
+const server = new Server({
+  httpPort: HTTP_SERVER_PORT,
+  wsPort: WS_SERVER_PORT,
 });
 
+/*
 // JSON-RPC 2.0 WebSocket Server methods
 // ...this is the API
 // @ts-ignore
@@ -86,7 +87,8 @@ transport.register('getById', async (_id) => {
     downstreams: downStreams,
   };
 });
+*/
 
-Promise.all([mongoosePromise, httpServer.initialize()]).then(() => {
+Promise.all([mongoosePromise, server.initialize()]).then(() => {
   console.log('Ready');
 });

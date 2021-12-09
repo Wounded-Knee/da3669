@@ -1,9 +1,9 @@
 /** @jsxFrag React.Fragment */
 /** @jsx jsx */
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { css, jsx } from '@emotion/react';
 import { connect } from 'react-redux';
-import { useParams, Routes, Route } from 'react-router';
+import { useParams } from 'react-router';
 import { useNavigate } from 'react-router-dom';
 import { getComponentByType } from './nodes/all';
 

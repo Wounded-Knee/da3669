@@ -1,15 +1,18 @@
-import { useReducer, useEffect } from 'react';
 import mongoose from 'mongoose';
+import { useReducer, useEffect } from 'react';
 import { useOnMount } from './useOnMount';
 import { useDebounce } from './useDebounce';
-import { call } from './transport';
 import { getNodeTypeByName, defaultNodeType } from '../../shared/nodes/all';
 import { useDispatch, useSelector } from 'react-redux';
+import useWebSocket, { ReadyState } from 'react-use-websocket';
+import { WS_SERVER_HOST, WS_SERVER_PORT } from '../config';
+const WS_URL = `ws://${WS_SERVER_HOST}:${WS_SERVER_PORT}`;
 
+const debugReducer = true;
 const reducer = (state, action) => {
   try {
     const { type, payload } = action;
-    console.log(type, payload);
+    if (debugReducer) console.log('useNode Reducer: ', type, payload);
     switch (type) {
       case 'ERROR_PERSIST':
         return {
@@ -130,19 +133,18 @@ const defaultState = {
   node: undefined,
 };
 
-const relate = async (type, node1id, node2id) => await call('relate', type, node1id, node2id);
-const persist = async (node) => await call('persist', node);
-const getNodeById = async (nodeId) => await call('getById', nodeId);
-
 export function useNode({ id, kind: propKind = defaultNodeType.name, relations = [] }) {
+  const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(WS_URL, { share: true });
   const reduxDispatch = useDispatch();
-  const reduxNode = useSelector(({ nodes }) => nodes.find(({ _id }) => _id === id));
-  const preNode = {
-    _id: id,
-    kind: propKind,
-    ...reduxNode,
-  };
-  const [state, dispatch] = useReducer(reducer, { ...defaultState, node: preNode });
+  const reduxNode = useSelector(({ nodes }) => nodes.find(({ _id }) => _id === id)) || {};
+  const [state, dispatch] = useReducer(reducer, {
+    ...defaultState,
+    node: {
+      _id: id,
+      kind: propKind,
+      ...reduxNode,
+    },
+  });
   const { node, saved, loaded, loading, pendingRelations } = state;
   const kind = node ? node.kind || propKind : propKind;
 
@@ -161,25 +163,30 @@ export function useNode({ id, kind: propKind = defaultNodeType.name, relations =
   };
 
   useOnMount(() => {
+    console.log('Mounted');
     relations.map(([type, nodeId]) => dispatch({ type: 'QUEUED_RELATION', payload: { type, nodeId } }));
   });
 
+  useEffect(() => {
+    if (lastJsonMessage) {
+      const { type, payload } = lastJsonMessage;
+      switch (type) {
+        case 'GETNODEBYID':
+          dispatch({ type: 'FINISHED_LOAD', payload });
+          reduxDispatch({ type: 'NODE_REPLACE', payload });
+          break;
+        default:
+          console.log('Message from the server: ', type, payload);
+          break;
+      }
+    }
+  }, [lastJsonMessage]);
+
   // Node load
   useEffect(() => {
-    console.log('node load', id);
     if (id && !loaded && !loading) {
       dispatch({ type: 'BEGAN_LOAD' });
-      getNodeById(id)
-        .then((node) => {
-          setTimeout(() => {
-            // Why does this terminate flow? Ugly fix.
-            reduxDispatch({ type: 'NODE_REPLACE', payload: node });
-          }, 1);
-          dispatch({ type: 'FINISHED_LOAD', payload: node });
-        })
-        .catch(() => {
-          dispatch({ type: 'ERROR_LOAD' });
-        });
+      sendJsonMessage({ type: 'GETNODEBYID', payload: id });
     }
   }, [id]);
 

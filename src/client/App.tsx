@@ -5,11 +5,11 @@ import React, { FC } from 'react';
 import { css, jsx } from '@emotion/react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom'; // Pages
 import { connect } from 'react-redux';
-import { routes, appName } from './config';
-import transport from './lib/transport';
+import { appName } from './config';
 import { set } from './lib/LocalStorage';
 import { store } from './lib/redux/store';
 import { actionTypes } from './lib/redux/reducer';
+import { routes } from './routes';
 
 // MUI
 import { CssBaseline } from '@mui/material';
@@ -61,36 +61,34 @@ export const App: FC = connect(
   mapStateToProps,
   mapDispatchToProps,
 )(({ setWebSocketConnected, webSocketConnected }) => {
+  /*
   transport.on('open', () => {
     console.log('WebSocket Connected.');
     setWebSocketConnected();
   });
 
   window.transport = transport;
+*/
 
   return (
     <BrowserRouter>
-      {webSocketConnected ? (
-        <div css={styles.root}>
-          <CssBaseline />
-          <Header />
-          <SideMenu />
-          <DataView />
-          <InfoView />
-          <main css={styles.main}>
-            <div css={styles.toolbar} />
-            <div css={styles.vignette}>
-              <Routes>
-                {routes.map(({ path, component: Component }, index) => (
-                  <Route key={index} path={path} element={<Component />} />
-                ))}
-              </Routes>
-            </div>
-          </main>
-        </div>
-      ) : (
-        <Loading />
-      )}
+      <div css={styles.root}>
+        <CssBaseline />
+        <Header />
+        <SideMenu />
+        <DataView />
+        <InfoView />
+        <main css={styles.main}>
+          <div css={styles.toolbar} />
+          <div css={styles.vignette}>
+            <Routes>
+              {routes.map(({ path, component: Component }, index) => (
+                <Route key={index} path={path} element={<Component />} />
+              ))}
+            </Routes>
+          </div>
+        </main>
+      </div>
     </BrowserRouter>
   );
 });

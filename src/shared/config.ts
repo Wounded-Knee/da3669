@@ -4,7 +4,7 @@ import { Schema } from 'mongoose';
 const HTTP_SERVER_PORT = 3000;
 
 // WS Server
-const WS_SERVER_PORT = 8081;
+const WS_SERVER_PORT = 3669;
 const WS_SERVER_HOST = 'localhost';
 
 // Store
@@ -17,7 +17,7 @@ const relationTypes = ['Reply', 'Stream'];
 const nodeTypes = ['Base', 'Document', 'User', 'Message'];
 
 const appName = 'D³';
-const headerText = `${appName}℠`;
+const headerText = `merge℠`;
 
 export {
   relationTypes,

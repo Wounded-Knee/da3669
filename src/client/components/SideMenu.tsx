@@ -5,7 +5,7 @@ import { css, jsx } from '@emotion/react';
 import { Divider, Drawer, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
 import { NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { routes } from '../config';
+import { routes } from '../routes';
 
 class NavLinkMui extends React.Component<any> {
   render() {

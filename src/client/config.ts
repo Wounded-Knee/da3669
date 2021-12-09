@@ -6,73 +6,10 @@ import {
   initialState as sharedInitialState,
 } from '../shared/config';
 import { get } from './lib/LocalStorage';
-import { Article, ReportGmailerrorred as PanicIcon } from '@mui/icons-material';
-import NodeManager from './wireframes/docstore/NodeManager';
-import { Chat } from './wireframes/chat/Chat';
-import { Office } from './components/Office';
-import AtmosphereIcon from '@mui/icons-material/Language';
-import JudgementIcon from '@mui/icons-material/Gavel';
-import ContextStackerIcon from '@mui/icons-material/BackupTable';
-import Atmosphere from './components/Atmosphere';
-import SavingsIcon from '@mui/icons-material/Savings';
-import { Bank } from './components/Banksy';
-import { Index as ContextStacker } from './wireframes/context-stacking/Index';
-import { Loading } from './components/Loading';
 
 const localState = get(appName) || { ui: { drawers: {} } };
 
-export const routes = [
-  {
-    route: '/panic',
-    path: '/panic',
-    icon: PanicIcon,
-    text: 'Panic',
-    component: Loading,
-  },
-  {
-    route: '/context',
-    path: '/context',
-    icon: ContextStackerIcon,
-    text: 'Context Stacker',
-    component: ContextStacker,
-  },
-  {
-    path: '/nodemanager/:nodeId',
-    component: NodeManager,
-  },
-  {
-    route: '/nodemanager',
-    path: '/nodemanager',
-    icon: Article,
-    text: 'Node Manager',
-    component: NodeManager,
-  },
-  {
-    route: '/atmosphere',
-    path: '/atmosphere',
-    icon: AtmosphereIcon,
-    text: 'Atmosphere',
-    component: Atmosphere,
-  },
-  {
-    path: '/atmosphere/:nodeId',
-    component: Atmosphere,
-  },
-  {
-    route: '/judgement',
-    path: '/judgement',
-    icon: JudgementIcon,
-    text: 'Judgement',
-    component: Office,
-  },
-  {
-    route: '/bank',
-    path: '/bank',
-    icon: SavingsIcon,
-    text: 'Bank',
-    component: Bank,
-  },
-];
+export const WS_URL = `ws://${WS_SERVER_HOST}:${WS_SERVER_PORT}`;
 
 export const initialState = {
   ...sharedInitialState,

@@ -1,6 +1,8 @@
 import { reducer as rootReducer, actionTypes as rootActionTypes } from '../../../shared/lib/redux/reducer';
 import { action } from '../../../shared/all';
+import { client } from '../../../shared/lib/redux/actionTypes';
 
+const debugReducer = true;
 export const initialState = {
   entities: [],
   nodes: [],
@@ -35,10 +37,13 @@ export const actionTypes = {
   NODE_REPLACE: 'NODE_REPLACE',
 };
 
-const clientReducer = (state, { type, payload }) => {
-  const { entities } = state;
+const clientReducer = (state = initialState, { type, payload }) => {
+  const reduxInit = type.indexOf('@@redux/INIT') !== -1;
+  if (!reduxInit && debugReducer) {
+    console.log(type, payload);
+  }
   switch (type) {
-    case actionTypes.NODE_REPLACE:
+    case client.REPLACE_NODE:
       if (payload === undefined) throw new Error(`${type}: Payload is undefined`);
       const newNodes = (payload instanceof Array ? payload : [payload]).filter((newNode) => {
         const oldNode = state.nodes.find(({ _id }) => _id === newNode._id);
@@ -46,11 +51,13 @@ const clientReducer = (state, { type, payload }) => {
       });
       if (newNodes.length) {
         const nodeIds = newNodes.filter(({ _id }) => _id !== undefined).map(({ _id }) => _id);
+        console.log('Inserting ', nodeIds);
         return {
           ...state,
           nodes: [...state.nodes.filter(({ _id }) => nodeIds.indexOf(_id) === -1), ...newNodes],
         };
       } else {
+        console.log('No new nodes remain, so, noop');
         return state;
       }
 
@@ -101,6 +108,9 @@ const clientReducer = (state, { type, payload }) => {
           },
         },
       };
+  }
+  if (!reduxInit) {
+    console.error('Unhandled action type: ', type);
   }
   return state;
 };
