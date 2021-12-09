@@ -7,21 +7,28 @@ import { useParams } from 'react-router';
 import { NodePicker } from './NodePicker';
 import { getNonVirtualPathsByName } from '../../../shared/relations/all';
 import { Link } from '../../components/Branded';
+import { useNavigate } from 'react-router-dom';
 
 const nodeType = 'Message';
 const upstreamPath = getNonVirtualPathsByName('stream');
 
 export const Index = ({ id, as = 'master' }) => {
+  const navigate = useNavigate();
   const propNodeId = id;
   const urlNodeId = useParams().nodeId;
   const nodeId = propNodeId || urlNodeId;
   const { nodes, createNode, topLevelNodes } = useNodes([nodeId]);
   const [node] = nodes;
 
+  const navigateToNode = ({ _id }) => {
+    const url = `/experiment1/${_id}/`;
+    navigate(url, { replace: true });
+  };
+
   if (!node || !nodeId)
     return (
       <>
-        <NodePicker />
+        <NodePicker nodeType={nodeType} onPick={([node]) => navigateToNode(node)} />
 
         {topLevelNodes.map((node, index) => (
           <div key={node._id}>
@@ -46,7 +53,7 @@ export const Index = ({ id, as = 'master' }) => {
         <>
           <Index as='upstream' id={nodeId} />
 
-          <NodePicker />
+          <NodePicker nodeType={nodeType} onPick={([node]) => navigateToNode(node)} />
         </>
       );
 

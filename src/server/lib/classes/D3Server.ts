@@ -47,7 +47,7 @@ class D3Server extends Kernel {
       ws.send(JSON.stringify(response));
     };
 
-    if (debug.messages) this.log('MSG ', { action: { type, payload }, promiseId });
+    if (debug.messages) this.log('MSG ', { type, payload, promiseId });
     try {
       switch (type) {
         case server.GET_TOP_LEVEL_NODES:
@@ -68,23 +68,14 @@ class D3Server extends Kernel {
           });
           break;
 
-        // case server.ABSORB_NODES:
-        //   const node = new DefaultModel(payload);
-        //   node
-        //     .save()
-        //     .then((node) => {
-        //       respondWith({
-        //         type: client.ABSORB_NODE,
-        //         payload: node,
-        //       });
-        //     })
-        //     .catch((e) => {
-        //       respondWith({
-        //         type: client.ERROR,
-        //         payload: e,
-        //       });
-        //     });
-        //   break;
+        case server.ABSORB_NODES:
+          Promise.all(payload.map((nodeData) => new DefaultModel(nodeData).save())).then((newNodes) => {
+            respondWith({
+              type: client.ABSORB_NODES,
+              payload: newNodes,
+            });
+          });
+          break;
 
         default:
           this.log('Un-handled message type: ', type, payload);
