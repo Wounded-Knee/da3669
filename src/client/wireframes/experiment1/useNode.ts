@@ -14,11 +14,16 @@ export const useNode = (id) => {
     });
   });
 
+  const createNode = (data) => {
+    action(server.ABSORB_NODE, data);
+  };
+
   useEffect(() => {
     !node && action(server.GET_NODE_BY_ID, id);
   }, [id]);
 
   return {
     node,
+    createNode,
   };
 };

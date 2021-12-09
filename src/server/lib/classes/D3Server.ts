@@ -34,25 +34,50 @@ class D3Server extends Kernel {
     const respondWith = (data) => ws.send(JSON.stringify(data));
     const { type, payload } = JSON.parse(decoder.decode(message));
     if (debug.messages) this.log('MSG ', type, payload);
-    switch (type) {
-      case server.GET_NODE_BY_ID:
-        const _id = payload;
-        const populatePaths = getNonVirtualPaths();
-        const gotById = await DefaultModel.findById(_id).populate(populatePaths);
-        const { model } = getNodeTypeByName(gotById.kind);
-        const downStreams = await model.find({ upstreams: _id });
+    try {
+      switch (type) {
+        case server.GET_NODE_BY_ID:
+          const _id = payload;
+          const populatePaths = getNonVirtualPaths();
+          const gotById = await DefaultModel.findById(_id).populate(populatePaths);
+          const { model } = getNodeTypeByName(gotById.kind);
+          const downStreams = await model.find({ upstreams: _id });
 
-        [...downStreams, gotById._doc].forEach((node) => {
-          respondWith({
-            type: client.REPLACE_NODE,
-            payload: node,
+          [...downStreams, gotById._doc].forEach((node) => {
+            respondWith({
+              type: client.ABSORB_NODE,
+              payload: node,
+            });
           });
-        });
-        break;
+          break;
 
-      default:
-        this.log('Un-handled message type: ', type, payload);
-        break;
+        case server.ABSORB_NODE:
+          const node = new DefaultModel(payload);
+          node
+            .save()
+            .then((node) => {
+              respondWith({
+                type: client.ABSORB_NODE,
+                payload: node,
+              });
+            })
+            .catch((e) => {
+              respondWith({
+                type: client.ERROR,
+                payload: e,
+              });
+            });
+          break;
+
+        default:
+          this.log('Un-handled message type: ', type, payload);
+          break;
+      }
+    } catch (e) {
+      respondWith({
+        type: client.ERROR,
+        payload: e.message,
+      });
     }
   }
 

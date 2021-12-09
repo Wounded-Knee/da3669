@@ -6,21 +6,30 @@ import { useNode } from './useNode';
 import { useParams } from 'react-router';
 import Autocomplete from '@mui/material/Autocomplete';
 import { TextField } from '@mui/material';
+import { getNonVirtualPathsByName } from '../../../shared/relations/all';
+
+const nodeType = 'Message';
+const replyPath = getNonVirtualPathsByName('reply');
 
 export const Index = ({ id, as = 'master' }) => {
   const [inputValue, setInputValue] = useState('');
   const propNodeId = id;
   const urlNodeId = useParams().nodeId;
   const nodeId = propNodeId || '' + urlNodeId;
-  const { node } = useNode(nodeId);
+  const { node, createNode } = useNode(nodeId);
 
   if (!node) return <Loading />;
 
-  const { text = '', upstreams = [], downstreams = [] } = node;
+  const { text = '', parents = [], downstreams = [] } = node;
 
   const onCommit = (value) => {
     console.log('User Commit ', value);
     setInputValue('');
+    createNode({
+      text: value,
+      kind: nodeType,
+      [replyPath]: [nodeId],
+    });
   };
 
   console.info('Debug Index.tsx', {
@@ -68,7 +77,7 @@ export const Index = ({ id, as = 'master' }) => {
     case 'upstream':
       return (
         <>
-          {upstreams.map(({ _id }, index) => (
+          {parents.map(({ _id }, index) => (
             <Index key={index} as='upstream' id={_id} />
           ))}
 

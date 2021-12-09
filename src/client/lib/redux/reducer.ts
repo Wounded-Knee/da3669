@@ -1,30 +1,9 @@
 import { reducer as rootReducer, actionTypes as rootActionTypes } from '../../../shared/lib/redux/reducer';
 import { action } from '../../../shared/all';
 import { client } from '../../../shared/lib/redux/actionTypes';
+import { initialState } from '../../config';
 
 const debugReducer = true;
-export const initialState = {
-  entities: [],
-  nodes: [],
-  documents: [],
-  user: {
-    id: null,
-  },
-  ui: {
-    drawers: {
-      info: false,
-      data: false,
-    },
-    ready: {
-      webSocket: false,
-    },
-    docStore: {
-      currentDoc: {},
-    },
-    selectedEntityIndex: null,
-    selectedEntityHistory: [],
-  },
-};
 
 export const actionTypes = {
   ...rootActionTypes,
@@ -43,7 +22,7 @@ const clientReducer = (state = initialState, { type, payload }) => {
     console.log(type, payload);
   }
   switch (type) {
-    case client.REPLACE_NODE:
+    case client.ABSORB_NODE:
       if (payload === undefined) throw new Error(`${type}: Payload is undefined`);
       const newNodes = (payload instanceof Array ? payload : [payload]).filter((newNode) => {
         const oldNode = state.nodes.find(({ _id }) => _id === newNode._id);
@@ -51,29 +30,15 @@ const clientReducer = (state = initialState, { type, payload }) => {
       });
       if (newNodes.length) {
         const nodeIds = newNodes.filter(({ _id }) => _id !== undefined).map(({ _id }) => _id);
-        console.log('Inserting ', nodeIds);
+        if (debugReducer) console.log('Inserting ', nodeIds);
         return {
           ...state,
           nodes: [...state.nodes.filter(({ _id }) => nodeIds.indexOf(_id) === -1), ...newNodes],
         };
       } else {
-        console.log('No new nodes remain, so, noop');
+        if (debugReducer) console.log('No new nodes remain, so, noop');
         return state;
       }
-
-    case actionTypes.DOCSTORE_UPDATE:
-
-    case actionTypes.DOCSTORE_SET_CURRENT_DOC:
-      return {
-        ...state,
-        ui: {
-          ...state.ui,
-          docStore: {
-            ...state.ui.docStore,
-            currentDoc: payload,
-          },
-        },
-      };
 
     case actionTypes.SET_USERID:
       return {
