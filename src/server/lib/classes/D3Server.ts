@@ -7,9 +7,7 @@ import { App as uWS } from 'uWebSockets.js';
 import { getNonVirtualPaths, getNonVirtualPathsByName } from '../../../shared/relations/all';
 import { getNodeTypeByName, defaultNodeType } from '../../../shared/nodes/all';
 import { server, client } from '../../../shared/lib/redux/actionTypes';
-import { auth } from '../../config';
-import Passport from 'passport';
-import GoogleStrategy from 'passport-google-oauth20';
+import { setupPassport } from '../../authentication';
 
 const { model: DefaultModel } = defaultNodeType;
 
@@ -19,33 +17,6 @@ const debug = {
   responses: true,
   auth: true,
 };
-
-// Authentication
-Passport.serializeUser((user, done) => {
-  done(null, user.id);
-});
-
-Passport.deserializeUser((user, done) => {
-  done(null, user);
-});
-
-Passport.use(
-  new GoogleStrategy(
-    {
-      clientID: auth.google.clientId,
-      clientSecret: auth.google.clientSecret,
-      callbackURL: auth.callbackUrl,
-    },
-    function (token, tokenSecret, profile, done) {
-      // User.findOrCreate({ googleId: profile.id }, function (err, user) {
-      //   return done(err, user);
-      // });
-      if (debug.auth) console.log('GOOGLE: ', token, tokenSecret, profile);
-      done(null, profile);
-    },
-  ),
-);
-if (debug.auth) console.log(auth.callbackUrl);
 
 //@ts-ignore
 const decoder = new TextDecoder('utf-8');
@@ -144,15 +115,7 @@ class D3Server extends Kernel {
           httpServer.set('view engine', 'ejs');
 
           // Passport Authentication
-          httpServer.use(Passport.initialize());
-          httpServer.get('/google', Passport.authenticate('google', { scope: 'profile' }));
-          httpServer.get(
-            '/google/loginCallback',
-            Passport.authenticate('google', { failureRedirect: '/login' }),
-            (req, res) => {
-              res.redirect('/successfulLogin');
-            },
-          );
+          setupPassport(httpServer);
 
           // React
           httpServer.use('/assets', express.static(path.join(process.cwd(), 'assets')));
