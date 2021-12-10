@@ -2,7 +2,7 @@
 /** @jsx jsx */
 import React from 'react';
 import { css, jsx } from '@emotion/react';
-import { Divider, Drawer, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
+import { Divider, Drawer, List, ListItem, ListItemIcon, ListItemText, Link as MuiLink } from '@mui/material';
 import { NavLink } from 'react-router-dom';
 import { routes } from '../routes';
 
@@ -37,9 +37,14 @@ export const SideMenu: React.FunctionComponent = () => {
       <div css={styles.toolbar} />
       <List>
         {routes.map(
-          ({ route, icon: Icon, text }, index) =>
+          ({ route, icon: Icon, text, express }, index) =>
             Icon && (
-              <ListItem key={index} button component={NavLink} to={route}>
+              <ListItem
+                key={index}
+                button
+                component={express ? MuiLink : NavLink}
+                {...{ [express ? 'href' : 'to']: route }}
+              >
                 <ListItemIcon>
                   <Icon />
                 </ListItemIcon>

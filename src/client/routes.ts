@@ -81,6 +81,7 @@ export const routes = [
     path: '/google',
     icon: GoogleIcon,
     text: 'Login',
+    express: true,
     component: Bank,
   },
 ];
