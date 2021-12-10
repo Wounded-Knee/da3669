@@ -1,10 +1,10 @@
 export const shared = Object.freeze({
-  ABSORB_NODE: 'ABSORB_NODE',
+  ABSORB_NODES: 'ABSORB_NODES',
 });
 
 export const server = Object.freeze({
   ...shared,
-  GET_NODE_BY_ID: 'GET_NODE_BY_ID',
+  GET_NODES_BY_ID: 'GET_NODES_BY_ID',
   GET_TOP_LEVEL_NODES: 'GET_TOP_LEVEL_NODES',
 });
 

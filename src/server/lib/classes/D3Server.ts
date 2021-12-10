@@ -13,6 +13,7 @@ const { model: DefaultModel } = defaultNodeType;
 const debug = {
   messages: true,
   errors: true,
+  responses: true,
 };
 
 //@ts-ignore
@@ -32,52 +33,48 @@ class D3Server extends Kernel {
 
   async message(ws, message, isBinary) {
     // called when a client sends a message
-    const respondWith = (data) => ws.send(JSON.stringify(data));
-    const { type, payload } = JSON.parse(decoder.decode(message));
-    if (debug.messages) this.log('MSG ', type, payload);
+    const {
+      action: { type, payload },
+      promiseId,
+    } = JSON.parse(decoder.decode(message));
+
+    const respondWith = (action) => {
+      const response = {
+        action,
+        promiseId,
+      };
+      if (debug.responses) console.log('RESPONSE ', response);
+      ws.send(JSON.stringify(response));
+    };
+
+    if (debug.messages) this.log('MSG ', { type, payload, promiseId });
     try {
       switch (type) {
         case server.GET_TOP_LEVEL_NODES:
-          const nodes = await DefaultModel.find({ upstreams: { $eq: [] } });
-          nodes.forEach((node) => {
-            respondWith({
-              type: client.ABSORB_NODE,
-              payload: node,
-            });
+          respondWith({
+            type: client.ABSORB_NODES,
+            payload: await DefaultModel.find({ upstreams: { $eq: [] } }),
           });
           break;
 
-        case server.GET_NODE_BY_ID:
-          const _id = payload;
+        case server.GET_NODES_BY_ID:
+          const nodeIdArray = payload;
           const populatePaths = getNonVirtualPaths();
-          const gotById = await DefaultModel.findById(_id).populate(populatePaths);
-          const { model } = getNodeTypeByName(gotById.kind);
-          const downStreams = await model.find({ upstreams: _id });
-
-          [...downStreams, gotById._doc].forEach((node) => {
-            respondWith({
-              type: client.ABSORB_NODE,
-              payload: node,
-            });
+          respondWith({
+            type: client.ABSORB_NODES,
+            payload: await DefaultModel.find({
+              $or: [{ _id: { $in: nodeIdArray } }, { upstreams: { $in: nodeIdArray } }],
+            }),
           });
           break;
 
-        case server.ABSORB_NODE:
-          const node = new DefaultModel(payload);
-          node
-            .save()
-            .then((node) => {
-              respondWith({
-                type: client.ABSORB_NODE,
-                payload: node,
-              });
-            })
-            .catch((e) => {
-              respondWith({
-                type: client.ERROR,
-                payload: e,
-              });
+        case server.ABSORB_NODES:
+          Promise.all(payload.map((nodeData) => new DefaultModel(nodeData).save())).then((newNodes) => {
+            respondWith({
+              type: client.ABSORB_NODES,
+              payload: newNodes,
             });
+          });
           break;
 
         default:

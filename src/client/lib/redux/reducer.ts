@@ -1,15 +1,18 @@
 import { client } from '../../../shared/lib/redux/actionTypes';
 import { initialState } from '../../config';
 
-const debugReducer = false;
+const debug = {
+  actions: false,
+  noop: true,
+};
 
 export const reducer = (state = initialState, { type, payload }) => {
   const reduxInit = type.indexOf('@@redux/INIT') !== -1;
-  if (!reduxInit && debugReducer) {
+  if (!reduxInit && debug.actions) {
     console.log(type, payload);
   }
   switch (type) {
-    case client.ABSORB_NODE:
+    case client.ABSORB_NODES:
       if (payload === undefined) throw new Error(`${type}: Payload is undefined`);
       const newNodes = (payload instanceof Array ? payload : [payload]).filter((newNode) => {
         const oldNode = state.nodes.find(({ _id }) => _id === newNode._id);
@@ -22,6 +25,7 @@ export const reducer = (state = initialState, { type, payload }) => {
           nodes: [...state.nodes.filter(({ _id }) => nodeIds.indexOf(_id) === -1), ...newNodes],
         };
       } else {
+        if (debug.noop) console.log('NOOP ', type, payload);
         return state;
       }
 
