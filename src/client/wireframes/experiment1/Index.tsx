@@ -9,6 +9,7 @@ import { getNonVirtualPathsByName } from '../../../shared/relations/all';
 import { Link } from '../../components/Branded';
 import { useNavigate } from 'react-router-dom';
 
+const maxDepth = 10;
 const debug = {
   variables: true,
 };
@@ -16,7 +17,7 @@ const urlPath = `/experiment1/`;
 const nodeType = 'Message';
 const upstreamPath = getNonVirtualPathsByName('stream');
 
-export const Index = ({ id, as = 'master' }) => {
+export const Index = ({ id, as = 'master', depth = 0 }) => {
   const navigate = useNavigate();
   const propNodeId = id;
   const urlNodeId = useParams().nodeId;
@@ -28,23 +29,22 @@ export const Index = ({ id, as = 'master' }) => {
   const nodePickerCreateNodeData = (value) => ({
     kind: nodeType,
     text: value,
-    [upstreamPath]: nodeId ? [nodeId] : [],
+    [upstreamPath]: nodeIdArray,
   });
 
   const navigateToNode = ({ _id }) => {
     const url = `${urlPath}${_id}/`;
-    navigate(url, { replace: true });
+    navigate(url);
   };
+
+  if (depth >= maxDepth) {
+    return <div>Max Depth Reached</div>;
+  }
 
   if (!node || !nodeId) {
     return (
       <>
-        <NodePicker
-          label='Speak'
-          nodeGenerator={nodePickerCreateNodeData}
-          nodeType={nodeType}
-          onPick={([node]) => navigateToNode(node)}
-        />
+        <NodePicker label='Speak' nodeGenerator={nodePickerCreateNodeData} onPick={([node]) => navigateToNode(node)} />
 
         {topLevelNodes.map((node, index) => (
           <div key={node._id}>
@@ -70,13 +70,12 @@ export const Index = ({ id, as = 'master' }) => {
     case 'master':
       return (
         <>
-          <Index key={nodeId} as='upstream' id={nodeId} />
+          <Index key={nodeId} as='upstream' depth={depth + 1} id={nodeId} />
 
           <NodePicker
             nodeGenerator={nodePickerCreateNodeData}
             label='Reply'
             options={downstreams}
-            nodeType={nodeType}
             onPick={([node]) => navigateToNode(node)}
           />
         </>
@@ -85,8 +84,8 @@ export const Index = ({ id, as = 'master' }) => {
     case 'upstream':
       return (
         <>
-          {upstreams.map(({ _id }, index) => (
-            <Index key={_id} as='upstream' id={_id} />
+          {upstreams.map((_id, index) => (
+            <Index key={_id} as='upstream' depth={depth + 1} id={_id} />
           ))}
 
           <View note='upstream' node={node} />
