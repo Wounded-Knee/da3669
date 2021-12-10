@@ -64,7 +64,7 @@ class D3Server extends Kernel {
             type: client.ABSORB_NODES,
             payload: await DefaultModel.find({
               $or: [{ _id: { $in: nodeIdArray } }, { upstreams: { $in: nodeIdArray } }],
-            }).populate(populatePaths),
+            }),
           });
           break;
 

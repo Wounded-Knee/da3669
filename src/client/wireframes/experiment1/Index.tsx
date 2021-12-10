@@ -9,6 +9,10 @@ import { getNonVirtualPathsByName } from '../../../shared/relations/all';
 import { Link } from '../../components/Branded';
 import { useNavigate } from 'react-router-dom';
 
+const debug = {
+  variables: true,
+};
+const urlPath = `/experiment1/`;
 const nodeType = 'Message';
 const upstreamPath = getNonVirtualPathsByName('stream');
 
@@ -17,18 +21,30 @@ export const Index = ({ id, as = 'master' }) => {
   const propNodeId = id;
   const urlNodeId = useParams().nodeId;
   const nodeId = propNodeId || urlNodeId;
-  const { nodes, createNode, topLevelNodes } = useNodes([nodeId]);
+  const nodeIdArray = nodeId ? [nodeId] : [];
+  const { nodes, topLevelNodes } = useNodes(nodeIdArray);
   const [node] = nodes;
 
+  const nodePickerCreateNodeData = (value) => ({
+    kind: nodeType,
+    text: value,
+    [upstreamPath]: nodeId ? [nodeId] : [],
+  });
+
   const navigateToNode = ({ _id }) => {
-    const url = `/experiment1/${_id}/`;
+    const url = `${urlPath}${_id}/`;
     navigate(url, { replace: true });
   };
 
-  if (!node || !nodeId)
+  if (!node || !nodeId) {
     return (
       <>
-        <NodePicker nodeType={nodeType} onPick={([node]) => navigateToNode(node)} />
+        <NodePicker
+          label='Speak'
+          nodeGenerator={nodePickerCreateNodeData}
+          nodeType={nodeType}
+          onPick={([node]) => navigateToNode(node)}
+        />
 
         {topLevelNodes.map((node, index) => (
           <div key={node._id}>
@@ -37,31 +53,40 @@ export const Index = ({ id, as = 'master' }) => {
         ))}
       </>
     );
+  }
 
-  const { text = '', parents = [], downstreams = [] } = node;
+  const { text = '', upstreams = [], downstreams = [] } = node;
 
-  console.info('Debug Index.tsx', {
-    propNodeId,
-    nodeId,
-    node,
-    downstreams,
-  });
+  if (debug.variables)
+    console.info('Debug Index.tsx', {
+      as,
+      propNodeId,
+      nodeId,
+      node,
+      downstreams,
+    });
 
   switch (as) {
     case 'master':
       return (
         <>
-          <Index as='upstream' id={nodeId} />
+          <Index key={nodeId} as='upstream' id={nodeId} />
 
-          <NodePicker nodeType={nodeType} onPick={([node]) => navigateToNode(node)} />
+          <NodePicker
+            nodeGenerator={nodePickerCreateNodeData}
+            label='Reply'
+            options={downstreams}
+            nodeType={nodeType}
+            onPick={([node]) => navigateToNode(node)}
+          />
         </>
       );
 
     case 'upstream':
       return (
         <>
-          {parents.map(({ _id }, index) => (
-            <Index key={index} as='upstream' id={_id} />
+          {upstreams.map(({ _id }, index) => (
+            <Index key={_id} as='upstream' id={_id} />
           ))}
 
           <View note='upstream' node={node} />
@@ -76,12 +101,8 @@ export const Index = ({ id, as = 'master' }) => {
 const View = ({ node, note = '?' }) => {
   const { text, _id } = node;
   return (
-    <Link to={`/experiment1/${_id}`} title={note}>
+    <Link to={`${urlPath}${_id}/`} title={note}>
       {text}
     </Link>
   );
-};
-
-const Stalled = () => {
-  return <div>Stalled...</div>;
 };
