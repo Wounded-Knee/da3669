@@ -17,15 +17,19 @@ export const ws = new WebsocketBuilder(WS_URL)
   .onMessage((instance, { data }) => {
     const packet = JSON.parse(data);
     const { action, promiseId: packetPromiseId } = packet;
-    if (debug.action) console.log('ACTION ', action);
-    const { resolve, reject } = promises.find(({ promiseId }) => promiseId === packetPromiseId);
+    if (action) {
+      if (debug.action) console.log('ACTION ', action);
+      const promiseObj = promises.find(({ promiseId }) => promiseId === packetPromiseId);
 
-    if (action.type === 'ERROR') {
-      if (debug.errors) console.error(action);
-      reject(action);
+      if (action.type === 'ERROR') {
+        if (debug.errors) console.error(action);
+        if (promiseObj) promiseObj.reject(action);
+      } else {
+        if (promiseObj) promiseObj.resolve(action);
+        store.dispatch(action);
+      }
     } else {
-      resolve(action);
-      store.dispatch(action);
+      console.error('Non-Action Message Received: ', packet);
     }
   })
   .build();

@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 
 const maxDepth = 10;
 const debug = {
-  variables: true,
+  variables: false,
 };
 const urlPath = `/experiment1/`;
 const nodeType = 'Message';

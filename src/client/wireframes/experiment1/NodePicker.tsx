@@ -6,6 +6,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import { TextField } from '@mui/material';
 import { dispatch } from './webSocket';
 import { server } from '../../../shared/lib/redux/actionTypes';
+import { v4 as uuidv4 } from 'uuid'; /* Ridiculous pt I */
 
 export const NodePicker = ({
   options = [],
@@ -13,22 +14,20 @@ export const NodePicker = ({
   onPick = (nodes) => void 0,
   label = 'Node Picker',
 }) => {
-  const [inputValue, setInputValue] = useState('');
-  const [createdNodes, setCreatedNodes] = useState([]);
-
-  const onCommit = (value) => {
-    console.log('User Commit ', value);
-    setInputValue('');
-    dispatch({
-      type: server.ABSORB_NODES,
-      payload: [nodeGenerator(value)],
-    }).then(({ payload: newNodes }) => onPick(newNodes));
-  };
+  const [chosenValue, setChosenValue] = useState('');
 
   const onChange = (event, value, reason) => {
+    setChosenValue('');
     switch (reason) {
+      case 'createOption':
+        dispatch({
+          type: server.ABSORB_NODES,
+          payload: [nodeGenerator(value)],
+        }).then(({ payload: newNodes }) => onPick(newNodes));
       case 'selectOption':
         onPick([value]);
+        break;
+      case 'blur':
         break;
       default:
         console.log('onChange', event, value, reason);
@@ -38,15 +37,15 @@ export const NodePicker = ({
 
   return (
     <Autocomplete
-      freeSolo
       id='NodePicker'
-      disableClearable
+      key={uuidv4()} /* Ridiculous pt II */
+      freeSolo
       autoComplete
       autoSelect
+      blurOnSelect
+      clearOnBlur
       onChange={onChange}
-      onKeyDown={({ key }) => key === 'Enter' && onCommit(inputValue)}
-      inputValue={inputValue}
-      onInputChange={(event, value) => setInputValue(value)}
+      value={chosenValue}
       options={options}
       getOptionLabel={(option) => option.text || option}
       isOptionEqualToValue={({ text = '' }, value = '') =>
