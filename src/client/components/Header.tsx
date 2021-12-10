@@ -1,14 +1,17 @@
 /** @jsx jsx */
-import React from 'react';
+import React, { useContext } from 'react';
 import { css, jsx } from '@emotion/react';
 import { AppBar, Toolbar, Typography, Grid, Button } from '@mui/material';
 import StorageIcon from '@mui/icons-material/Storage';
 import InfoIcon from '@mui/icons-material/Info';
 import { headerText, clownTitle } from '../config';
 import { useRainbow } from '../lib/useRainbow';
+import { PassportContext } from './PassportContext';
 
 const headerTextArray = headerText.split('');
 export const Header: React.FunctionComponent = () => {
+  const userProfile = useContext(PassportContext);
+
   const styles = {
     appBar: css`
       background-color: ${useRainbow()};
@@ -28,6 +31,7 @@ export const Header: React.FunctionComponent = () => {
       min-height: 50px !important;
     `,
   };
+
   return (
     <AppBar position='fixed' css={styles.appBar}>
       <Toolbar css={styles.toolbar}>
@@ -56,6 +60,7 @@ export const Header: React.FunctionComponent = () => {
           </Grid>
           <Grid item xs={1}>
             {/* User Select */}
+            {userProfile.given_name}
           </Grid>
           <Grid item xs={1}>
             <Button onClick={() => core.uiSetDrawer('info')}>

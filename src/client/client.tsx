@@ -4,14 +4,14 @@ import { App } from './App';
 import { Provider } from 'react-redux';
 import { store } from './lib/redux/store';
 import { Theme } from './components/Theme';
-import { Passport } from './components/Passport';
+import { PassportProvider } from './components/PassportContext';
 
 ReactDOM.render(
   <Provider store={store}>
     <Theme>
-      <Passport>
+      <PassportProvider>
         <App />
-      </Passport>
+      </PassportProvider>
     </Theme>
   </Provider>,
   document.getElementById('app'),

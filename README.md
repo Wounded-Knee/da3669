@@ -60,6 +60,7 @@
 - [React v17](https://facebook.github.io/react/)
 - [React router v6](https://reactrouter.com/)
 - [MongoDB](https://www.mongodb.com/)
+- [Passport](https://www.passportjs.org/)
 - [MUI](https://mui.com/)
 - [Jest](https://jestjs.io/)
 - [Styled Components](https://github.com/styled-components/styled-components)
