@@ -24,4 +24,13 @@ const { version: VERSION } = PackageJson;
 // HTTP Server
 const HTTP_SERVER_PORT = parseInt(process.env.PORT) || _HTTP_SERVER_PORT;
 
+// Authentication
+export const auth = {
+  callbackUrl: `http://${WS_SERVER_HOST}:${HTTP_SERVER_PORT}/google/loginCallback`,
+  google: {
+    clientId: process.env.AUTH_GOOGLE_CLIENT_ID,
+    clientSecret: process.env.AUTH_GOOGLE_CLIENT_SECRET,
+  },
+};
+
 export { relationTypes, IS_DEV, VERSION, WEBPACK_PORT, HTTP_SERVER_PORT, WS_SERVER_HOST, WS_SERVER_PORT };

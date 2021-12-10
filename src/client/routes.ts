@@ -4,6 +4,7 @@ import { Chat } from './wireframes/chat/Chat';
 import { Office } from './components/Office';
 import AtmosphereIcon from '@mui/icons-material/Language';
 import JudgementIcon from '@mui/icons-material/Gavel';
+import GoogleIcon from '@mui/icons-material/Google';
 import ContextStackerIcon from '@mui/icons-material/BackupTable';
 import Atmosphere from './components/Atmosphere';
 import SavingsIcon from '@mui/icons-material/Savings';
@@ -73,6 +74,13 @@ export const routes = [
     path: '/bank',
     icon: SavingsIcon,
     text: 'Bank',
+    component: Bank,
+  },
+  {
+    route: '/google',
+    path: '/google',
+    icon: GoogleIcon,
+    text: 'Login',
     component: Bank,
   },
 ];

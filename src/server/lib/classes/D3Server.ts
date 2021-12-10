@@ -7,6 +7,7 @@ import { App as uWS } from 'uWebSockets.js';
 import { getNonVirtualPaths, getNonVirtualPathsByName } from '../../../shared/relations/all';
 import { getNodeTypeByName, defaultNodeType } from '../../../shared/nodes/all';
 import { server, client } from '../../../shared/lib/redux/actionTypes';
+import { setupPassport } from '../../authentication';
 
 const { model: DefaultModel } = defaultNodeType;
 
@@ -14,6 +15,7 @@ const debug = {
   messages: true,
   errors: true,
   responses: true,
+  auth: true,
 };
 
 //@ts-ignore
@@ -112,6 +114,10 @@ class D3Server extends Kernel {
           this.express = httpServer;
           httpServer.set('view engine', 'ejs');
 
+          // Passport Authentication
+          setupPassport(httpServer);
+
+          // React
           httpServer.use('/assets', express.static(path.join(process.cwd(), 'assets')));
           httpServer.use(staticsRouter());
           httpServer.use(pagesRouter());
