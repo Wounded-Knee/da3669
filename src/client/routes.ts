@@ -1,18 +1,24 @@
-import { Article, ReportGmailerrorred as PanicIcon } from '@mui/icons-material';
+// Icons
+import {
+  Article,
+  ReportGmailerrorred as PanicIcon,
+  Language as AtmosphereIcon,
+  Gavel as JudgementIcon,
+  Google as GoogleIcon,
+  BackupTable as ContextStackerIcon,
+  Savings as SavingsIcon,
+  Science as ExperimentIcon,
+} from '@mui/icons-material';
+
+// Components
 import NodeManager from './wireframes/docstore/NodeManager';
 import { Chat } from './wireframes/chat/Chat';
 import { Office } from './components/Office';
-import AtmosphereIcon from '@mui/icons-material/Language';
-import JudgementIcon from '@mui/icons-material/Gavel';
-import GoogleIcon from '@mui/icons-material/Google';
-import ContextStackerIcon from '@mui/icons-material/BackupTable';
 import Atmosphere from './components/Atmosphere';
-import SavingsIcon from '@mui/icons-material/Savings';
 import { Bank } from './components/Banksy';
 import { Index as ContextStacker } from './wireframes/context-stacking/Index';
 import { Loading } from './components/Loading';
 import { Index as Experiment1 } from './wireframes/experiment1/Index';
-import ExperimentIcon from '@mui/icons-material/Science';
 
 export const routes = [
   {
@@ -40,48 +46,48 @@ export const routes = [
     text: 'Experiment 1',
     component: Experiment1,
   },
-  {
-    path: '/nodemanager/:nodeId',
-    component: NodeManager,
-  },
-  {
-    route: '/nodemanager',
-    path: '/nodemanager',
-    icon: Article,
-    text: 'Node Manager',
-    component: NodeManager,
-  },
-  {
-    route: '/atmosphere',
-    path: '/atmosphere',
-    icon: AtmosphereIcon,
-    text: 'Atmosphere',
-    component: Atmosphere,
-  },
-  {
-    path: '/atmosphere/:nodeId',
-    component: Atmosphere,
-  },
-  {
-    route: '/judgement',
-    path: '/judgement',
-    icon: JudgementIcon,
-    text: 'Judgement',
-    component: Office,
-  },
-  {
-    route: '/bank',
-    path: '/bank',
-    icon: SavingsIcon,
-    text: 'Bank',
-    component: Bank,
-  },
+  // {
+  //   path: '/nodemanager/:nodeId',
+  //   component: NodeManager,
+  // },
+  // {
+  //   route: '/nodemanager',
+  //   path: '/nodemanager',
+  //   icon: Article,
+  //   text: 'Node Manager',
+  //   component: NodeManager,
+  // },
+  // {
+  //   route: '/atmosphere',
+  //   path: '/atmosphere',
+  //   icon: AtmosphereIcon,
+  //   text: 'Atmosphere',
+  //   component: Atmosphere,
+  // },
+  // {
+  //   path: '/atmosphere/:nodeId',
+  //   component: Atmosphere,
+  // },
+  // {
+  //   route: '/judgement',
+  //   path: '/judgement',
+  //   icon: JudgementIcon,
+  //   text: 'Judgement',
+  //   component: Office,
+  // },
+  // {
+  //   route: '/bank',
+  //   path: '/bank',
+  //   icon: SavingsIcon,
+  //   text: 'Bank',
+  //   component: Bank,
+  // },
   {
     route: '/google',
     path: '/google',
     icon: GoogleIcon,
     text: 'Login',
     express: true,
-    component: Bank,
+    component: Loading,
   },
 ];
