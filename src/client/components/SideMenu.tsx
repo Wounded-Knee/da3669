@@ -1,6 +1,6 @@
 /** @jsxFrag React.Fragment */
 /** @jsx jsx */
-import React from 'react';
+import React, { useState } from 'react';
 import { css, jsx } from '@emotion/react';
 import { Divider, Drawer, List, ListItem, ListItemIcon, ListItemText, Link as MuiLink } from '@mui/material';
 import { NavLink } from 'react-router-dom';
@@ -22,18 +22,14 @@ export const SideMenu: React.FunctionComponent = () => {
     `,
   };
 
-  return (
-    <Drawer
-      sx={{
-        width: drawerWidth,
-        flexShrink: 0,
-        '& .MuiDrawer-paper': {
-          width: drawerWidth,
-          boxSizing: 'border-box',
-        },
-      }}
-      variant='permanent'
-    >
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
+
+  const drawerContents = (
+    <>
       <div css={styles.toolbar} />
       <List>
         {routes.map(
@@ -54,6 +50,39 @@ export const SideMenu: React.FunctionComponent = () => {
         )}
       </List>
       <Divider />
-    </Drawer>
+    </>
+  );
+
+  return (
+    <>
+      <Drawer
+        variant='temporary'
+        open={mobileOpen}
+        onClose={handleDrawerToggle}
+        ModalProps={{
+          keepMounted: true, // Better open performance on mobile.
+        }}
+        sx={{
+          display: { xs: 'block', sm: 'none' },
+          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+        }}
+      >
+        {drawerContents}
+      </Drawer>
+      <Drawer
+        sx={{
+          display: { xs: 'none', sm: 'block' },
+          width: drawerWidth,
+          flexShrink: 0,
+          '& .MuiDrawer-paper': {
+            width: drawerWidth,
+            boxSizing: 'border-box',
+          },
+        }}
+        variant='permanent'
+      >
+        {drawerContents}
+      </Drawer>
+    </>
   );
 };
