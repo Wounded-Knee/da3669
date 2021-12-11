@@ -42,9 +42,13 @@ export const Header: React.FunctionComponent = () => {
       <Toolbar css={styles.toolbar}>
         <Grid container alignItems='center'>
           <Grid item xs={1}>
-            <Button onClick={() => dispatch({ type: client.DRAWER, payload: ['sideMenu'] })}>
-              <MenuIcon css={styles.buttons} />
-            </Button>
+            <MenuIcon
+              onClick={() => dispatch({ type: client.DRAWER, payload: ['sideMenu'] })}
+              sx={{
+                display: { xs: 'block', sm: 'none' },
+              }}
+              css={styles.buttons}
+            />
           </Grid>
           <Grid item xs={10}>
             <Typography variant='h5' noWrap css={styles.title}>
