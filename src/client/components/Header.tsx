@@ -6,13 +6,12 @@ import { Menu as MenuIcon, Storage as StorageIcon, Info as InfoIcon } from '@mui
 import { headerText, clownTitle } from '../config';
 import { PassportContext } from './PassportContext';
 import { useTheme } from '@mui/styles';
-import { store } from '../lib/redux/store';
+import { useDispatch } from 'react-redux';
 import { client } from '../../shared/lib/redux/actionTypes';
-
-const { dispatch } = store;
 
 const headerTextArray = headerText.split('');
 export const Header: React.FunctionComponent = () => {
+  const dispatch = useDispatch();
   const theme = useTheme();
   const userProfile = useContext(PassportContext);
 
