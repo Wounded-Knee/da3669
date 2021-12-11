@@ -34,6 +34,15 @@ class D3Server extends Kernel {
     this.log('How about we FUCK ON???');
   }
 
+  createUser(name, googleId = '', pictureUrl = '') {
+    const UserModel = getNodeTypeByName('User');
+    return new UserModel({
+      name,
+      googleId,
+      pictureUrl,
+    }).save();
+  }
+
   async message(ws, message, isBinary) {
     // called when a client sends a message
     const {
@@ -126,7 +135,7 @@ class D3Server extends Kernel {
           httpServer.set('view engine', 'ejs');
 
           // Passport Authentication
-          setupPassport(httpServer);
+          setupPassport(this);
 
           // React
           httpServer.use('/assets', express.static(path.join(process.cwd(), 'assets')));
