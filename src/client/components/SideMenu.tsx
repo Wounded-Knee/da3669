@@ -1,10 +1,13 @@
 /** @jsxFrag React.Fragment */
 /** @jsx jsx */
-import React from 'react';
+import React, { useState } from 'react';
 import { css, jsx } from '@emotion/react';
 import { Divider, Drawer, List, ListItem, ListItemIcon, ListItemText, Link as MuiLink } from '@mui/material';
 import { NavLink } from 'react-router-dom';
 import { routes } from '../routes';
+import { useSelector, useDispatch } from 'react-redux';
+import { getDrawerState } from '../wireframes/experiment1/selectors';
+import { client } from '../../shared/lib/redux/actionTypes';
 
 class NavLinkMui extends React.Component<any> {
   render() {
@@ -22,18 +25,15 @@ export const SideMenu: React.FunctionComponent = () => {
     `,
   };
 
-  return (
-    <Drawer
-      sx={{
-        width: drawerWidth,
-        flexShrink: 0,
-        '& .MuiDrawer-paper': {
-          width: drawerWidth,
-          boxSizing: 'border-box',
-        },
-      }}
-      variant='permanent'
-    >
+  const mobileOpen = useSelector(() => getDrawerState('sideMenu'));
+  const dispatch = useDispatch();
+
+  const handleDrawerToggle = () => {
+    dispatch({ type: client.DRAWER, payload: ['sideMenu'] });
+  };
+
+  const drawerContents = (
+    <>
       <div css={styles.toolbar} />
       <List>
         {routes.map(
@@ -41,6 +41,7 @@ export const SideMenu: React.FunctionComponent = () => {
             Icon && (
               <ListItem
                 key={index}
+                onClick={() => dispatch({ type: client.DRAWER, payload: ['sideMenu', false] })}
                 button
                 component={express ? MuiLink : NavLink}
                 {...{ [express ? 'href' : 'to']: route }}
@@ -54,6 +55,39 @@ export const SideMenu: React.FunctionComponent = () => {
         )}
       </List>
       <Divider />
-    </Drawer>
+    </>
+  );
+
+  return (
+    <>
+      <Drawer
+        variant='temporary'
+        open={mobileOpen}
+        onClose={handleDrawerToggle}
+        ModalProps={{
+          keepMounted: true, // Better open performance on mobile.
+        }}
+        sx={{
+          display: { xs: 'block', sm: 'none' },
+          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+        }}
+      >
+        {drawerContents}
+      </Drawer>
+      <Drawer
+        sx={{
+          display: { xs: 'none', sm: 'block' },
+          width: drawerWidth,
+          flexShrink: 0,
+          '& .MuiDrawer-paper': {
+            width: drawerWidth,
+            boxSizing: 'border-box',
+          },
+        }}
+        variant='permanent'
+      >
+        {drawerContents}
+      </Drawer>
+    </>
   );
 };

@@ -18,3 +18,5 @@ export const getNodesById = (nodeIdArray) => {
 
 export const getDownstreamsById = (id) =>
   store.getState().nodes.filter(({ upstreams }) => upstreams.indexOf(id) !== -1);
+
+export const getDrawerState = (drawerName) => store.getState().ui.drawers[drawerName];

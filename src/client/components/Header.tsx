@@ -2,14 +2,16 @@
 import React, { useContext } from 'react';
 import { css, jsx } from '@emotion/react';
 import { AppBar, Toolbar, Typography, Grid, Button } from '@mui/material';
-import StorageIcon from '@mui/icons-material/Storage';
-import InfoIcon from '@mui/icons-material/Info';
+import { Menu as MenuIcon, Storage as StorageIcon, Info as InfoIcon } from '@mui/icons-material';
 import { headerText, clownTitle } from '../config';
 import { PassportContext } from './PassportContext';
 import { useTheme } from '@mui/styles';
+import { useDispatch } from 'react-redux';
+import { client } from '../../shared/lib/redux/actionTypes';
 
 const headerTextArray = headerText.split('');
 export const Header: React.FunctionComponent = () => {
+  const dispatch = useDispatch();
   const theme = useTheme();
   const userProfile = useContext(PassportContext);
 
@@ -24,6 +26,7 @@ export const Header: React.FunctionComponent = () => {
     `,
     title: css`
       letter-spacing: 0.5em;
+      text-align: right;
     `,
     buttons: css`
       color: #fff;
@@ -37,6 +40,15 @@ export const Header: React.FunctionComponent = () => {
     <AppBar position='fixed' css={styles.appBar}>
       <Toolbar css={styles.toolbar}>
         <Grid container alignItems='center'>
+          <Grid item xs={1}>
+            <MenuIcon
+              onClick={() => dispatch({ type: client.DRAWER, payload: ['sideMenu'] })}
+              sx={{
+                display: { xs: 'block', sm: 'none' },
+              }}
+              css={styles.buttons}
+            />
+          </Grid>
           <Grid item xs={10}>
             <Typography variant='h5' noWrap css={styles.title}>
               {
@@ -65,7 +77,7 @@ export const Header: React.FunctionComponent = () => {
             {/* User Select */}
             {userProfile.given_name}
           </Grid>
-          <Grid item xs={1}>
+          {/* <Grid item xs={1}>
             <Button onClick={() => core.uiSetDrawer('info')}>
               <InfoIcon css={styles.buttons} />
             </Button>
@@ -73,7 +85,7 @@ export const Header: React.FunctionComponent = () => {
             <Button onClick={() => core.uiSetDrawer('data')}>
               <StorageIcon css={styles.buttons} />
             </Button>
-          </Grid>
+          </Grid> */}
         </Grid>
       </Toolbar>
     </AppBar>
