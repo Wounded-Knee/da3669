@@ -7,6 +7,7 @@ export const server = Object.freeze({
   GET_NODES_BY_ID: 'GET_NODES_BY_ID',
   GET_TOP_LEVEL_NODES: 'GET_TOP_LEVEL_NODES',
   READ_NODE: 'READ_NODE',
+  GET_USER_BY_SESSION_ID: 'GET_USER_BY_SESSION_ID',
 });
 
 export const client = Object.freeze({
@@ -16,4 +17,5 @@ export const client = Object.freeze({
   DRAWER: 'DRAWER',
   READY_WEBSOCKET: 'READY_WEBSOCKET',
   NOOP: 'NOOP',
+  SESSION_EXPIRED: 'SESSION_EXPIRED',
 });

@@ -49,8 +49,9 @@ export const Header: React.FunctionComponent = () => {
               css={styles.buttons}
             />
           </Grid>
-          <Grid item xs={10}>
+          <Grid item xs={11}>
             <Typography variant='h5' noWrap css={styles.title}>
+              {userProfile.name}{' '}
               {
                 /*clownTitle
                 ? headerTextArray.map((char, index) => {
@@ -72,10 +73,6 @@ export const Header: React.FunctionComponent = () => {
                 : */ headerText
               }
             </Typography>
-          </Grid>
-          <Grid item xs={1}>
-            {/* User Select */}
-            {userProfile.given_name}
           </Grid>
           {/* <Grid item xs={1}>
             <Button onClick={() => core.uiSetDrawer('info')}>

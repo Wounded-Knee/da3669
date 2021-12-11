@@ -1,7 +1,10 @@
 import { auth } from './config';
 import Passport from 'passport';
-import GoogleStrategy from 'passport-google-oauth20';
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { getNodeTypeByName, defaultNodeType } from '../shared/nodes/all';
+import { v4 as uuidv4 } from 'uuid';
+import cookieParser from 'cookie-parser';
+import { cookieName } from './config';
 
 const debug = {
   auth: false,
@@ -9,18 +12,21 @@ const debug = {
 
 // Authentication
 Passport.serializeUser((user, done) => {
-  done(null, user.id);
+  // @ts-ignore
+  done(null, user._id);
 });
 
-Passport.deserializeUser((user, done) => {
-  done(null, user);
+Passport.deserializeUser((_id, done) => {
+  const UserModel = getNodeTypeByName('User').model;
+  UserModel.findById(_id, (err, userNode) => {
+    if (!err) {
+      done(null, userNode);
+    } else {
+      done(err);
+    }
+  });
 });
 
-const userData = {
-  profile: {
-    _json: {},
-  },
-};
 Passport.use(
   new GoogleStrategy(
     {
@@ -54,19 +60,37 @@ Passport.use(
 );
 if (debug.auth) console.log(auth.callbackUrl);
 
+const sessions = [];
+
+export const getSessionById = (sessionId) => sessions.find(({ id }) => id === sessionId) || {};
+
 export const setupPassport = (d3Server) => {
   const { express } = d3Server;
+  express.use(cookieParser());
   express.use(Passport.initialize());
   express.use(Passport.session());
   express.get('/google', Passport.authenticate('google', { scope: 'profile' }));
   express.get('/google/loginCallback', Passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
-    const oneDayToSeconds = 24 * 60 * 60;
-    res.cookie('d3session', JSON.stringify(userData.profile._json), {
-      maxAge: oneDayToSeconds,
-      httpOnly: false,
-      secure: false,
-    });
-
+    console.log('Cookies ', req.cookies);
+    const sessionId = req.cookies[cookieName];
+    const { userId } = getSessionById(sessionId);
+    if (!sessionId || !userId) {
+      // Create Session
+      const session = {
+        id: uuidv4(),
+        userId: req.user._id,
+        date: Date.now(),
+      };
+      sessions.push(session);
+      const twoDays = 24 * 60 * 60 * 1000 * 2;
+      res.cookie(cookieName, session.id, {
+        maxAge: twoDays,
+        httpOnly: false,
+        secure: false,
+      });
+    } else {
+      console.log('Recognized user as ', getSessionById(sessionId).userId);
+    }
     res.redirect('/successfulLogin');
   });
 };

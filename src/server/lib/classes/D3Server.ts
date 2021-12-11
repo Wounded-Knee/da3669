@@ -7,7 +7,7 @@ import { App as uWS } from 'uWebSockets.js';
 import { getNonVirtualPaths, getNonVirtualPathsByName } from '../../../shared/relations/all';
 import { getNodeTypeByName, defaultNodeType } from '../../../shared/nodes/all';
 import { server, client } from '../../../shared/lib/redux/actionTypes';
-import { setupPassport } from '../../authentication';
+import { setupPassport, getSessionById } from '../../authentication';
 import session from 'express-session';
 
 const { model: DefaultModel } = defaultNodeType;
@@ -54,6 +54,23 @@ class D3Server extends Kernel {
     if (debug.messages) this.log('MSG ', { type, payload, promiseId });
     try {
       switch (type) {
+        case server.GET_USER_BY_SESSION_ID:
+          const sessionId = payload;
+          const session = getSessionById(sessionId);
+          const { userId } = session;
+          if (userId) {
+            console.log('userid ', userId);
+            respondWith({
+              type: client.ABSORB_NODES,
+              payload: await DefaultModel.findById(userId),
+            });
+          } else {
+            respondWith({
+              type: client.SESSION_EXPIRED,
+            });
+          }
+          break;
+
         case server.READ_NODE:
           if (debug.reads) this.log('READ: ', payload);
           respondWith({
