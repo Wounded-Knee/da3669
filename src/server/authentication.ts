@@ -31,7 +31,6 @@ Passport.use(
     function (token, tokenSecret, profile, done) {
       const UserModel = getNodeTypeByName('User').model;
       const query = { $and: [{ googleId: profile.id }, { googleId: { $ne: '' } }] };
-      console.log('Query ', query);
       UserModel.findOne(query, (err, userNode) => {
         if (!err && userNode) {
           // Found
@@ -58,19 +57,15 @@ if (debug.auth) console.log(auth.callbackUrl);
 export const setupPassport = (d3Server) => {
   const { express } = d3Server;
   express.use(Passport.initialize());
+  express.use(Passport.session());
   express.get('/google', Passport.authenticate('google', { scope: 'profile' }));
   express.get('/google/loginCallback', Passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
-    if (userData.profile._json) {
-      if (debug.auth) console.log('Storing cookie ', userData);
-      const oneDayToSeconds = 24 * 60 * 60;
-      res.cookie('userProfile', JSON.stringify(userData.profile._json), {
-        maxAge: oneDayToSeconds,
-        httpOnly: false,
-        secure: false,
-      });
-    } else {
-      if (debug.auth) console.log('No cookie for you');
-    }
+    const oneDayToSeconds = 24 * 60 * 60;
+    res.cookie('d3session', JSON.stringify(userData.profile._json), {
+      maxAge: oneDayToSeconds,
+      httpOnly: false,
+      secure: false,
+    });
 
     res.redirect('/successfulLogin');
   });

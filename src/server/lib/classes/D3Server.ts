@@ -8,6 +8,7 @@ import { getNonVirtualPaths, getNonVirtualPathsByName } from '../../../shared/re
 import { getNodeTypeByName, defaultNodeType } from '../../../shared/nodes/all';
 import { server, client } from '../../../shared/lib/redux/actionTypes';
 import { setupPassport } from '../../authentication';
+import session from 'express-session';
 
 const { model: DefaultModel } = defaultNodeType;
 
@@ -32,15 +33,6 @@ class D3Server extends Kernel {
     // this handler is called when a client opens a ws connection with the server
     this.sockets.push(ws);
     this.log('How about we FUCK ON???');
-  }
-
-  createUser(name, googleId = '', pictureUrl = '') {
-    const UserModel = getNodeTypeByName('User');
-    return new UserModel({
-      name,
-      googleId,
-      pictureUrl,
-    }).save();
   }
 
   async message(ws, message, isBinary) {
@@ -133,6 +125,7 @@ class D3Server extends Kernel {
           const httpServer = express();
           this.express = httpServer;
           httpServer.set('view engine', 'ejs');
+          httpServer.use(session({ resave: true, saveUninitialized: true, secret: 'Laura Ingalls Wilder' }));
 
           // Passport Authentication
           setupPassport(this);

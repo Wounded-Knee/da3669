@@ -25,7 +25,7 @@ export const Header: React.FunctionComponent = () => {
       z-index: 10000;
     `,
     title: css`
-      letter-spacing: 0.5em;
+      letter-spacing: ${headerText.length > 4 ? '0.5em' : 'inherit'};
       text-align: right;
     `,
     buttons: css`
