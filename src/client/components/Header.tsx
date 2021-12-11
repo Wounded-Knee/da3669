@@ -5,17 +5,18 @@ import { AppBar, Toolbar, Typography, Grid, Button } from '@mui/material';
 import StorageIcon from '@mui/icons-material/Storage';
 import InfoIcon from '@mui/icons-material/Info';
 import { headerText, clownTitle } from '../config';
-import { useRainbow } from '../lib/useRainbow';
 import { PassportContext } from './PassportContext';
+import { useTheme } from '@mui/styles';
 
 const headerTextArray = headerText.split('');
 export const Header: React.FunctionComponent = () => {
+  const theme = useTheme();
   const userProfile = useContext(PassportContext);
 
   const styles = {
     appBar: css`
-      background-color: ${useRainbow()};
-      border-top: 2px solid ${useRainbow(100, 60)};
+      background-color: ${theme.palette.secondary.dark};
+      border-top: 2px solid ${theme.palette.secondary.dark};
       box-shadow: -1px 22px 7px -19px rgba(0, 0, 0, 0.75) inset;
       text-shadow: black 1px 1px 3px;
       font-weight: bold;
@@ -38,7 +39,8 @@ export const Header: React.FunctionComponent = () => {
         <Grid container alignItems='center'>
           <Grid item xs={10}>
             <Typography variant='h5' noWrap css={styles.title}>
-              {clownTitle
+              {
+                /*clownTitle
                 ? headerTextArray.map((char, index) => {
                     const len = headerTextArray.length;
                     const range = 200;
@@ -55,7 +57,8 @@ export const Header: React.FunctionComponent = () => {
                       </span>
                     );
                   })
-                : headerText}
+                : */ headerText
+              }
             </Typography>
           </Grid>
           <Grid item xs={1}>
