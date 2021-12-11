@@ -43,12 +43,16 @@ class D3Server extends Kernel {
       promiseId,
     } = JSON.parse(decoder.decode(message));
 
+    const session = getSessionById(sessionId);
+    const userId = session ? session.userId : null;
+    console.log('Session ', session, userId);
+
     const respondWith = (action) => {
       const response = {
         action,
         promiseId,
       };
-      if (debug.responses) console.log('RESPONSE ', response);
+      if (debug.responses) this.log('RESPONSE ', response);
       ws.send(JSON.stringify(response));
     };
 
@@ -56,10 +60,7 @@ class D3Server extends Kernel {
     try {
       switch (type) {
         case server.GET_USER:
-          const session = getSessionById(sessionId);
-          const { userId } = session;
           if (userId) {
-            console.log('userid ', userId);
             respondWith({
               type: client.ABSORB_NODES,
               payload: await DefaultModel.findById(userId),
@@ -97,12 +98,25 @@ class D3Server extends Kernel {
           break;
 
         case server.ABSORB_NODES:
-          Promise.all(payload.map((nodeData) => new DefaultModel(nodeData).save())).then((newNodes) => {
-            respondWith({
-              type: client.ABSORB_NODES,
-              payload: newNodes,
+          if (userId) {
+            Promise.all(
+              payload.map((nodeData) =>
+                new DefaultModel({
+                  ...nodeData,
+                  author: userId,
+                }).save(),
+              ),
+            ).then((newNodes) => {
+              respondWith({
+                type: client.ABSORB_NODES,
+                payload: newNodes,
+              });
             });
-          });
+          } else {
+            respondWith({
+              type: client.SESSION_EXPIRED,
+            });
+          }
           break;
 
         default:

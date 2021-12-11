@@ -1,9 +1,8 @@
 /** @jsxFrag React.Fragment */
 /** @jsx jsx */
-// App
 import React, { FC } from 'react';
 import { css, jsx } from '@emotion/react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom'; // Pages
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { appName } from './config';
 import { set } from './lib/LocalStorage';
 import { store } from './lib/redux/store';
@@ -11,6 +10,7 @@ import { routes } from './routes';
 
 // MUI
 import { CssBaseline } from '@mui/material';
+import { Box } from '@mui/material';
 
 // Components
 import { Header } from './components/Header';
@@ -65,13 +65,18 @@ export const App: FC = () => {
         <InfoView />
         <main css={styles.main}>
           <div css={styles.toolbar} />
-          <div css={styles.vignette}>
+          <Box
+            css={styles.vignette}
+            sx={{
+              padding: { xs: '1em', sm: '3em' },
+            }}
+          >
             <Routes>
               {routes.map(({ path, component: Component }, index) => (
                 <Route key={index} path={path} element={<Component />} />
               ))}
             </Routes>
-          </div>
+          </Box>
         </main>
       </div>
     </BrowserRouter>

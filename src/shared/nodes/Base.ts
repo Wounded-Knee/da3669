@@ -7,6 +7,7 @@ export default {
   default: true,
   options: { discriminatorKey: 'kind', timestamps: true },
   schemaPaths: {
+    author: mongoose.Types.ObjectId,
     reads: [
       {
         user: mongoose.Types.ObjectId,
