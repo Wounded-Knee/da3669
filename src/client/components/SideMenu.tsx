@@ -1,6 +1,6 @@
 /** @jsxFrag React.Fragment */
 /** @jsx jsx */
-import React, { useState } from 'react';
+import React from 'react';
 import { css, jsx } from '@emotion/react';
 import { Divider, Drawer, List, ListItem, ListItemIcon, ListItemText, Link as MuiLink } from '@mui/material';
 import { NavLink } from 'react-router-dom';
