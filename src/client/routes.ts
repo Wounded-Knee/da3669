@@ -19,6 +19,7 @@ import { Bank } from './components/Banksy';
 import { Index as ContextStacker } from './wireframes/context-stacking/Index';
 import { Loading } from './components/Loading';
 import { Index as Experiment1 } from './wireframes/experiment1/Index';
+import { KungFury } from './components/KungFury';
 
 export const routes = [
   {
@@ -89,5 +90,10 @@ export const routes = [
     text: 'Login',
     express: true,
     component: Loading,
+  },
+  {
+    path: '/kungfury',
+    route: '/kungfury',
+    component: KungFury,
   },
 ];

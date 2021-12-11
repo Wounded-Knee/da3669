@@ -36,6 +36,18 @@ const styles = {
     box-shadow: inset 0 0 100px black;
     padding: 3em;
     min-height: 100vh;
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: column;
+    justify-content: start;
+    align-items: auto;
+    align-content: start;
+
+    &:before {
+      display: block;
+      content: ' ';
+      flex: 999 999 auto;
+    }
   `,
   toolbar: css`
     min-height: 50px;
