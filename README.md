@@ -1,4 +1,4 @@
-# DA3669: D3 Full-Stack Experiment
+# DA3669: D³ Prototype
 
 <img src="https://github.com/WAKlNYAN/da3669/raw/master/assets/d3.gif" width="150">
 
@@ -19,7 +19,7 @@
 
 ## Requirements
 
-- `NodeJs 12.13+`, `Chrome 79+` or `FireFox 72+`
+- `NodeJs 16.13.1+`, `Chrome 79+` or `FireFox 72+`
 
 ### Directory Layout
 
@@ -29,20 +29,8 @@
 ├── dist/                             # All the generated files will go here, and will run from this folder
 ├── src/                              # The source code of the application
 │   ├── client/                       # React app
-│   │   ├── components/               # React components
-│   │   │   └── entities/             # React components for display/edit of entities
-│   │   ├── lib/                      # Local libraries
-│   │   │   ├── classes/              # Classes
-│   │   │   └── redux/                # Redux store / reducer
 │   ├── server/                       # Express server app
-│   │   ├── lib/                      # Local libraries
-│   │   │   ├── classes/              # Classes
-│   │   │   └── redux/                # Redux store / reducer
-│   ├── shared/                       # The shared code between the client and the server
-│   │   ├── lib/                      # Local libraries
-│   │   │   ├── classes/              # Classes
-│   │   │   │   └── entities/         # Entity classes by entity type
-│   │   │   └── redux/                # Redux store / reducer
+│   └── shared/                       # The shared code between the client and the server
 ├── assets/                           # images, css, jsons etc.
 ├── .eslintrc                         # es-lint configuration
 ├── .prettierec                       # prettier configuration
@@ -55,17 +43,18 @@
 └── README.md                         # This file
 ```
 
-### Built On
-
+### Client
 - [React v17](https://facebook.github.io/react/)
 - [React router v6](https://reactrouter.com/)
-- [MongoDB](https://www.mongodb.com/)
-- [Passport](https://www.passportjs.org/)
 - [MUI](https://mui.com/)
+- [Emotion](https://emotion.sh/docs/styled)
 - [Jest](https://jestjs.io/)
-- [Styled Components](https://github.com/styled-components/styled-components)
+
+### Server
 - [Express](https://expressjs.com/)
-- [RPC Websockets](https://www.npmjs.com/package/rpc-websockets)
+- [µWebSockets](https://github.com/uNetworking/uWebSockets)
+- [MongoDB](https://www.mongodb.com/) / [Mongoose](https://mongoosejs.com/)
+- [Passport](https://www.passportjs.org/)
 
 ### Usage
 
@@ -76,15 +65,20 @@
 - `npm start` - Just runs `node ./dist/server/server.js`
 - `npm start:prod` - sets `NODE_ENV` to `production` and then runs `node ./dist/server/server.js`. (Bypassing webpack proxy)
 
-### Config
+### Configuration
 
-All applications require a config mechanism, for example, `SLACK_API_TOKEN`. Things that you don't want in your git history, you want a different environment to have different value (dev/staging/production). This repo uses the file `config.ts` to access all your app variables. And a `.env` file to override variable in dev environment. This file is ignored from git.
+.env
+```
+MONGODB_URL=mongodb+srv://mongoDBUsername:m0n60dbp455w0rd@mongoDBHost/mongoDBDatabase?retryWrites=true&w=majority
+AUTH_GOOGLE_CLIENT_ID=6006l304u7h2cl13n71d.apps.googleusercontent.com
+AUTH_GOOGLE_CLIENT_SECRET=6006l304u7h2cl13n753cr37
+```
 
 ---
 
 #### Licence
 
-No license is offered.
+No license is offered to the general public. This code is private property.
 
 Copyright © ɐʞoʎǝH - All Rights Reserved.
 Unauthorized copying of data in this project, via any medium, is strictly prohibited.
