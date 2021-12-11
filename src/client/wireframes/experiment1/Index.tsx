@@ -53,13 +53,13 @@ export const Index = ({ id, as = 'master', depth = 0 }) => {
   if (!node || !nodeId) {
     return (
       <>
-        <NodePicker label='Speak' nodeGenerator={nodePickerCreateNodeData} onPick={([node]) => navigateToNode(node)} />
-
         {topLevelNodes.map((node, index) => (
           <div key={node._id}>
             <View node={node} />
           </div>
         ))}
+
+        <NodePicker label='Speak' nodeGenerator={nodePickerCreateNodeData} onPick={([node]) => navigateToNode(node)} />
       </>
     );
   }

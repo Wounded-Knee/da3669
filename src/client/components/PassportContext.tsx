@@ -5,7 +5,7 @@ import { server } from '../../shared/lib/redux/actionTypes';
 import { dispatch } from '../wireframes/experiment1/webSocket';
 
 const cookies = parse(document.cookie);
-const sessionId = cookies[cookieName] || false;
+export const sessionId = cookies[cookieName] || false;
 const noProfile = {};
 
 export const PassportContext = createContext(noProfile);
@@ -16,7 +16,7 @@ export const PassportProvider = ({ children }) => {
 
   useEffect(() => {
     if (sessionId) {
-      dispatch({ type: server.GET_USER_BY_SESSION_ID, payload: sessionId }).then(({ payload: userNode }) => {
+      dispatch({ type: server.GET_USER }).then(({ payload: userNode }) => {
         console.log('User Node ', userNode);
         setProfile({
           ...userNode,

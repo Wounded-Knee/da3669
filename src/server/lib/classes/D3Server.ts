@@ -39,6 +39,7 @@ class D3Server extends Kernel {
     // called when a client sends a message
     const {
       action: { type, payload },
+      sessionId,
       promiseId,
     } = JSON.parse(decoder.decode(message));
 
@@ -54,8 +55,7 @@ class D3Server extends Kernel {
     if (debug.messages) this.log('MSG ', { type, payload, promiseId });
     try {
       switch (type) {
-        case server.GET_USER_BY_SESSION_ID:
-          const sessionId = payload;
+        case server.GET_USER:
           const session = getSessionById(sessionId);
           const { userId } = session;
           if (userId) {
