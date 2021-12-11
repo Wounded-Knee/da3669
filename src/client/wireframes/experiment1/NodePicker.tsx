@@ -13,6 +13,7 @@ export const NodePicker = ({
   nodeGenerator = (value) => ({}),
   onPick = (nodes) => void 0,
   label = 'Node Picker',
+  sx = {},
 }) => {
   const [chosenValue, setChosenValue] = useState('');
 
@@ -37,6 +38,9 @@ export const NodePicker = ({
 
   return (
     <Autocomplete
+      css={css`
+        flex: 1 0 auto;
+      `}
       id='NodePicker'
       key={uuidv4()} /* Ridiculous pt II */
       freeSolo
