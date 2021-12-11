@@ -16,6 +16,7 @@ const debug = {
   errors: true,
   responses: true,
   auth: true,
+  reads: true,
 };
 
 //@ts-ignore
@@ -52,6 +53,13 @@ class D3Server extends Kernel {
     if (debug.messages) this.log('MSG ', { type, payload, promiseId });
     try {
       switch (type) {
+        case server.READ_NODE:
+          if (debug.reads) this.log('READ: ', payload);
+          respondWith({
+            type: client.NOOP,
+          });
+          break;
+
         case server.GET_TOP_LEVEL_NODES:
           respondWith({
             type: client.ABSORB_NODES,
@@ -81,6 +89,9 @@ class D3Server extends Kernel {
 
         default:
           this.log('Un-handled message type: ', type, payload);
+          respondWith({
+            type: client.NOOP,
+          });
           break;
       }
     } catch (e) {

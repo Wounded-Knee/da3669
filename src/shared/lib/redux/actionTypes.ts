@@ -6,6 +6,7 @@ export const server = Object.freeze({
   ...shared,
   GET_NODES_BY_ID: 'GET_NODES_BY_ID',
   GET_TOP_LEVEL_NODES: 'GET_TOP_LEVEL_NODES',
+  READ_NODE: 'READ_NODE',
 });
 
 export const client = Object.freeze({
@@ -14,4 +15,5 @@ export const client = Object.freeze({
   ERROR: 'ERROR',
   DRAWER: 'DRAWER',
   READY_WEBSOCKET: 'READY_WEBSOCKET',
+  NOOP: 'NOOP',
 });
