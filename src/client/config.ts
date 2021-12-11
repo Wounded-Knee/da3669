@@ -16,6 +16,7 @@ export const initialState = {
     drawers: {
       info: false,
       data: false,
+      sideMenu: false,
       ...localState.ui.drawers,
     },
     ready: {

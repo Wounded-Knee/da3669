@@ -5,6 +5,9 @@ import { css, jsx } from '@emotion/react';
 import { Divider, Drawer, List, ListItem, ListItemIcon, ListItemText, Link as MuiLink } from '@mui/material';
 import { NavLink } from 'react-router-dom';
 import { routes } from '../routes';
+import { useSelector, useDispatch } from 'react-redux';
+import { getDrawerState } from '../wireframes/experiment1/selectors';
+import { client } from '../../shared/lib/redux/actionTypes';
 
 class NavLinkMui extends React.Component<any> {
   render() {
@@ -22,10 +25,11 @@ export const SideMenu: React.FunctionComponent = () => {
     `,
   };
 
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const mobileOpen = useSelector(() => getDrawerState('sideMenu'));
+  const dispatch = useDispatch();
 
   const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
+    dispatch({ type: client.DRAWER, payload: ['sideMenu'] });
   };
 
   const drawerContents = (
@@ -37,6 +41,7 @@ export const SideMenu: React.FunctionComponent = () => {
             Icon && (
               <ListItem
                 key={index}
+                onClick={() => dispatch({ type: client.DRAWER, payload: ['sideMenu', false] })}
                 button
                 component={express ? MuiLink : NavLink}
                 {...{ [express ? 'href' : 'to']: route }}
