@@ -95,14 +95,13 @@ class D3Server extends Kernel {
             $or: [{ _id: { $in: nodeIdArray } }, { upstreams: { $in: nodeIdArray } }],
           });
 
-          // Subscribe this user to each node
           DefaultModel.findById(userId, (err, userNode) => {
-            nodesOfInterest.forEach(({ _id }) =>
-              userNode.subscriptions.push({
-                _id,
-                date: Date.now(),
-              }),
-            );
+            userNode.subscriptions = [
+              // Unsubscribe this user from expired subscriptions
+              ...userNode.subscriptions.filter(({ date }) => new Date(date) > new Date(Date.now() - 1000 * 60 * 60)),
+              // Subscribe this user to each node
+              ...nodesOfInterest.map(({ _id }) => ({ _id, date: Date.now() })),
+            ];
             userNode.save().then(() => {
               //Return each node
               respondWith({
