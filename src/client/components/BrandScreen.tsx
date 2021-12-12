@@ -11,6 +11,7 @@ export const BrandScreen: React.FunctionComponent = ({ speed = 1.5, children }) 
         item
         css={css`
           font-size: 30vw;
+          font-weight: bold;
           background: linear-gradient(
             327deg,
             #ffaa00,
