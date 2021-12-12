@@ -29,7 +29,8 @@ export const BrandScreen: React.FunctionComponent = ({ speed = 1.5, children }) 
             #00ff00,
             #ffff00,
             #ffaa00,
-            #ff0000
+            #ffaa00,
+            #ffaa00
           );
           background-size: 500% 500%;
           -webkit-background-clip: text;

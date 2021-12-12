@@ -89,8 +89,15 @@ export const Talk = ({ id, as = 'master', depth = 0 }) => {
             options={downstreams}
             onPick={([node]) => navigateToNode(node)}
           />
+
+          {downstreams.map(({ _id }) => (
+            <Talk key={_id} as='downstream' id={_id} />
+          ))}
         </>
       );
+
+    case 'downstream':
+      return <View note='downstream' node={node} />;
 
     case 'upstream':
       return (

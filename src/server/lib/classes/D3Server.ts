@@ -57,7 +57,7 @@ class D3Server extends Kernel {
       ws.send(JSON.stringify(response));
     };
 
-    const subscribeTo = (nodeList) =>
+    const subscribeTo = (nodeList, recursion = 0) =>
       new Promise((resolve, reject) => {
         DefaultModel.findById(userId, (err, userNode) => {
           userNode.subscriptions = [
@@ -66,7 +66,24 @@ class D3Server extends Kernel {
             // Subscribe this user to each node
             ...nodeList.map(({ _id }) => ({ _id, date: Date.now() })),
           ];
-          userNode.save().then(resolve);
+          userNode
+            .save()
+            .then(resolve)
+            .catch(() => {
+              subscribeTo(nodeList, recursion + 1)
+                .then(resolve)
+                .catch(() => {
+                  subscribeTo(nodeList, recursion + 1)
+                    .then(resolve)
+                    .catch(() => {
+                      subscribeTo(nodeList, recursion + 1)
+                        .then(resolve)
+                        .catch(() => {
+                          console.error('Fucking fried in recursion');
+                        });
+                    });
+                });
+            });
         });
       });
 

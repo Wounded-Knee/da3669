@@ -17,7 +17,8 @@ export const Header: React.FunctionComponent = () => {
 
   const styles = {
     appBar: css`
-      background-color: ${theme.palette.secondary.dark};
+      background-color: ${userProfile._id ? theme.palette.secondary.dark : 'transparent'};
+      ${!userProfile._id && 'background-image: none;'}
       border-top: 2px solid ${theme.palette.secondary.dark};
       box-shadow: -1px 22px 7px -19px rgba(0, 0, 0, 0.75) inset;
       text-shadow: black 1px 1px 3px;
@@ -39,9 +40,9 @@ export const Header: React.FunctionComponent = () => {
   return (
     <AppBar position='fixed' css={styles.appBar}>
       <Toolbar css={styles.toolbar}>
-        <Grid container alignItems='center'>
-          <Grid item xs={1}>
-            {userProfile._id && (
+        {userProfile._id && (
+          <Grid container alignItems='center'>
+            <Grid item xs={1}>
               <MenuIcon
                 onClick={() => dispatch({ type: client.DRAWER, payload: ['sideMenu'] })}
                 sx={{
@@ -49,44 +50,15 @@ export const Header: React.FunctionComponent = () => {
                 }}
                 css={styles.buttons}
               />
-            )}
+            </Grid>
+            <Grid item xs={11}>
+              <Typography variant='h5' noWrap css={styles.title}>
+                {!userProfile._id && appName}
+                {userProfile.name}{' '}
+              </Typography>
+            </Grid>
           </Grid>
-          <Grid item xs={11}>
-            <Typography variant='h5' noWrap css={styles.title}>
-              {!userProfile._id && appName}
-              {userProfile.name}{' '}
-              {
-                /*clownTitle
-                ? headerTextArray.map((char, index) => {
-                    const len = headerTextArray.length;
-                    const range = 200;
-                    const perChar = range / len;
-                    const firstChar = -range * 0.5;
-                    return (
-                      <span
-                        key={index}
-                        css={css`
-                          color: ${useRainbow(100, 70, firstChar + perChar * index)};
-                        `}
-                      >
-                        {char}
-                      </span>
-                    );
-                  })
-                : */ headerText
-              }
-            </Typography>
-          </Grid>
-          {/* <Grid item xs={1}>
-            <Button onClick={() => core.uiSetDrawer('info')}>
-              <InfoIcon css={styles.buttons} />
-            </Button>
-
-            <Button onClick={() => core.uiSetDrawer('data')}>
-              <StorageIcon css={styles.buttons} />
-            </Button>
-          </Grid> */}
-        </Grid>
+        )}
       </Toolbar>
     </AppBar>
   );
