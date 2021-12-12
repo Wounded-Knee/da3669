@@ -1,6 +1,6 @@
 /** @jsxFrag React.Fragment */
 /** @jsx jsx */
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { css, jsx } from '@emotion/react';
 import { useNodes } from '../lib/useNodes';
 import { useParams } from 'react-router';
@@ -33,6 +33,8 @@ export const Talk = ({ id, as = 'master', depth = 0 }) => {
     if (as === 'master' && nodeId) {
       dispatch({ type: server.READ_NODE, payload: nodeId });
     }
+
+    return () => console.log(`Talk Unmounting `, id);
   });
 
   const nodePickerCreateNodeData = (value) => ({
@@ -79,7 +81,7 @@ export const Talk = ({ id, as = 'master', depth = 0 }) => {
     case 'master':
       return (
         <>
-          <Index key={nodeId} as='upstream' depth={depth + 1} id={nodeId} />
+          <Talk key={nodeId} as='upstream' depth={depth + 1} id={nodeId} />
 
           <NodePicker
             nodeGenerator={nodePickerCreateNodeData}
@@ -94,7 +96,7 @@ export const Talk = ({ id, as = 'master', depth = 0 }) => {
       return (
         <>
           {upstreams.map((_id, index) => (
-            <Index key={_id} as='upstream' depth={depth + 1} id={_id} />
+            <Talk key={_id} as='upstream' depth={depth + 1} id={_id} />
           ))}
 
           <View note='upstream' node={node} />

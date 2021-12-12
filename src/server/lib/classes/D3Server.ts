@@ -23,6 +23,8 @@ const debug = {
 //@ts-ignore
 const decoder = new TextDecoder('utf-8');
 
+const requiresUser = Object.freeze([server.ABSORB_NODES, server.READ_NODE, server.SUBSCRIBE]);
+
 class D3Server extends Kernel {
   express;
   http;
@@ -45,7 +47,6 @@ class D3Server extends Kernel {
 
     const session = getSessionById(sessionId);
     const userId = session ? session.userId : null;
-    console.log('Session ', session, userId);
 
     const respondWith = (action) => {
       const response = {
@@ -56,20 +57,21 @@ class D3Server extends Kernel {
       ws.send(JSON.stringify(response));
     };
 
+    if (!userId && requiresUser.indexOf(type)) {
+      respondWith({
+        type: client.SESSION_EXPIRED,
+      });
+      return false;
+    }
+
     if (debug.messages) this.log('MSG ', { type, payload, promiseId });
     try {
       switch (type) {
         case server.GET_USER:
-          if (userId) {
-            respondWith({
-              type: client.ABSORB_NODES,
-              payload: await DefaultModel.findById(userId),
-            });
-          } else {
-            respondWith({
-              type: client.SESSION_EXPIRED,
-            });
-          }
+          respondWith({
+            type: client.ABSORB_NODES,
+            payload: await DefaultModel.findById(userId),
+          });
           break;
 
         case server.READ_NODE:
@@ -86,37 +88,58 @@ class D3Server extends Kernel {
           });
           break;
 
-        case server.GET_NODES_BY_ID:
+        case server.SUBSCRIBE:
           const nodeIdArray = payload;
-          const populatePaths = getNonVirtualPaths();
-          respondWith({
-            type: client.ABSORB_NODES,
-            payload: await DefaultModel.find({
-              $or: [{ _id: { $in: nodeIdArray } }, { upstreams: { $in: nodeIdArray } }],
-            }),
+          // Retrieve each subscribed node and its downstreams
+          const nodesOfInterest = await DefaultModel.find({
+            $or: [{ _id: { $in: nodeIdArray } }, { upstreams: { $in: nodeIdArray } }],
           });
+
+          // Subscribe this user to each node
+          DefaultModel.findById(userId, (err, userNode) => {
+            nodesOfInterest.forEach(({ _id }) =>
+              userNode.subscriptions.push({
+                _id,
+                date: Date.now(),
+              }),
+            );
+            userNode.save().then(() => {
+              //Return each node
+              respondWith({
+                type: client.ABSORB_NODES,
+                payload: nodesOfInterest,
+              });
+            });
+          });
+
+          // WHY DOESNT THIS WORK? (It works in mongosh)
+          // const updateDoc = {
+          //   $push: { subscriptions: { $each: nodesOfInterest.map(({ _id }) => ({ _id })) } },
+          // };
+          // DefaultModel.findOneAndUpdate({ _id: userId }, updateDoc, { new: true, rawResult: true }).then((result) => {
+          //   console.log(`Subscribed.`, result);
+          //   // Return each node
+          //   respondWith({
+          //     type: client.ABSORB_NODES,
+          //     payload: nodesOfInterest,
+          //   });
+          // });
           break;
 
         case server.ABSORB_NODES:
-          if (userId) {
-            Promise.all(
-              payload.map((nodeData) =>
-                new DefaultModel({
-                  ...nodeData,
-                  author: userId,
-                }).save(),
-              ),
-            ).then((newNodes) => {
-              respondWith({
-                type: client.ABSORB_NODES,
-                payload: newNodes,
-              });
-            });
-          } else {
+          Promise.all(
+            payload.map((nodeData) =>
+              new DefaultModel({
+                ...nodeData,
+                author: userId,
+              }).save(),
+            ),
+          ).then((newNodes) => {
             respondWith({
-              type: client.SESSION_EXPIRED,
+              type: client.ABSORB_NODES,
+              payload: newNodes,
             });
-          }
+          });
           break;
 
         default:

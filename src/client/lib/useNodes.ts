@@ -18,7 +18,7 @@ export const useNodes = (nodeIdArray = []) => {
 
   useEffect(() => {
     if (nodeIdArray.length) {
-      action(server.GET_NODES_BY_ID, nodeIdArray);
+      action(server.SUBSCRIBE, nodeIdArray);
       return store.subscribe(() => {
         setNodes(getNodesById(nodeIdArray));
       });
