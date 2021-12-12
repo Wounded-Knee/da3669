@@ -24,14 +24,9 @@ store.subscribe(() => {
 });
 
 const styles = {
-  root: css`
-    display: flex;
-  `,
-  main: css`
+  vignette: css`
     flex-grow: 1;
     height: 100vh;
-  `,
-  vignette: css`
     background: #333;
     box-shadow: inset 0 0 100px black;
     padding: 3em;
@@ -57,28 +52,25 @@ const styles = {
 export const App: FC = () => {
   return (
     <BrowserRouter>
-      <div css={styles.root}>
+      <Box sx={{ display: 'flex' }}>
         <CssBaseline />
         <Header />
         <SideMenu />
         <DataView />
         <InfoView />
-        <main css={styles.main}>
-          <div css={styles.toolbar} />
-          <Box
-            css={styles.vignette}
-            sx={{
-              padding: { xs: '1em', sm: '3em' },
-            }}
-          >
-            <Routes>
-              {routes.map(({ path, component: Component }, index) => (
-                <Route key={index} path={path} element={<Component />} />
-              ))}
-            </Routes>
-          </Box>
-        </main>
-      </div>
+        <Box
+          css={styles.vignette}
+          sx={{
+            padding: { xs: '1em', sm: '3em' },
+          }}
+        >
+          <Routes>
+            {routes.map(({ path, component: Component }, index) => (
+              <Route key={index} path={path} element={<Component />} />
+            ))}
+          </Routes>
+        </Box>
+      </Box>
     </BrowserRouter>
   );
 };
