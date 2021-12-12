@@ -5,17 +5,15 @@ export const shared = Object.freeze({
 export const server = Object.freeze({
   ...shared,
   SUBSCRIBE: 'SUBSCRIBE',
-  GET_TOP_LEVEL_NODES: 'GET_TOP_LEVEL_NODES',
+  SUBSCRIBE_BY_SELECTOR: 'SUBSCRIBE_BY_SELECTOR',
   READ_NODE: 'READ_NODE',
   GET_USER: 'GET_USER',
 });
 
 export const client = Object.freeze({
   ...shared,
-  SET_USERID: 'SET_USERID',
   ERROR: 'ERROR',
   DRAWER: 'DRAWER',
-  READY_WEBSOCKET: 'READY_WEBSOCKET',
   NOOP: 'NOOP',
   SESSION_EXPIRED: 'SESSION_EXPIRED',
 });

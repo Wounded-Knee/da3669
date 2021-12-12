@@ -10,7 +10,7 @@ export const useNodes = (nodeIdArray = []) => {
   const [topLevelNodes, setTopLevelNodes] = useState(getTopLevelNodes());
 
   useOnMount(() => {
-    action(server.GET_TOP_LEVEL_NODES, undefined);
+    action(server.SUBSCRIBE_BY_SELECTOR, 'TOP_LEVEL');
     return store.subscribe(() => {
       setTopLevelNodes(getTopLevelNodes());
     });

@@ -57,6 +57,19 @@ class D3Server extends Kernel {
       ws.send(JSON.stringify(response));
     };
 
+    const subscribeTo = (nodeList) =>
+      new Promise((resolve, reject) => {
+        DefaultModel.findById(userId, (err, userNode) => {
+          userNode.subscriptions = [
+            // Unsubscribe this user from expired subscriptions
+            ...userNode.subscriptions.filter(({ date }) => new Date(date) > new Date(Date.now() - 1000 * 60 * 60)),
+            // Subscribe this user to each node
+            ...nodeList.map(({ _id }) => ({ _id, date: Date.now() })),
+          ];
+          userNode.save().then(resolve);
+        });
+      });
+
     if (!userId && requiresUser.indexOf(type)) {
       respondWith({
         type: client.SESSION_EXPIRED,
@@ -81,10 +94,16 @@ class D3Server extends Kernel {
           });
           break;
 
-        case server.GET_TOP_LEVEL_NODES:
+        case server.SUBSCRIBE_BY_SELECTOR:
+          const selector = {
+            TOP_LEVEL: { upstreams: { $eq: [] } },
+          }[payload];
+
+          const selectedNodes = await DefaultModel.find(selector);
+
           respondWith({
             type: client.ABSORB_NODES,
-            payload: await DefaultModel.find({ upstreams: { $eq: [] } }),
+            payload: selectedNodes,
           });
           break;
 
@@ -95,19 +114,11 @@ class D3Server extends Kernel {
             $or: [{ _id: { $in: nodeIdArray } }, { upstreams: { $in: nodeIdArray } }],
           });
 
-          DefaultModel.findById(userId, (err, userNode) => {
-            userNode.subscriptions = [
-              // Unsubscribe this user from expired subscriptions
-              ...userNode.subscriptions.filter(({ date }) => new Date(date) > new Date(Date.now() - 1000 * 60 * 60)),
-              // Subscribe this user to each node
-              ...nodesOfInterest.map(({ _id }) => ({ _id, date: Date.now() })),
-            ];
-            userNode.save().then(() => {
-              //Return each node
-              respondWith({
-                type: client.ABSORB_NODES,
-                payload: nodesOfInterest,
-              });
+          subscribeTo(nodesOfInterest).then(() => {
+            //Return each node
+            respondWith({
+              type: client.ABSORB_NODES,
+              payload: nodesOfInterest,
             });
           });
 
