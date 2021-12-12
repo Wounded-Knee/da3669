@@ -2,7 +2,7 @@ import React, { useState, useEffect, createContext } from 'react';
 import { parse } from 'cookieparser';
 import { cookieName } from '../config';
 import { server } from '../../shared/lib/redux/actionTypes';
-import { dispatch } from '../wireframes/experiment1/webSocket';
+import { dispatch } from '../webSocket';
 
 const cookies = parse(document.cookie);
 export const sessionId = cookies[cookieName] || false;

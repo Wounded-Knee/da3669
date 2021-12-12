@@ -2,25 +2,25 @@
 /** @jsx jsx */
 import React, { useState } from 'react';
 import { css, jsx } from '@emotion/react';
-import { useNodes } from './useNodes';
+import { useNodes } from '../lib/useNodes';
 import { useParams } from 'react-router';
 import { NodePicker } from './NodePicker';
-import { getNonVirtualPathsByName } from '../../../shared/relations/all';
-import { Link } from '../../components/Branded';
+import { getNonVirtualPathsByName } from '../../shared/relations/all';
+import { Link } from './Branded';
 import { useNavigate } from 'react-router-dom';
-import { dispatch } from './webSocket';
-import { server } from '../../../shared/lib/redux/actionTypes';
-import { useOnMount } from '../../lib/useOnMount';
+import { dispatch } from '../webSocket';
+import { server } from '../../shared/lib/redux/actionTypes';
+import { useOnMount } from '../lib/useOnMount';
 
 const maxDepth = 10;
 const debug = {
   variables: false,
 };
-const urlPath = `/experiment1/`;
+const urlPath = `/talk/`;
 const nodeType = 'Message';
 const upstreamPath = getNonVirtualPathsByName('stream');
 
-export const Index = ({ id, as = 'master', depth = 0 }) => {
+export const Talk = ({ id, as = 'master', depth = 0 }) => {
   const navigate = useNavigate();
   const propNodeId = id;
   const urlNodeId = useParams().nodeId;
@@ -67,7 +67,7 @@ export const Index = ({ id, as = 'master', depth = 0 }) => {
   const { text = '', upstreams = [], downstreams = [] } = node;
 
   if (debug.variables)
-    console.info('Debug Index.tsx', {
+    console.info('Debug Talk.tsx', {
       as,
       propNodeId,
       nodeId,
