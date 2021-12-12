@@ -5,29 +5,23 @@ import { css, jsx } from '@emotion/react';
 import { Google as GoogleIcon } from '@mui/icons-material';
 import { Typography, Grid } from '@mui/material';
 import { Link } from '@mui/material';
+import { BrandScreen } from './BrandScreen';
 
 export const LoginPrompt = () => {
   return (
     <Link href={'/google'} underline='none'>
-      <Grid
-        container
-        direction='row'
-        justifyContent='center'
-        alignItems='center'
-        css={css`
-          text-align: center;
-          margin-bottom: 50%;
-        `}
-      >
-        <Grid item xs={12}>
-          <GoogleIcon sx={{ fontSize: 140 }} />
+      <BrandScreen speed={15}>
+        <Grid container spacing={1} direction='row' justifyContent='center' alignItems='center'>
+          <Grid item>
+            <GoogleIcon sx={{ fontSize: 20 }} />
+          </Grid>
+          <Grid item>
+            <Typography variant='h5' noWrap>
+              Login
+            </Typography>
+          </Grid>
         </Grid>
-        <Grid item xs={12}>
-          <Typography variant='h2' noWrap>
-            Log in
-          </Typography>
-        </Grid>
-      </Grid>
+      </BrandScreen>
     </Link>
   );
 };
