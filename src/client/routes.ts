@@ -84,12 +84,8 @@ export const routes = [
   //   component: Bank,
   // },
   {
-    route: '/google',
     path: '/google',
-    icon: GoogleIcon,
-    text: 'Login',
     express: true,
-    component: Loading,
   },
   {
     path: '/kungfury',

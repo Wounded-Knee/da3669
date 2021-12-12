@@ -66,9 +66,10 @@ export const App: FC = () => {
         >
           {userProfile._id ? (
             <Routes>
-              {routes.map(({ path, component: Component }, index) => (
-                <Route key={index} path={path} element={<Component />} />
-              ))}
+              {routes.map(
+                ({ path, component: Component }, index) =>
+                  Component && <Route key={index} path={path} element={<Component />} />,
+              )}
             </Routes>
           ) : (
             <LoginPrompt />
