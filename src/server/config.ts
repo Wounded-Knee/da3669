@@ -25,6 +25,18 @@ const { version: VERSION } = PackageJson;
 // HTTP Server
 const HTTP_SERVER_PORT = parseInt(process.env.PORT) || _HTTP_SERVER_PORT;
 
+if (!process.env.AUTH_GOOGLE_CLIENT_ID || !process.env.MONGODB_URL || !process.env.AUTH_GOOGLE_CLIENT_SECRET) {
+  console.error(
+    '\n\n\n********************************************************\n',
+    'You need to specify the following parameters in your .env file:\n' +
+      'MONGODB_URL\n' +
+      'AUTH_GOOGLE_CLIENT_SECRET\n' +
+      'AUTH_GOOGLE_CLIENT_ID\n' +
+      '********************************************************\n\n\n',
+  );
+  process.abort();
+}
+
 // Authentication
 export const auth = {
   callbackUrl: `http://${WS_SERVER_HOST}:${HTTP_SERVER_PORT}/google/loginCallback`,
