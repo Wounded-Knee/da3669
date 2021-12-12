@@ -62,6 +62,9 @@ export const reducer = (state = initialState, { type, payload }) => {
           },
         },
       };
+
+    case client.NOOP:
+      return state;
   }
   if (!reduxInit) {
     console.error('Unhandled action type: ', type);

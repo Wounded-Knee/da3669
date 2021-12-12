@@ -1,4 +1,4 @@
-import { Schema } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import { relationTypes } from '../relations/all';
 
 const modelName = 'Base';
@@ -7,6 +7,16 @@ export default {
   default: true,
   options: { discriminatorKey: 'kind', timestamps: true },
   schemaPaths: {
+    author: mongoose.Types.ObjectId,
+    reads: [
+      {
+        user: mongoose.Types.ObjectId,
+        date: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
     ...relationTypes.reduce(
       (relationPaths, { relations }) => ({
         ...relationPaths,

@@ -3,5 +3,7 @@ export default {
   extending: 'Base',
   schemaPaths: {
     name: { type: String, required: true },
+    googleId: String,
+    pictureUrl: String,
   },
 };

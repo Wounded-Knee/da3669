@@ -7,7 +7,8 @@ import { App as uWS } from 'uWebSockets.js';
 import { getNonVirtualPaths, getNonVirtualPathsByName } from '../../../shared/relations/all';
 import { getNodeTypeByName, defaultNodeType } from '../../../shared/nodes/all';
 import { server, client } from '../../../shared/lib/redux/actionTypes';
-import { setupPassport } from '../../authentication';
+import { setupPassport, getSessionById } from '../../authentication';
+import session from 'express-session';
 
 const { model: DefaultModel } = defaultNodeType;
 
@@ -16,6 +17,7 @@ const debug = {
   errors: true,
   responses: true,
   auth: true,
+  reads: true,
 };
 
 //@ts-ignore
@@ -37,21 +39,46 @@ class D3Server extends Kernel {
     // called when a client sends a message
     const {
       action: { type, payload },
+      sessionId,
       promiseId,
     } = JSON.parse(decoder.decode(message));
+
+    const session = getSessionById(sessionId);
+    const userId = session ? session.userId : null;
+    console.log('Session ', session, userId);
 
     const respondWith = (action) => {
       const response = {
         action,
         promiseId,
       };
-      if (debug.responses) console.log('RESPONSE ', response);
+      if (debug.responses) this.log('RESPONSE ', response);
       ws.send(JSON.stringify(response));
     };
 
     if (debug.messages) this.log('MSG ', { type, payload, promiseId });
     try {
       switch (type) {
+        case server.GET_USER:
+          if (userId) {
+            respondWith({
+              type: client.ABSORB_NODES,
+              payload: await DefaultModel.findById(userId),
+            });
+          } else {
+            respondWith({
+              type: client.SESSION_EXPIRED,
+            });
+          }
+          break;
+
+        case server.READ_NODE:
+          if (debug.reads) this.log('READ: ', payload);
+          respondWith({
+            type: client.NOOP,
+          });
+          break;
+
         case server.GET_TOP_LEVEL_NODES:
           respondWith({
             type: client.ABSORB_NODES,
@@ -71,16 +98,32 @@ class D3Server extends Kernel {
           break;
 
         case server.ABSORB_NODES:
-          Promise.all(payload.map((nodeData) => new DefaultModel(nodeData).save())).then((newNodes) => {
-            respondWith({
-              type: client.ABSORB_NODES,
-              payload: newNodes,
+          if (userId) {
+            Promise.all(
+              payload.map((nodeData) =>
+                new DefaultModel({
+                  ...nodeData,
+                  author: userId,
+                }).save(),
+              ),
+            ).then((newNodes) => {
+              respondWith({
+                type: client.ABSORB_NODES,
+                payload: newNodes,
+              });
             });
-          });
+          } else {
+            respondWith({
+              type: client.SESSION_EXPIRED,
+            });
+          }
           break;
 
         default:
           this.log('Un-handled message type: ', type, payload);
+          respondWith({
+            type: client.NOOP,
+          });
           break;
       }
     } catch (e) {
@@ -113,9 +156,10 @@ class D3Server extends Kernel {
           const httpServer = express();
           this.express = httpServer;
           httpServer.set('view engine', 'ejs');
+          httpServer.use(session({ resave: true, saveUninitialized: true, secret: 'Laura Ingalls Wilder' }));
 
           // Passport Authentication
-          setupPassport(httpServer);
+          setupPassport(this);
 
           // React
           httpServer.use('/assets', express.static(path.join(process.cwd(), 'assets')));

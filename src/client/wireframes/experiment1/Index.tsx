@@ -8,6 +8,9 @@ import { NodePicker } from './NodePicker';
 import { getNonVirtualPathsByName } from '../../../shared/relations/all';
 import { Link } from '../../components/Branded';
 import { useNavigate } from 'react-router-dom';
+import { dispatch } from './webSocket';
+import { server } from '../../../shared/lib/redux/actionTypes';
+import { useOnMount } from '../../lib/useOnMount';
 
 const maxDepth = 10;
 const debug = {
@@ -25,6 +28,12 @@ export const Index = ({ id, as = 'master', depth = 0 }) => {
   const nodeIdArray = nodeId ? [nodeId] : [];
   const { nodes, topLevelNodes } = useNodes(nodeIdArray);
   const [node] = nodes;
+
+  useOnMount(() => {
+    if (as === 'master' && nodeId) {
+      dispatch({ type: server.READ_NODE, payload: nodeId });
+    }
+  });
 
   const nodePickerCreateNodeData = (value) => ({
     kind: nodeType,
@@ -44,13 +53,13 @@ export const Index = ({ id, as = 'master', depth = 0 }) => {
   if (!node || !nodeId) {
     return (
       <>
-        <NodePicker label='Speak' nodeGenerator={nodePickerCreateNodeData} onPick={([node]) => navigateToNode(node)} />
-
         {topLevelNodes.map((node, index) => (
           <div key={node._id}>
             <View node={node} />
           </div>
         ))}
+
+        <NodePicker label='Speak' nodeGenerator={nodePickerCreateNodeData} onPick={([node]) => navigateToNode(node)} />
       </>
     );
   }
