@@ -3,7 +3,7 @@ import React, { useContext } from 'react';
 import { css, jsx } from '@emotion/react';
 import { AppBar, Toolbar, Typography, Grid, Button } from '@mui/material';
 import { Menu as MenuIcon, Storage as StorageIcon, Info as InfoIcon } from '@mui/icons-material';
-import { headerText, clownTitle } from '../config';
+import { headerText, appName, clownTitle } from '../config';
 import { PassportContext } from './PassportContext';
 import { useTheme } from '@mui/styles';
 import { useDispatch } from 'react-redux';
@@ -41,16 +41,19 @@ export const Header: React.FunctionComponent = () => {
       <Toolbar css={styles.toolbar}>
         <Grid container alignItems='center'>
           <Grid item xs={1}>
-            <MenuIcon
-              onClick={() => dispatch({ type: client.DRAWER, payload: ['sideMenu'] })}
-              sx={{
-                display: { xs: 'block', sm: 'none' },
-              }}
-              css={styles.buttons}
-            />
+            {userProfile._id && (
+              <MenuIcon
+                onClick={() => dispatch({ type: client.DRAWER, payload: ['sideMenu'] })}
+                sx={{
+                  display: { xs: 'block', sm: 'none' },
+                }}
+                css={styles.buttons}
+              />
+            )}
           </Grid>
           <Grid item xs={11}>
             <Typography variant='h5' noWrap css={styles.title}>
+              {!userProfile._id && appName}
               {userProfile.name}{' '}
               {
                 /*clownTitle
