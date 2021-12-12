@@ -4,9 +4,9 @@ import React, { useState } from 'react';
 import { css, jsx } from '@emotion/react';
 import Autocomplete from '@mui/material/Autocomplete';
 import { TextField } from '@mui/material';
-import { dispatch } from './webSocket';
-import { server } from '../../../shared/lib/redux/actionTypes';
+import { dispatch } from '../webSocket';
 import { v4 as uuidv4 } from 'uuid'; /* Ridiculous pt I */
+import { server } from '../../shared/lib/redux/actionTypes';
 
 export const NodePicker = ({
   options = [],

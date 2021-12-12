@@ -6,7 +6,7 @@ import { Divider, Drawer, List, ListItem, ListItemIcon, ListItemText, Link as Mu
 import { NavLink } from 'react-router-dom';
 import { routes } from '../routes';
 import { useSelector, useDispatch } from 'react-redux';
-import { getDrawerState } from '../wireframes/experiment1/selectors';
+import { getDrawerState } from '../lib/redux/selectors';
 import { client } from '../../shared/lib/redux/actionTypes';
 
 class NavLinkMui extends React.Component<any> {

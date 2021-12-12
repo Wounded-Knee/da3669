@@ -1,8 +1,8 @@
-import { store } from '../../lib/redux/store';
-import { WS_SERVER_HOST, WS_SERVER_PORT } from '../../config';
+import { store } from './lib/redux/store';
+import { WS_SERVER_HOST, WS_SERVER_PORT } from './config';
 import { WebsocketBuilder, LRUBuffer } from 'websocket-ts';
 import { v4 as uuidv4 } from 'uuid';
-import { sessionId } from '../../components/PassportContext';
+import { sessionId } from './components/PassportContext';
 
 const WS_URL = `ws://${WS_SERVER_HOST}:${WS_SERVER_PORT}`;
 

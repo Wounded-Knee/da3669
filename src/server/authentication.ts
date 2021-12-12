@@ -91,6 +91,6 @@ export const setupPassport = (d3Server) => {
     } else {
       console.log('Recognized user as ', getSessionById(sessionId).userId);
     }
-    res.redirect('/successfulLogin');
+    res.redirect('/talk/');
   });
 };

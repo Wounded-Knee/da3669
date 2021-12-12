@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { action } from './webSocket';
-import { server } from '../../../shared/lib/redux/actionTypes';
-import { store } from '../../lib/redux/store';
-import { useOnMount } from '../../lib/useOnMount';
-import { getNodesById, getTopLevelNodes } from './selectors';
+import { action } from '../webSocket';
+import { server } from '../../shared/lib/redux/actionTypes';
+import { store } from './redux/store';
+import { useOnMount } from './useOnMount';
+import { getNodesById, getTopLevelNodes } from './redux/selectors';
 
 export const useNodes = (nodeIdArray = []) => {
   const [nodes, setNodes] = useState(getNodesById(nodeIdArray));

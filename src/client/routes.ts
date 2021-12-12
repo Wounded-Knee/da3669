@@ -7,7 +7,7 @@ import {
   Google as GoogleIcon,
   BackupTable as ContextStackerIcon,
   Savings as SavingsIcon,
-  Science as ExperimentIcon,
+  Forum as TalkIcon,
 } from '@mui/icons-material';
 
 // Components
@@ -18,7 +18,7 @@ import Atmosphere from './components/Atmosphere';
 import { Bank } from './components/Banksy';
 import { Index as ContextStacker } from './wireframes/context-stacking/Index';
 import { Loading } from './components/Loading';
-import { Index as Experiment1 } from './wireframes/experiment1/Index';
+import { Talk } from './components/Talk';
 import { KungFury } from './components/KungFury';
 
 export const routes = [
@@ -37,15 +37,15 @@ export const routes = [
     component: ContextStacker,
   },
   {
-    path: '/experiment1/:nodeId',
-    component: Experiment1,
+    path: '/talk/:nodeId',
+    component: Talk,
   },
   {
-    route: '/experiment1',
-    path: '/experiment1',
-    icon: ExperimentIcon,
-    text: 'Experiment 1',
-    component: Experiment1,
+    route: '/talk',
+    path: '/talk',
+    icon: TalkIcon,
+    text: 'Talk',
+    component: Talk,
   },
   // {
   //   path: '/nodemanager/:nodeId',
@@ -84,12 +84,8 @@ export const routes = [
   //   component: Bank,
   // },
   {
-    route: '/google',
     path: '/google',
-    icon: GoogleIcon,
-    text: 'Login',
     express: true,
-    component: Loading,
   },
   {
     path: '/kungfury',

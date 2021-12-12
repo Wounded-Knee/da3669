@@ -1,6 +1,6 @@
 /** @jsxFrag React.Fragment */
 /** @jsx jsx */
-import React, { FC } from 'react';
+import React, { FC, useContext } from 'react';
 import { css, jsx } from '@emotion/react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { appName } from './config';
@@ -17,68 +17,65 @@ import { Header } from './components/Header';
 import { SideMenu } from './components/SideMenu';
 import { DataView } from './components/DataView';
 import { InfoView } from './components/InfoView';
+import { PassportContext } from './components/PassportContext';
+import { LoginPrompt } from './components/LoginPrompt';
 
 store.subscribe(() => {
   const { user, ui } = store.getState();
   set(appName, { ui, user });
 });
 
-const styles = {
-  root: css`
-    display: flex;
-  `,
-  main: css`
-    flex-grow: 1;
-    height: 100vh;
-  `,
-  vignette: css`
-    background: #333;
-    box-shadow: inset 0 0 100px black;
-    padding: 3em;
-    min-height: 100vh;
-    display: flex;
-    flex-wrap: nowrap;
-    flex-direction: column;
-    justify-content: start;
-    align-items: auto;
-    align-content: start;
-
-    &:before {
-      display: block;
-      content: ' ';
-      flex: 999 999 auto;
-    }
-  `,
-  toolbar: css`
-    min-height: 50px;
-  `,
-};
-
 export const App: FC = () => {
+  const userProfile = useContext(PassportContext);
   return (
     <BrowserRouter>
-      <div css={styles.root}>
+      <Box sx={{ display: 'flex' }}>
         <CssBaseline />
         <Header />
-        <SideMenu />
-        <DataView />
-        <InfoView />
-        <main css={styles.main}>
-          <div css={styles.toolbar} />
-          <Box
-            css={styles.vignette}
-            sx={{
-              padding: { xs: '1em', sm: '3em' },
-            }}
-          >
+        {userProfile._id && (
+          <>
+            <SideMenu />
+            <DataView />
+            <InfoView />
+          </>
+        )}
+        <Box
+          css={css`
+            flex-grow: 1;
+            height: 100vh;
+            background: #333;
+            box-shadow: inset 0 0 100px black;
+            padding: 3em;
+            min-height: 100vh;
+            display: flex;
+            flex-wrap: nowrap;
+            flex-direction: column;
+            justify-content: start;
+            align-items: auto;
+            align-content: start;
+
+            &:before {
+              display: block;
+              content: ' ';
+              flex: 999 999 auto;
+            }
+          `}
+          sx={{
+            padding: { xs: '1em', sm: '3em' },
+          }}
+        >
+          {userProfile._id ? (
             <Routes>
-              {routes.map(({ path, component: Component }, index) => (
-                <Route key={index} path={path} element={<Component />} />
-              ))}
+              {routes.map(
+                ({ path, component: Component }, index) =>
+                  Component && <Route key={index} path={path} element={<Component />} />,
+              )}
             </Routes>
-          </Box>
-        </main>
-      </div>
+          ) : (
+            <LoginPrompt />
+          )}
+        </Box>
+      </Box>
     </BrowserRouter>
   );
 };
