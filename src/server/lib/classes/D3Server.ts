@@ -91,7 +91,7 @@ class D3Server extends Kernel {
         case server.ECONOMY_TRANSFER:
           const { model: EconomyModel } = getNodeTypeByName('Economy');
           const { qty, destinationId } = payload;
-          const economyNode = new EconomyModel({
+          new EconomyModel({
             qty,
             destinationId,
             author: userId,
@@ -120,10 +120,15 @@ class D3Server extends Kernel {
 
         case server.SUBSCRIBE_BY_SELECTOR:
           const selector = {
-            TOP_LEVEL: { upstreams: { $eq: [] } },
+            TOP_LEVEL: {
+              rel: {
+                upstreams: [],
+              },
+            },
           }[payload];
 
           const selectedNodes = await DefaultModel.find(selector);
+          console.log('selnodes ', selectedNodes);
 
           subscribeTo(selectedNodes, userId).then(() => {
             respondWith({
@@ -137,7 +142,7 @@ class D3Server extends Kernel {
           const nodeIdArray = payload;
           // Retrieve each subscribed node and its downstreams
           const nodesOfInterest = await DefaultModel.find({
-            $or: [{ _id: { $in: nodeIdArray } }, { upstreams: { $in: nodeIdArray } }],
+            $or: [{ _id: { $in: nodeIdArray } }, { rel: { upstreams: { $in: nodeIdArray } } }],
           });
 
           subscribeTo(nodesOfInterest, userId).then(() => {

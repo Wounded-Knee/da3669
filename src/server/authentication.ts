@@ -51,7 +51,10 @@ Passport.use(
             googleId: profile.id,
           })
             .save()
-            .then((userNode) => done(null, userNode))
+            .then((userNode) => {
+              this.log('Created New User', userNode);
+              done(null, userNode);
+            })
             .catch((e) => done(e));
         }
       });

@@ -7,13 +7,15 @@ const addSchemaStatics = (schema, statics) => {
 
 const addRelationPaths = (modelName, schemaPaths, relationTypes = []) => ({
   ...schemaPaths,
-  ...relationTypes.reduce(
-    (schemaPaths, [[singular, pathName]]) => ({
-      ...schemaPaths,
-      [pathName]: [{ type: Schema.Types.ObjectId, ref: modelName }],
-    }),
-    {},
-  ),
+  rel: {
+    ...relationTypes.reduce(
+      (schemaPaths, [[singular, pathName]]) => ({
+        ...schemaPaths,
+        [pathName]: [{ type: Schema.Types.ObjectId, ref: modelName }],
+      }),
+      {},
+    ),
+  },
 });
 
 export const getNodeTypeByName = (soughtName) => nodeTypesMore.find(({ name }) => name === soughtName);

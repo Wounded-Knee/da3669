@@ -38,7 +38,9 @@ export const Talk = ({ id, as = 'master', depth = 0 }) => {
   const nodePickerCreateNodeData = (value) => ({
     kind: nodeType,
     text: value,
-    ['upstreams']: nodeIdArray,
+    rel: {
+      ['upstreams']: nodeIdArray,
+    },
   });
 
   const navigateToNode = ({ _id }) => {
@@ -64,7 +66,11 @@ export const Talk = ({ id, as = 'master', depth = 0 }) => {
     );
   }
 
-  const { text = '', upstreams = [], downstreams = [] } = node;
+  const {
+    text = '',
+    rel: { upstreams = [] },
+    downstreams = [],
+  } = node;
 
   if (debug.variables)
     console.info('Debug Talk.tsx', {
