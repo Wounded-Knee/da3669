@@ -1,18 +1,19 @@
 /** @jsxFrag React.Fragment */
 /** @jsx jsx */
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { css, jsx } from '@emotion/react';
-import { connect } from 'react-redux';
-import { useParams, Routes, Route } from 'react-router';
-
-const mapStateToProps = (state) => ({
-  nodes: state.nodes,
-});
+import { useSelector } from 'react-redux';
+import { getNetWorth } from '../lib/redux/selectors';
 
 export const Bank = () => {
-  const { nodeId } = useParams();
+  const netWorth = useSelector(getNetWorth);
 
-  return <h1>Bank</h1>;
+  return (
+    <>
+      <h1>Bank</h1>
+      <p>Net Worth: {netWorth}</p>
+    </>
+  );
 };
 
-export default connect(mapStateToProps)(Bank);
+export default Bank;

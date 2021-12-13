@@ -76,13 +76,13 @@ export const routes = [
   //   text: 'Judgement',
   //   component: Office,
   // },
-  // {
-  //   route: '/bank',
-  //   path: '/bank',
-  //   icon: SavingsIcon,
-  //   text: 'Bank',
-  //   component: Bank,
-  // },
+  {
+    route: '/bank',
+    path: '/bank',
+    icon: SavingsIcon,
+    text: 'Bank',
+    component: Bank,
+  },
   {
     path: '/google',
     express: true,
