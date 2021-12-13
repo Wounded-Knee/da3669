@@ -4,6 +4,18 @@ import { nodeTypes as nodeTypeList } from '../config';
 const addSchemaStatics = (schema, statics) => {
   if (statics) Object.keys(statics).forEach((staticName) => (schema.statics[staticName] = statics[staticName]));
 };
+
+const addRelationPaths = (modelName, schemaPaths, relationTypes = []) => ({
+  ...schemaPaths,
+  ...relationTypes.reduce(
+    (schemaPaths, [[singular, pathName]]) => ({
+      ...schemaPaths,
+      [pathName]: [{ type: Schema.Types.ObjectId, ref: modelName }],
+    }),
+    {},
+  ),
+});
+
 export const getNodeTypeByName = (soughtName) => nodeTypesMore.find(({ name }) => name === soughtName);
 
 const IS_NODE = typeof global === 'object' && '[object global]' === global.toString.call(global);
@@ -12,7 +24,9 @@ const IS_NODE = typeof global === 'object' && '[object global]' === global.toStr
 export const nodeTypes = nodeTypeList.map((type) => require(`./${type}`).default);
 export const nodeTypesMore = nodeTypes.map((nodeType) => {
   let schema, Model;
-  const { extending, options, schemaPaths, schemaStatics, name } = nodeType;
+  const { extending, options, schemaPaths: protoSchemaPaths, schemaStatics, name, relationTypes } = nodeType;
+  const schemaPaths = addRelationPaths(name, protoSchemaPaths, relationTypes);
+  console.log(schemaPaths);
   if (extending) {
     const souper = nodeTypes.find(({ name }) => name === extending);
     const souperModel = model(souper.name);
@@ -31,6 +45,7 @@ export const nodeTypesMore = nodeTypes.map((nodeType) => {
   return {
     ...nodeType,
     model: Model,
+    relationTypes,
     schema,
   };
 });

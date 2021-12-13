@@ -4,7 +4,6 @@ import { pagesRouter } from '../../routes/pages-router';
 import { staticsRouter } from '../../routes/statics-router';
 import Kernel from '../../../shared/lib/classes/Kernel';
 import { App as uWS } from 'uWebSockets.js';
-import { getNonVirtualPaths, getNonVirtualPathsByName } from '../../../shared/relations/all';
 import { getNodeTypeByName, defaultNodeType } from '../../../shared/nodes/all';
 import { server, client } from '../../../shared/lib/redux/actionTypes';
 import { setupPassport, getSessionById } from '../../authentication';

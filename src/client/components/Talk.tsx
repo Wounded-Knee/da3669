@@ -5,7 +5,6 @@ import { css, jsx } from '@emotion/react';
 import { useNodes } from '../lib/useNodes';
 import { useParams } from 'react-router';
 import { NodePicker } from './NodePicker';
-import { getNonVirtualPathsByName } from '../../shared/relations/all';
 import { Link } from './Branded';
 import { useNavigate } from 'react-router-dom';
 import { dispatch } from '../webSocket';
@@ -18,7 +17,6 @@ const debug = {
 };
 const urlPath = `/talk/`;
 const nodeType = 'Message';
-const upstreamPath = getNonVirtualPathsByName('stream');
 
 export const Talk = ({ id, as = 'master', depth = 0 }) => {
   const navigate = useNavigate();
@@ -40,7 +38,7 @@ export const Talk = ({ id, as = 'master', depth = 0 }) => {
   const nodePickerCreateNodeData = (value) => ({
     kind: nodeType,
     text: value,
-    [upstreamPath]: nodeIdArray,
+    ['upstreams']: nodeIdArray,
   });
 
   const navigateToNode = ({ _id }) => {
