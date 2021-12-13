@@ -9,6 +9,8 @@ import { getNodeTypeByName, defaultNodeType } from '../../../shared/nodes/all';
 import { server, client } from '../../../shared/lib/redux/actionTypes';
 import { setupPassport, getSessionById } from '../../authentication';
 import session from 'express-session';
+import { subscribeTo } from './NodeSubscriptions';
+import { registerSocket } from './SocketRegistry';
 
 const { model: DefaultModel } = defaultNodeType;
 
@@ -23,7 +25,12 @@ const debug = {
 //@ts-ignore
 const decoder = new TextDecoder('utf-8');
 
-const requiresUser = Object.freeze([server.ABSORB_NODES, server.READ_NODE, server.SUBSCRIBE]);
+const requiresUser = Object.freeze([
+  server.ABSORB_NODES,
+  server.SUBSCRIBE,
+  server.SUBSCRIBE_BY_SELECTOR,
+  server.GET_USER,
+]);
 
 class D3Server extends Kernel {
   express;
@@ -57,42 +64,14 @@ class D3Server extends Kernel {
       ws.send(JSON.stringify(response));
     };
 
-    const subscribeTo = (nodeList, recursion = 0) =>
-      new Promise((resolve, reject) => {
-        DefaultModel.findById(userId, (err, userNode) => {
-          userNode.subscriptions = [
-            // Unsubscribe this user from expired subscriptions
-            ...userNode.subscriptions.filter(({ date }) => new Date(date) > new Date(Date.now() - 1000 * 60 * 60)),
-            // Subscribe this user to each node
-            ...nodeList.map(({ _id }) => ({ _id, date: Date.now() })),
-          ];
-          userNode
-            .save()
-            .then(resolve)
-            .catch(() => {
-              subscribeTo(nodeList, recursion + 1)
-                .then(resolve)
-                .catch(() => {
-                  subscribeTo(nodeList, recursion + 1)
-                    .then(resolve)
-                    .catch(() => {
-                      subscribeTo(nodeList, recursion + 1)
-                        .then(resolve)
-                        .catch(() => {
-                          console.error('Fucking fried in recursion');
-                        });
-                    });
-                });
-            });
-        });
-      });
-
     if (!userId && requiresUser.indexOf(type)) {
       respondWith({
         type: client.SESSION_EXPIRED,
       });
       return false;
     }
+
+    registerSocket(ws, userId.toString());
 
     if (debug.messages) this.log('MSG ', { type, payload, promiseId });
     try {
@@ -104,13 +83,6 @@ class D3Server extends Kernel {
           });
           break;
 
-        case server.READ_NODE:
-          if (debug.reads) this.log('READ: ', payload);
-          respondWith({
-            type: client.NOOP,
-          });
-          break;
-
         case server.SUBSCRIBE_BY_SELECTOR:
           const selector = {
             TOP_LEVEL: { upstreams: { $eq: [] } },
@@ -118,9 +90,11 @@ class D3Server extends Kernel {
 
           const selectedNodes = await DefaultModel.find(selector);
 
-          respondWith({
-            type: client.ABSORB_NODES,
-            payload: selectedNodes,
+          subscribeTo(selectedNodes, userId).then(() => {
+            respondWith({
+              type: client.ABSORB_NODES,
+              payload: selectedNodes,
+            });
           });
           break;
 
@@ -131,26 +105,13 @@ class D3Server extends Kernel {
             $or: [{ _id: { $in: nodeIdArray } }, { upstreams: { $in: nodeIdArray } }],
           });
 
-          subscribeTo(nodesOfInterest).then(() => {
+          subscribeTo(nodesOfInterest, userId).then(() => {
             //Return each node
             respondWith({
               type: client.ABSORB_NODES,
               payload: nodesOfInterest,
             });
           });
-
-          // WHY DOESNT THIS WORK? (It works in mongosh)
-          // const updateDoc = {
-          //   $push: { subscriptions: { $each: nodesOfInterest.map(({ _id }) => ({ _id })) } },
-          // };
-          // DefaultModel.findOneAndUpdate({ _id: userId }, updateDoc, { new: true, rawResult: true }).then((result) => {
-          //   console.log(`Subscribed.`, result);
-          //   // Return each node
-          //   respondWith({
-          //     type: client.ABSORB_NODES,
-          //     payload: nodesOfInterest,
-          //   });
-          // });
           break;
 
         case server.ABSORB_NODES:

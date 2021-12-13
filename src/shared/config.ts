@@ -17,3 +17,6 @@ export const headerText = ''; //appName || `merge℠`;
 
 // Session
 export const cookieName = `d3Session`;
+
+// Node Server
+export const subscriptionTimeoutMs = 1000 * 60 * 60; // 1 hour
