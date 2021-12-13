@@ -12,6 +12,18 @@ export const reducer = (state = initialState, { type, payload }) => {
     console.log(type, payload);
   }
   switch (type) {
+    case client.UPDATE_NET_WORTH:
+      return {
+        ...state,
+        ui: {
+          ...state.ui,
+          user: {
+            ...state.ui.user,
+            netWorth: payload,
+          },
+        },
+      };
+
     case client.ABSORB_NODES:
       if (payload === undefined) throw new Error(`${type}: Payload is undefined`);
       const newNodes = (payload instanceof Array ? payload : [payload]).filter((newNode) => {

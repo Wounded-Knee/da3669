@@ -9,6 +9,9 @@ export const initialState = {
   nodes: [],
   ui: {
     ...localState.ui,
+    user: {
+      netWorth: 0,
+    },
     drawers: {
       info: false,
       data: false,

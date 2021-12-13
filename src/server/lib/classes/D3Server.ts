@@ -30,6 +30,7 @@ const requiresUser = Object.freeze([
   server.SUBSCRIBE,
   server.SUBSCRIBE_BY_SELECTOR,
   server.GET_USER,
+  server.ECONOMY_TRANSFER,
 ]);
 
 class D3Server extends Kernel {
@@ -64,6 +65,18 @@ class D3Server extends Kernel {
       ws.send(JSON.stringify(response));
     };
 
+    const getNetWorthByUserId = async (userId) => {
+      const { model: EconomyModel } = getNodeTypeByName('Economy');
+      const economyNodes = await EconomyModel.find({
+        author: userId,
+        kind: 'Economy',
+      });
+      return economyNodes.reduce((netWorth, economyNode) => {
+        const { qty } = economyNode;
+        return netWorth - qty;
+      }, 0);
+    };
+
     if (!userId && requiresUser.indexOf(type)) {
       respondWith({
         type: client.SESSION_EXPIRED,
@@ -76,10 +89,33 @@ class D3Server extends Kernel {
     if (debug.messages) this.log('MSG ', { type, payload, promiseId });
     try {
       switch (type) {
+        case server.ECONOMY_TRANSFER:
+          const { model: EconomyModel } = getNodeTypeByName('Economy');
+          const { qty, destinationId } = payload;
+          const economyNode = new EconomyModel({
+            qty,
+            destinationId,
+            author: userId,
+          })
+            .save()
+            .then(async (transaction) => {
+              const netWorth = await getNetWorthByUserId(userId);
+              respondWith({
+                type: client.UPDATE_NET_WORTH,
+                payload: netWorth,
+              });
+            });
+          break;
+
         case server.GET_USER:
+          const netWorth = await getNetWorthByUserId(userId);
           respondWith({
             type: client.ABSORB_NODES,
             payload: await DefaultModel.findById(userId),
+          });
+          respondWith({
+            type: client.UPDATE_NET_WORTH,
+            payload: netWorth,
           });
           break;
 

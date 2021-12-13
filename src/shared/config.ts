@@ -10,7 +10,7 @@ export const WS_SERVER_HOST = 'localhost';
 
 //Types
 export const relationTypes = ['Reply', 'Stream'];
-export const nodeTypes = ['Base', 'Document', 'User', 'Message'];
+export const nodeTypes = ['Base', 'Document', 'User', 'Message', 'Economy'];
 
 export const appName = 'D³';
 export const headerText = ''; //appName || `merge℠`;

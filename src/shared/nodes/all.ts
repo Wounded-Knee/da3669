@@ -36,3 +36,14 @@ export const nodeTypesMore = nodeTypes.map((nodeType) => {
 });
 
 export const defaultNodeType = nodeTypesMore.find((nodeType) => !!nodeType.default);
+
+console.log(
+  'Node Types Loaded: ',
+  nodeTypesMore.map((nodeType) => {
+    const { name } = nodeType;
+    return {
+      name,
+      model: !!model,
+    };
+  }),
+);
