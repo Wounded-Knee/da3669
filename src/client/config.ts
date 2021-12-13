@@ -7,10 +7,6 @@ export const WS_URL = `ws://${WS_SERVER_HOST}:${WS_SERVER_PORT}`;
 
 export const initialState = {
   nodes: [],
-  documents: [],
-  user: {
-    id: null,
-  },
   ui: {
     ...localState.ui,
     drawers: {
@@ -19,14 +15,6 @@ export const initialState = {
       sideMenu: false,
       ...localState.ui.drawers,
     },
-    ready: {
-      webSocket: false,
-    },
-    docStore: {
-      currentDoc: {},
-    },
-    selectedEntityIndex: null,
-    selectedEntityHistory: [],
   },
 };
 

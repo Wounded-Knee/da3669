@@ -9,6 +9,8 @@ import { getNodeTypeByName, defaultNodeType } from '../../../shared/nodes/all';
 import { server, client } from '../../../shared/lib/redux/actionTypes';
 import { setupPassport, getSessionById } from '../../authentication';
 import session from 'express-session';
+import { subscribeTo } from './NodeSubscriptions';
+import { registerSocket } from './SocketRegistry';
 
 const { model: DefaultModel } = defaultNodeType;
 
@@ -23,7 +25,12 @@ const debug = {
 //@ts-ignore
 const decoder = new TextDecoder('utf-8');
 
-const requiresUser = Object.freeze([server.ABSORB_NODES, server.READ_NODE, server.SUBSCRIBE]);
+const requiresUser = Object.freeze([
+  server.ABSORB_NODES,
+  server.SUBSCRIBE,
+  server.SUBSCRIBE_BY_SELECTOR,
+  server.GET_USER,
+]);
 
 class D3Server extends Kernel {
   express;
@@ -64,6 +71,8 @@ class D3Server extends Kernel {
       return false;
     }
 
+    registerSocket(ws, userId.toString());
+
     if (debug.messages) this.log('MSG ', { type, payload, promiseId });
     try {
       switch (type) {
@@ -74,17 +83,18 @@ class D3Server extends Kernel {
           });
           break;
 
-        case server.READ_NODE:
-          if (debug.reads) this.log('READ: ', payload);
-          respondWith({
-            type: client.NOOP,
-          });
-          break;
+        case server.SUBSCRIBE_BY_SELECTOR:
+          const selector = {
+            TOP_LEVEL: { upstreams: { $eq: [] } },
+          }[payload];
 
-        case server.GET_TOP_LEVEL_NODES:
-          respondWith({
-            type: client.ABSORB_NODES,
-            payload: await DefaultModel.find({ upstreams: { $eq: [] } }),
+          const selectedNodes = await DefaultModel.find(selector);
+
+          subscribeTo(selectedNodes, userId).then(() => {
+            respondWith({
+              type: client.ABSORB_NODES,
+              payload: selectedNodes,
+            });
           });
           break;
 
@@ -95,34 +105,13 @@ class D3Server extends Kernel {
             $or: [{ _id: { $in: nodeIdArray } }, { upstreams: { $in: nodeIdArray } }],
           });
 
-          DefaultModel.findById(userId, (err, userNode) => {
-            userNode.subscriptions = [
-              // Unsubscribe this user from expired subscriptions
-              ...userNode.subscriptions.filter(({ date }) => new Date(date) > new Date(Date.now() - 1000 * 60 * 60)),
-              // Subscribe this user to each node
-              ...nodesOfInterest.map(({ _id }) => ({ _id, date: Date.now() })),
-            ];
-            userNode.save().then(() => {
-              //Return each node
-              respondWith({
-                type: client.ABSORB_NODES,
-                payload: nodesOfInterest,
-              });
+          subscribeTo(nodesOfInterest, userId).then(() => {
+            //Return each node
+            respondWith({
+              type: client.ABSORB_NODES,
+              payload: nodesOfInterest,
             });
           });
-
-          // WHY DOESNT THIS WORK? (It works in mongosh)
-          // const updateDoc = {
-          //   $push: { subscriptions: { $each: nodesOfInterest.map(({ _id }) => ({ _id })) } },
-          // };
-          // DefaultModel.findOneAndUpdate({ _id: userId }, updateDoc, { new: true, rawResult: true }).then((result) => {
-          //   console.log(`Subscribed.`, result);
-          //   // Return each node
-          //   respondWith({
-          //     type: client.ABSORB_NODES,
-          //     payload: nodesOfInterest,
-          //   });
-          // });
           break;
 
         case server.ABSORB_NODES:

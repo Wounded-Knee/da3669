@@ -9,6 +9,7 @@ import {
   WS_SERVER_HOST,
   HTTP_SERVER_PORT as _HTTP_SERVER_PORT,
   cookieName,
+  subscriptionTimeoutMs,
 } from '../shared/config';
 
 const IS_DEV = process.env.NODE_ENV !== 'production';
@@ -46,4 +47,14 @@ export const auth = {
   },
 };
 
-export { cookieName, relationTypes, IS_DEV, VERSION, WEBPACK_PORT, HTTP_SERVER_PORT, WS_SERVER_HOST, WS_SERVER_PORT };
+export {
+  subscriptionTimeoutMs,
+  cookieName,
+  relationTypes,
+  IS_DEV,
+  VERSION,
+  WEBPACK_PORT,
+  HTTP_SERVER_PORT,
+  WS_SERVER_HOST,
+  WS_SERVER_PORT,
+};

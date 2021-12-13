@@ -29,15 +29,6 @@ export const reducer = (state = initialState, { type, payload }) => {
         return state;
       }
 
-    case client.SET_USERID:
-      return {
-        ...state,
-        user: {
-          ...state.user,
-          id: payload,
-        },
-      };
-
     case client.DRAWER:
       const [drawerName, open] = payload;
       return {
@@ -47,18 +38,6 @@ export const reducer = (state = initialState, { type, payload }) => {
           drawers: {
             ...state.ui.drawers,
             [drawerName]: open || !state.ui.drawers[drawerName],
-          },
-        },
-      };
-
-    case client.READY_WEBSOCKET:
-      return {
-        ...state,
-        ui: {
-          ...state.ui,
-          ready: {
-            ...state.ui.ready,
-            webSocket: true,
           },
         },
       };
