@@ -40,6 +40,12 @@ export const NodePicker = ({
     <Autocomplete
       css={css`
         flex: 1 0 auto;
+        box-shadow: 0px 0px 9px 2px rgba(0, 0, 0, 0.75) inset;
+        margin: 1em -15px 0;
+
+        & fieldset {
+          border: 0;
+        }
       `}
       id='NodePicker'
       key={uuidv4()} /* Ridiculous pt II */

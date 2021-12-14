@@ -92,10 +92,9 @@ export const socketServer = new Promise((resolve) => {
               })
                 .save()
                 .then(async (transaction) => {
-                  const netWorth = await getNetWorthByUserId(userId);
                   respondWith({
                     type: client.UPDATE_NET_WORTH,
-                    payload: netWorth,
+                    payload: await getNetWorthByUserId(userId),
                   });
                 });
               break;
@@ -113,16 +112,20 @@ export const socketServer = new Promise((resolve) => {
               break;
 
             case server.SUBSCRIBE_BY_SELECTOR:
-              const selector = {
-                TOP_LEVEL: {
-                  rel: {
-                    upstreams: [],
+              let selectedNodes;
+              if (typeof payload === 'string') {
+                const selector = {
+                  TOP_LEVEL: {
+                    rel: {
+                      upstreams: [],
+                    },
                   },
-                },
-              }[payload];
-
-              const selectedNodes = await DefaultModel.find(selector);
-              console.log('selnodes ', selectedNodes);
+                }[payload];
+                selectedNodes = await DefaultModel.find(selector);
+              } else {
+                // Process selector object
+                selectedNodes = [];
+              }
 
               subscribeTo(selectedNodes, userId).then(() => {
                 respondWith({
