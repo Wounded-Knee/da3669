@@ -73,7 +73,6 @@ export const setupPassport = (express) => {
   express.use(Passport.session());
   express.get('/google', Passport.authenticate('google', { scope: 'profile' }));
   express.get('/google/loginCallback', Passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
-    console.log('Cookies ', req.cookies);
     const sessionId = req.cookies[cookieName];
     const { userId } = getSessionById(sessionId);
     if (!sessionId || !userId) {
@@ -90,8 +89,6 @@ export const setupPassport = (express) => {
         httpOnly: false,
         secure: false,
       });
-    } else {
-      console.log('Recognized user as ', getSessionById(sessionId).userId);
     }
     res.redirect('/talk/');
   });
