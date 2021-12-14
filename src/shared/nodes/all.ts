@@ -54,6 +54,9 @@ export const nodeTypesMore = nodeTypes.map((nodeType) => {
 
 export const defaultNodeType = nodeTypesMore.find((nodeType) => !!nodeType.default);
 
+export const relationTypes = () =>
+  nodeTypes.reduce((allRelationTypes, { relationTypes }) => [...allRelationTypes, ...(relationTypes || [])], []);
+
 console.log(
   'Node Types Loaded: ',
   nodeTypesMore.map((nodeType) => {
@@ -63,4 +66,6 @@ console.log(
       model: !!model,
     };
   }),
+  '\nRelation Types: ',
+  relationTypes,
 );

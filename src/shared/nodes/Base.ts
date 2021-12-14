@@ -1,7 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 
 const modelName = 'Base';
-
 export default {
   name: modelName,
   default: true,
@@ -17,10 +16,10 @@ export default {
   ],
   options: { discriminatorKey: 'kind', timestamps: true },
   schemaPaths: {
-    author: mongoose.Types.ObjectId,
+    author: Schema.Types.ObjectId,
     reads: [
       {
-        user: mongoose.Types.ObjectId,
+        user: Schema.Types.ObjectId,
         date: {
           type: Date,
           default: Date.now,
