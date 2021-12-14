@@ -46,8 +46,7 @@ export const socketServer = new Promise((resolve) => {
           promiseId,
         } = JSON.parse(decoder.decode(message));
 
-        const session = getSessionById(sessionId);
-        const userId = session ? session.userId : null;
+        const { userId } = getSessionById(sessionId);
 
         const respondWith = (action) => {
           const response = {

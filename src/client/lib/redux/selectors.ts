@@ -42,6 +42,17 @@ export class NodeSelector {
     this.ids = ids;
   }
 
+  load(obj) {
+    const {
+      payload: { ids, rel, self, pop },
+    } = obj;
+    this.self = self;
+    this.ids = ids;
+    this.rel = rel;
+    this.pop = pop;
+    return this;
+  }
+
   id(id) {
     this.ids.push(id);
     return this;
@@ -78,6 +89,7 @@ export class NodeSelector {
       payload: {
         ids: this.ids,
         self: this.self,
+        pop: this.pop,
         rel: this.rel,
       },
     };
