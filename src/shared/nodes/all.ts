@@ -28,7 +28,6 @@ export const nodeTypesMore = nodeTypes.map((nodeType) => {
   let schema, Model;
   const { extending, options, schemaPaths: protoSchemaPaths, schemaStatics, name, relationTypes } = nodeType;
   const schemaPaths = addRelationPaths(name, protoSchemaPaths, relationTypes);
-  console.log(schemaPaths);
   if (extending) {
     const souper = nodeTypes.find(({ name }) => name === extending);
     const souperModel = model(souper.name);
@@ -54,7 +53,7 @@ export const nodeTypesMore = nodeTypes.map((nodeType) => {
 
 export const defaultNodeType = nodeTypesMore.find((nodeType) => !!nodeType.default);
 
-export const relationTypes = () =>
+export const relationTypes = (): Array<string[]> =>
   nodeTypes.reduce((allRelationTypes, { relationTypes }) => [...allRelationTypes, ...(relationTypes || [])], []);
 
 console.log(
