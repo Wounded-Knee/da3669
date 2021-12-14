@@ -94,7 +94,6 @@ export const Talk = ({ id, as = 'master', depth = 0 }) => {
       return <View note='downstream' node={node} />;
 
     case 'upstream':
-      console.log(as, node, nodeId, upstreams);
       return (
         <>
           {upstreams.map((_id, index) => (

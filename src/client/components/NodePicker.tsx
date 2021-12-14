@@ -31,7 +31,6 @@ export const NodePicker = ({
       case 'blur':
         break;
       default:
-        console.log('onChange', event, value, reason);
         break;
     }
   };

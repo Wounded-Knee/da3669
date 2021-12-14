@@ -1,12 +1,7 @@
-import { NodeSelector as NodeSelectorParent } from '../../../shared/lib/NodeSelector';
-import { relationTypes } from '../../../shared/nodes/all';
-import { broadcastCreatedNodes } from './NodeSubscriptions';
-import { getNodeTypeByName, defaultNodeType, nodeTypesMore } from '../../../shared/nodes/all';
 import mongoose from 'mongoose';
+import { NodeSelector as NodeSelectorParent } from '../../../shared/lib/NodeSelector';
+import { defaultNodeType } from '../../../shared/nodes/all';
 const { model: DefaultModel } = defaultNodeType;
-const { model: MessageModel } = getNodeTypeByName('Message');
-
-console.log(nodeTypesMore);
 
 export class NodeSelector extends NodeSelectorParent {
   async getNodes() {
@@ -21,22 +16,10 @@ export class NodeSelector extends NodeSelectorParent {
     const baseNodes = this.self ? await DefaultModel.find({ _id: { $in: baseNodeIds } }) : [];
     const query = {
       $or: this.relationTypes.reduce((queries, [obverse, converse]) => {
-        return [...queries, { [`rel.${obverse[1]}`]: { $in: baseNodeIds } }];
+        return [...queries, { [`rel.${obverse[1]}`]: { $in: this.ids } }];
       }, []),
     };
-    //const query = { kind: 'Message' };
-    // const query = this.relationTypes.reduce((queries, [obverse, converse]) => {
-    //   const nid = baseNodeIds[0].toString();
-    //   console.log('nid', nid);
-    //   return [...queries, { [`rel.${obverse[1]}`]: `${nid}` }];
-    // }, [])[0];
-    console.log('query ', JSON.stringify(query));
-
-    const x = await DefaultModel.find({ kind: 'Message' }).where('rel.upstreams').in(baseNodeIds).exec();
-    console.log('xxx', x, baseNodeIds);
-
-    const relations = this.relationTypes.length ? await DefaultModel.find(JSON.parse(JSON.stringify(query))) : [];
-    console.log('relations', await DefaultModel.find(JSON.parse(JSON.stringify(query))).explain('allPlansExecution'));
+    const relations = this.relationTypes.length ? await DefaultModel.find(query) : [];
     return [...baseNodes, ...relations];
   }
 }

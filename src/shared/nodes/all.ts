@@ -1,4 +1,4 @@
-import { ObjectId, Schema, model } from 'mongoose';
+import { Schema, model } from 'mongoose';
 import { nodeTypes as nodeTypeList } from '../config';
 
 const addSchemaStatics = (schema, statics) => {
