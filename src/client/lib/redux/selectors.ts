@@ -1,7 +1,7 @@
 import { store } from '../../lib/redux/store';
 import { nodeTypes, relationTypes } from '../../../shared/nodes/all';
 import { addHelper } from '../debug';
-import { server } from '../../../shared/lib/redux/actionTypes';
+import { selectNodes } from '../../lib/NodeSelector';
 
 const augmentNode = (node) =>
   node
@@ -27,98 +27,7 @@ export const getDrawerState = (drawerName) => store.getState().ui.drawers[drawer
 
 export const getNetWorth = () => store.getState().ui.user.netWorth;
 
-function intersect(a, b) {
-  const setB = new Set(b);
-  return [...new Set(a)].filter((x) => setB.has(x));
-}
-
-export class NodeSelector {
-  ids = [];
-  self = true;
-  rel = false;
-  pop = false;
-
-  constructor(...ids) {
-    this.ids = ids;
-  }
-
-  load(obj) {
-    const {
-      payload: { ids, rel, self, pop },
-    } = obj;
-    this.self = self;
-    this.ids = ids;
-    this.rel = rel;
-    this.pop = pop;
-    return this;
-  }
-
-  id(id) {
-    this.ids.push(id);
-    return this;
-  }
-
-  notSelf() {
-    this.self = false;
-    return this;
-  }
-
-  andRelations(...relationTypes) {
-    if (this.rel !== true) {
-      if (relationTypes.length === 0) {
-        this.rel = true;
-      } else {
-        this.rel = relationTypes;
-      }
-    }
-    return this;
-  }
-
-  populate() {
-    this.pop = true;
-    return this;
-  }
-
-  get serialize() {
-    return JSON.stringify([this.ids, this.self, this.rel, this.pop]);
-  }
-
-  get serverAction() {
-    return {
-      type: server.SUBSCRIBE_BY_SELECTOR,
-      payload: {
-        ids: this.ids,
-        self: this.self,
-        pop: this.pop,
-        rel: this.rel,
-      },
-    };
-  }
-
-  get nodes() {
-    const allNodes = store.getState().nodes;
-    const theseNodes = allNodes.filter(({ _id }) => this.ids.indexOf(_id) !== -1);
-    const theseRelationTypes = relationTypes.filter(([obverse, converse]) => {
-      return this.rel === true || (this.rel instanceof Array && intersect(this.rel, converse).length);
-    });
-    return theseNodes.map((thisNode) => {
-      return {
-        ...thisNode,
-        rel: theseRelationTypes.reduce(
-          (rel, [obverse, converse]) => ({
-            ...rel,
-            [converse[1]]: allNodes
-              .filter((node) => node[obverse[1]] && node[obverse[1]].indexOf(thisNode._id) !== -1)
-              .map((node) => (this.pop ? node : node._id)),
-          }),
-          {},
-        ),
-      };
-    });
-  }
-}
-
-export const selectNodes = (...args) => new NodeSelector(...args);
+export { selectNodes };
 
 addHelper({
   selectNodes,
