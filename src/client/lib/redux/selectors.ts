@@ -1,6 +1,7 @@
 import { store } from '../../lib/redux/store';
 import { nodeTypes, relationTypes } from '../../../shared/nodes/all';
 import { addHelper } from '../debug';
+import { server } from '../../../shared/lib/redux/actionTypes';
 
 const augmentNode = (node) =>
   node
@@ -62,6 +63,22 @@ export class NodeSelector {
     return this;
   }
 
+  populate() {
+    this.pop = true;
+    return this;
+  }
+
+  get serverAction() {
+    return {
+      type: server.SUBSCRIBE_BY_SELECTOR,
+      payload: {
+        ids: this.ids,
+        self: this.self,
+        rel: this.rel,
+      },
+    };
+  }
+
   get nodes() {
     const allNodes = store.getState().nodes;
     const theseNodes = allNodes.filter(({ _id }) => this.ids.indexOf(_id) !== -1);
@@ -83,20 +100,9 @@ export class NodeSelector {
       };
     });
   }
-
-  populate() {
-    this.pop = true;
-    return this;
-  }
-
-  getServer() {
-    return {
-      ids: this.ids,
-      self: this.self,
-      rel: this.rel,
-    };
-  }
 }
+
+export const selectNodes = (...args) => new NodeSelector(...args);
 
 addHelper({
   selectNode: (...args) => new NodeSelector(...args),
