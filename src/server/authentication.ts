@@ -67,8 +67,7 @@ const sessions = [];
 
 export const getSessionById = (sessionId) => sessions.find(({ id }) => id === sessionId) || {};
 
-export const setupPassport = (d3Server) => {
-  const { express } = d3Server;
+export const setupPassport = (express) => {
   express.use(cookieParser());
   express.use(Passport.initialize());
   express.use(Passport.session());
