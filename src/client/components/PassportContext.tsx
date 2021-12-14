@@ -17,7 +17,7 @@ export const PassportProvider = ({ children }) => {
   useEffect(() => {
     if (sessionId) {
       dispatch({ type: server.GET_USER }).then(({ payload: userNode }) => {
-        console.log('User Node ', userNode);
+        console.log('😐', userNode);
         setProfile({
           ...userNode,
           sessionId,

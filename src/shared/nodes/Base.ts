@@ -1,36 +1,31 @@
 import mongoose, { Schema } from 'mongoose';
-import { relationTypes } from '../relations/all';
 
 const modelName = 'Base';
 export default {
   name: modelName,
   default: true,
+  relationTypes: [
+    [
+      ['upstream', 'upstreams'],
+      ['downstream', 'downstreams'],
+    ],
+    [
+      ['child', 'children'],
+      ['parent', 'parents'],
+    ],
+  ],
   options: { discriminatorKey: 'kind', timestamps: true },
   schemaPaths: {
-    author: mongoose.Types.ObjectId,
+    author: Schema.Types.ObjectId,
     reads: [
       {
-        user: mongoose.Types.ObjectId,
+        user: Schema.Types.ObjectId,
         date: {
           type: Date,
           default: Date.now,
         },
       },
     ],
-    ...relationTypes.reduce(
-      (relationPaths, { relations }) => ({
-        ...relationPaths,
-        ...relations
-          .filter(({ virtual }) => !virtual)
-          .reduce(
-            (relationPaths, { path }) => ({
-              [path]: [{ type: Schema.Types.ObjectId, ref: modelName }],
-            }),
-            {},
-          ),
-      }),
-      {},
-    ),
   },
   schemaStatics: {
     persist: async function (node, relations = []) {

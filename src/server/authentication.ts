@@ -51,7 +51,10 @@ Passport.use(
             googleId: profile.id,
           })
             .save()
-            .then((userNode) => done(null, userNode))
+            .then((userNode) => {
+              this.log('Created New User', userNode);
+              done(null, userNode);
+            })
             .catch((e) => done(e));
         }
       });
@@ -64,14 +67,12 @@ const sessions = [];
 
 export const getSessionById = (sessionId) => sessions.find(({ id }) => id === sessionId) || {};
 
-export const setupPassport = (d3Server) => {
-  const { express } = d3Server;
+export const setupPassport = (express) => {
   express.use(cookieParser());
   express.use(Passport.initialize());
   express.use(Passport.session());
   express.get('/google', Passport.authenticate('google', { scope: 'profile' }));
   express.get('/google/loginCallback', Passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
-    console.log('Cookies ', req.cookies);
     const sessionId = req.cookies[cookieName];
     const { userId } = getSessionById(sessionId);
     if (!sessionId || !userId) {
@@ -88,8 +89,6 @@ export const setupPassport = (d3Server) => {
         httpOnly: false,
         secure: false,
       });
-    } else {
-      console.log('Recognized user as ', getSessionById(sessionId).userId);
     }
     res.redirect('/talk/');
   });

@@ -1,0 +1,82 @@
+import { App as uWS } from 'uWebSockets.js';
+import { WS_SERVER_PORT } from '../../config';
+import { server, client } from '../../../shared/lib/redux/actionTypes';
+import { getSessionById } from '../../authentication';
+import { registerSocket, getRecordsBySocket } from './SocketRegistry';
+import { processAction } from './processAction';
+
+//@ts-ignore
+const decoder = new TextDecoder('utf-8');
+const debug = {
+  messages: true,
+  errors: true,
+  responses: true,
+  auth: true,
+  reads: true,
+};
+const requiresUser = Object.freeze([
+  server.ABSORB_NODES,
+  server.SUBSCRIBE,
+  server.SUBSCRIBE_BY_SELECTOR,
+  server.GET_USER,
+  server.ECONOMY_TRANSFER,
+]);
+let sockets = [];
+
+export const socketServer = new Promise((resolve) => {
+  uWS()
+    .ws('/', {
+      // config
+      compression: 0,
+      maxPayloadLength: 16 * 1024 * 1024,
+      idleTimeout: 60,
+
+      open: (ws) => {
+        sockets.push(ws);
+        console.log('How about we FUCK ON???');
+      },
+
+      message: async (ws, message, isBinary) => {
+        // called when a client sends a message
+        const {
+          action: { type, payload },
+          sessionId,
+          promiseId,
+        } = JSON.parse(decoder.decode(message));
+        const { userId } = getSessionById(sessionId);
+        const teresaLaughlin = {
+          type,
+          payload,
+          sessionId,
+          promiseId,
+          userId,
+          ws,
+          registryRecord: getRecordsBySocket(ws),
+          honorRequest: !(!userId && requiresUser.indexOf(type)),
+          respondWith: (action) => {
+            const response = {
+              action,
+              promiseId,
+            };
+            if (debug.responses) console.log('RESPONSE ', response);
+            ws.send(JSON.stringify(response));
+          },
+        };
+        if (userId) registerSocket(ws, userId.toString(), sessionId);
+        processAction(teresaLaughlin);
+      },
+
+      close: (ws, code, message) => {
+        // called when a ws connection is closed
+        const before = sockets.length;
+        sockets = sockets.filter((socket) => socket !== ws);
+        console.log(`${before - sockets.length} of ${before} users fucked off.`, ws);
+      },
+    })
+    .listen(WS_SERVER_PORT, (token) => {
+      token
+        ? console.log(`WS Listening @ port ${WS_SERVER_PORT}`)
+        : console.log(`WS Failed to listen @ port ${WS_SERVER_PORT}`);
+      resolve(token);
+    });
+});

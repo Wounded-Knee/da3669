@@ -1,18 +1,20 @@
 let records = [];
+const socketUsageDataCap = 100;
 
 // Call this on every socket message.
 // It freshens existing records
 // It registers non-existing records
-export const registerSocket = (socket, userId) => {
+export const registerSocket = (socket, userId, sessionId) => {
   if (getRecordsBySocket(socket).length) {
     records = records.map((record) => {
-      const { socket: thisSocket, userId: thisUserId, created, lastUsed } = record;
+      const { socket: thisSocket } = record;
       if (thisSocket === socket) {
         return {
-          socket,
-          userId,
-          created,
-          lastUsed: Date.now(),
+          ...record,
+          dates: {
+            ...record.dates,
+            uses: [Date.now(), ...record.dates.uses.splice(0, socketUsageDataCap - 1)],
+          },
         };
       } else {
         return record;
@@ -22,8 +24,11 @@ export const registerSocket = (socket, userId) => {
     records.push({
       socket,
       userId,
-      created: Date.now(),
-      lastUsed: Date.now(),
+      sessionId,
+      dates: {
+        created: Date.now(),
+        uses: [Date.now()],
+      },
     });
   }
 
@@ -41,3 +46,5 @@ export const getRecordsBySocket = (socket) => {
 export const getSocketsByUserId = (userId) => {
   return getRecordsByUserId(userId).map(({ socket }) => socket);
 };
+
+export const broadcastTo = (userIdArray, action) => {};

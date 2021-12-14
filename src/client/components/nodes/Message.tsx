@@ -30,10 +30,10 @@ const Message = ({ mode = 'view', onCreate = (state) => {}, id, relations = [] }
     let relations = [];
     switch (type) {
       case 'upstream':
-        relations = node['upstreams'] || relations;
+        relations = node.rel['upstreams'] || relations;
         break;
       case 'downstream':
-        relations = node['downstreams'] || relations;
+        relations = node.rel['downstreams'] || relations;
         break;
     }
     return (

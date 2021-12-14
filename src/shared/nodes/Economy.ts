@@ -1,9 +1,9 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 export default {
   name: 'Economy',
   extending: 'Base',
   schemaPaths: {
     qty: Number,
-    destinationId: mongoose.Types.ObjectId,
+    destinationId: Schema.Types.ObjectId,
   },
 };

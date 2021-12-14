@@ -1,23 +1,9 @@
 import { subscriptionTimeoutMs } from '../../config';
 
-/*
-Subscriptions:
-
-client
-  {
-    type: server.SUBSCRIBE,
-    payload: [{
-      ids: ['a765ba734d73473411'],
-      self: true,
-      rel: true,
-      rel: ['upstream', 'downstream'],
-    }]
-  }
-
-*/
-
+const debug = {
+  subscriptions: false,
+};
 let subscriptions = [];
-
 const getNodeIdList = (nodeList) => nodeList.map(({ _id }) => _id.toString());
 
 export const broadcastCreatedNodes = (nodeList) => {
@@ -28,6 +14,10 @@ export const broadcastCreatedNodes = (nodeList) => {
     //
   });
 };
+
+// In: nodeIdArray
+// Out: SocketRegistryRecordArray
+const getSubscribersByNodes = () => {};
 
 export const subscribeTo = (nodeList, userId) =>
   new Promise((resolve, reject) => {
@@ -58,7 +48,7 @@ export const subscribeTo = (nodeList, userId) =>
       ...nodeList.map(({ _id }) => ({ _id, userId, date: Date.now() })),
     ];
 
-    console.log('Subscription Report: ', report);
+    if (debug.subscriptions) console.log('Subscription Report: ', report);
 
     resolve([report, nodeList]);
   });

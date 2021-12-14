@@ -3,6 +3,7 @@ import { WS_SERVER_HOST, WS_SERVER_PORT } from './config';
 import { WebsocketBuilder, LRUBuffer } from 'websocket-ts';
 import { v4 as uuidv4 } from 'uuid';
 import { sessionId } from './components/PassportContext';
+import { addHelper } from './lib/debug';
 
 const WS_URL = `ws://${WS_SERVER_HOST}:${WS_SERVER_PORT}`;
 
@@ -20,7 +21,7 @@ export const ws = new WebsocketBuilder(WS_URL)
     const packet = JSON.parse(data);
     const { action, promiseId: packetPromiseId } = packet;
     if (action) {
-      if (debug.action) console.log('ACTION ', action);
+      if (debug.action) console.log('🔧', action);
       const promiseObj = promises.find(({ promiseId }) => promiseId === packetPromiseId);
 
       if (action.type === 'ERROR') {
@@ -31,17 +32,19 @@ export const ws = new WebsocketBuilder(WS_URL)
         store.dispatch(action);
       }
     } else {
-      console.error('Non-Action Message Received: ', packet);
+      console.error('⚠️ Non-Action Message Received: ', packet);
     }
   })
   .build();
 
 export const send = (data) => {
-  if (debug.send) console.info('WS SEND ', data);
   ws.send(data);
 };
 
-export const sendJSON = (data) => send(JSON.stringify(data));
+export const sendJSON = (data) => {
+  if (debug.send) console.info('🌍', data);
+  return send(JSON.stringify(data));
+};
 
 export const dispatch = (action) =>
   new Promise((resolve, reject) => {
@@ -63,9 +66,7 @@ export const dispatch = (action) =>
 
 export const action = (type, payload) => dispatch({ type, payload });
 
-// @ts-ignore
-window.d3 = {
-  ...(window.d3 || {}),
+addHelper({
   ws: {
     send,
     sendJSON,
@@ -73,4 +74,4 @@ window.d3 = {
     action,
     getPromises: () => promises,
   },
-};
+});

@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-import { action } from '../webSocket';
+import { action, dispatch } from '../webSocket';
 import { server } from '../../shared/lib/redux/actionTypes';
 import { store } from './redux/store';
 import { useOnMount } from './useOnMount';
-import { getNodesById, getTopLevelNodes } from './redux/selectors';
+import { getTopLevelNodes } from './redux/selectors';
 
-export const useNodes = (nodeIdArray = []) => {
-  const [nodes, setNodes] = useState(getNodesById(nodeIdArray));
+export const useNodes = (nodeSelector) => {
+  const [nodes, setNodes] = useState(nodeSelector.nodes);
   const [topLevelNodes, setTopLevelNodes] = useState(getTopLevelNodes());
 
   useOnMount(() => {
@@ -17,13 +17,13 @@ export const useNodes = (nodeIdArray = []) => {
   });
 
   useEffect(() => {
-    if (nodeIdArray.length) {
-      action(server.SUBSCRIBE, nodeIdArray);
+    if (nodeSelector.ids.length) {
+      dispatch(nodeSelector.serverAction);
       return store.subscribe(() => {
-        setNodes(getNodesById(nodeIdArray));
+        setNodes(nodeSelector.nodes);
       });
     }
-  }, [JSON.stringify(nodeIdArray)]);
+  }, [nodeSelector.serialize]);
 
   return {
     nodes,
