@@ -109,5 +109,5 @@ export class NodeSelector {
 export const selectNodes = (...args) => new NodeSelector(...args);
 
 addHelper({
-  selectNode: (...args) => new NodeSelector(...args),
+  selectNodes,
 });
