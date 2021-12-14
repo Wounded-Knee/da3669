@@ -1,5 +1,6 @@
 import { store } from '../../lib/redux/store';
 import { nodeTypes, relationTypes } from '../../../shared/nodes/all';
+import { addHelper } from '../debug';
 
 const augmentNode = (node) =>
   node
@@ -96,3 +97,7 @@ export class NodeSelector {
     };
   }
 }
+
+addHelper({
+  selectNode: (...args) => new NodeSelector(...args),
+});

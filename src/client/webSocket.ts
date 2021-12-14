@@ -3,6 +3,7 @@ import { WS_SERVER_HOST, WS_SERVER_PORT } from './config';
 import { WebsocketBuilder, LRUBuffer } from 'websocket-ts';
 import { v4 as uuidv4 } from 'uuid';
 import { sessionId } from './components/PassportContext';
+import { addHelper } from './lib/debug';
 
 const WS_URL = `ws://${WS_SERVER_HOST}:${WS_SERVER_PORT}`;
 
@@ -63,9 +64,7 @@ export const dispatch = (action) =>
 
 export const action = (type, payload) => dispatch({ type, payload });
 
-// @ts-ignore
-window.d3 = {
-  ...(window.d3 || {}),
+addHelper({
   ws: {
     send,
     sendJSON,
@@ -73,4 +72,4 @@ window.d3 = {
     action,
     getPromises: () => promises,
   },
-};
+});
