@@ -17,9 +17,7 @@ export class NodeSelector {
   }
 
   load(obj) {
-    const {
-      payload: { ids, rel, self, pop },
-    } = obj;
+    const { ids, rel, self, pop } = obj;
     this.self = self;
     this.ids = ids;
     this.rel = rel;
@@ -54,19 +52,14 @@ export class NodeSelector {
     return this;
   }
 
-  get serialize() {
-    return JSON.stringify([this.ids, this.self, this.rel, this.pop]);
+  get relationTypes() {
+    return relationTypes.filter(([obverse, converse]) => {
+      // @ts-ignore
+      return this.rel === true || (this.rel instanceof Array && intersect(this.rel, converse).length);
+    });
   }
 
-  get serverAction() {
-    return {
-      type: server.SUBSCRIBE_BY_SELECTOR,
-      payload: {
-        ids: this.ids,
-        self: this.self,
-        pop: this.pop,
-        rel: this.rel,
-      },
-    };
+  get serialize() {
+    return JSON.stringify([this.ids, this.self, this.rel, this.pop]);
   }
 }

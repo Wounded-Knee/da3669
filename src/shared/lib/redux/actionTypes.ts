@@ -8,6 +8,7 @@ export const server = Object.freeze({
   SUBSCRIBE_BY_SELECTOR: 'SUBSCRIBE_BY_SELECTOR',
   GET_USER: 'GET_USER',
   ECONOMY_TRANSFER: 'ECONOMY_TRANSFER',
+  SUBSCRIBE2: 'SUBSCRIBE2',
 });
 
 export const client = Object.freeze({

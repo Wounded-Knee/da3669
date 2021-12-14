@@ -1,5 +1,4 @@
 import { store } from '../../lib/redux/store';
-import { nodeTypes, relationTypes } from '../../../shared/nodes/all';
 import { addHelper } from '../debug';
 import { selectNodes } from '../../lib/NodeSelector';
 

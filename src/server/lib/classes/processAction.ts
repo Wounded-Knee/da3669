@@ -2,6 +2,7 @@ import { getNetWorthByUserId } from './getNetWorthByUserId';
 import { server, client } from '../../../shared/lib/redux/actionTypes';
 import { getNodeTypeByName, defaultNodeType } from '../../../shared/nodes/all';
 import { subscribeTo } from './NodeSubscriptions';
+import { selectNodes } from '../classes/NodeSelector';
 const { model: DefaultModel } = defaultNodeType;
 const debug = {
   errors: true,
@@ -66,6 +67,13 @@ export const processAction = async ({ honorRequest, type, payload, userId, respo
             type: client.ABSORB_NODES,
             payload: selectedNodes,
           });
+        });
+        break;
+
+      case server.SUBSCRIBE2:
+        respondWith({
+          type: client.ABSORB_NODES,
+          payload: await selectNodes().load(payload).getNodes(),
         });
         break;
 

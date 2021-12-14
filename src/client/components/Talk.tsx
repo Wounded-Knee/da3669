@@ -25,7 +25,7 @@ export const Talk = ({ id, as = 'master', depth = 0 }) => {
   const urlNodeId = useParams().nodeId;
   const nodeId = propNodeId || urlNodeId;
   const nodeIdArray = nodeId ? [nodeId] : [];
-  const { nodes, topLevelNodes } = useNodes(selectNodes(nodeIdArray));
+  const { nodes, topLevelNodes } = useNodes(selectNodes(...nodeIdArray).andRelations('downstreams'));
   const [node] = nodes;
 
   const nodePickerCreateNodeData = (value) => ({

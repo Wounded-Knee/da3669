@@ -1,29 +1,37 @@
 import { NodeSelector as NodeSelectorParent } from '../../shared/lib/NodeSelector';
 import { store } from './redux/store';
-import { relationTypes } from '../../shared/nodes/all';
+import { server } from '../../shared/lib/redux/actionTypes';
 
 export class NodeSelector extends NodeSelectorParent {
   get nodes() {
     const allNodes = store.getState().nodes;
-    const theseNodes = allNodes.filter(({ _id }) => this.ids.indexOf(_id) !== -1);
-    const theseRelationTypes = relationTypes.filter(([obverse, converse]) => {
-      // @ts-ignore
-      return this.rel === true || (this.rel instanceof Array && intersect(this.rel, converse).length);
-    });
-    return theseNodes.map((thisNode) => {
+    const baseNodes = allNodes.filter(({ _id }) => this.ids.indexOf(_id) !== -1);
+    return baseNodes.map((thisNode) => {
       return {
         ...thisNode,
-        rel: theseRelationTypes.reduce(
+        rel: this.relationTypes.reduce(
           (rel, [obverse, converse]) => ({
             ...rel,
             [converse[1]]: allNodes
-              .filter((node) => node[obverse[1]] && node[obverse[1]].indexOf(thisNode._id) !== -1)
+              .filter(({ rel }) => rel && rel[obverse[1]] && rel[obverse[1]].indexOf(thisNode._id) !== -1)
               .map((node) => (this.pop ? node : node._id)),
           }),
           {},
         ),
       };
     });
+  }
+
+  get serverAction() {
+    return {
+      type: server.SUBSCRIBE2,
+      payload: {
+        ids: this.ids,
+        self: this.self,
+        pop: this.pop,
+        rel: this.rel,
+      },
+    };
   }
 }
 
