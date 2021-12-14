@@ -8,9 +8,7 @@ import { NodePicker } from './NodePicker';
 import { selectNodes } from '../lib/redux/selectors';
 import { Link } from './Branded';
 import { useNavigate } from 'react-router-dom';
-import { dispatch } from '../webSocket';
-import { server } from '../../shared/lib/redux/actionTypes';
-import { useOnMount } from '../lib/useOnMount';
+import { Types } from 'mongoose';
 
 const maxDepth = 10;
 const debug = {
@@ -32,7 +30,7 @@ export const Talk = ({ id, as = 'master', depth = 0 }) => {
     kind: nodeType,
     text: value,
     rel: {
-      ['upstreams']: nodeIdArray,
+      ['upstreams']: nodeIdArray.map((id) => new Types.ObjectId(id)),
     },
   });
 

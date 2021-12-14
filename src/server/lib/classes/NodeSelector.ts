@@ -1,13 +1,16 @@
 import { NodeSelector as NodeSelectorParent } from '../../../shared/lib/NodeSelector';
 import { relationTypes } from '../../../shared/nodes/all';
 import { broadcastCreatedNodes } from './NodeSubscriptions';
-import { getNodeTypeByName, defaultNodeType } from '../../../shared/nodes/all';
-import { Types } from 'mongoose';
+import { getNodeTypeByName, defaultNodeType, nodeTypesMore } from '../../../shared/nodes/all';
+import mongoose from 'mongoose';
 const { model: DefaultModel } = defaultNodeType;
+const { model: MessageModel } = getNodeTypeByName('Message');
+
+console.log(nodeTypesMore);
 
 export class NodeSelector extends NodeSelectorParent {
   async getNodes() {
-    const { ObjectId } = Types;
+    const { ObjectId } = mongoose.Types;
     const baseNodeIds = this.ids.reduce((baseNodeIds, id) => {
       try {
         return [...baseNodeIds, new ObjectId(id)];
@@ -15,27 +18,26 @@ export class NodeSelector extends NodeSelectorParent {
         return baseNodeIds;
       }
     }, []);
-    console.log('baseNodeIds', baseNodeIds, this.ids);
-    const baseNodes = this.self && (await DefaultModel.find({ _id: { $in: baseNodeIds } }));
-    return baseNodes
-      ? baseNodes.map(({ _doc: thisNode }) => {
-          return {
-            ...thisNode,
-            rel: this.relationTypes.reduce(async (rel, [obverse, converse]) => {
-              const query = {
-                rel: {
-                  [obverse[1]]: { $in: [thisNode._id] },
-                },
-              };
-              console.log('Query ', query);
-              return {
-                ...rel,
-                [converse[1]]: (await DefaultModel.find(query)).map((node) => (this.pop ? node : node._id)),
-              };
-            }, {}),
-          };
-        })
-      : [];
+    const baseNodes = this.self ? await DefaultModel.find({ _id: { $in: baseNodeIds } }) : [];
+    const query = {
+      $or: this.relationTypes.reduce((queries, [obverse, converse]) => {
+        return [...queries, { [`rel.${obverse[1]}`]: { $in: baseNodeIds } }];
+      }, []),
+    };
+    //const query = { kind: 'Message' };
+    // const query = this.relationTypes.reduce((queries, [obverse, converse]) => {
+    //   const nid = baseNodeIds[0].toString();
+    //   console.log('nid', nid);
+    //   return [...queries, { [`rel.${obverse[1]}`]: `${nid}` }];
+    // }, [])[0];
+    console.log('query ', JSON.stringify(query));
+
+    const x = await DefaultModel.find({ kind: 'Message' }).where('rel.upstreams').in(baseNodeIds).exec();
+    console.log('xxx', x, baseNodeIds);
+
+    const relations = this.relationTypes.length ? await DefaultModel.find(JSON.parse(JSON.stringify(query))) : [];
+    console.log('relations', await DefaultModel.find(JSON.parse(JSON.stringify(query))).explain('allPlansExecution'));
+    return [...baseNodes, ...relations];
   }
 }
 
