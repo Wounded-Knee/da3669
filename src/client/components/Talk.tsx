@@ -1,10 +1,11 @@
 /** @jsxFrag React.Fragment */
 /** @jsx jsx */
-import React, { useEffect } from 'react';
+import React from 'react';
 import { css, jsx } from '@emotion/react';
 import { useNodes } from '../lib/useNodes';
 import { useParams } from 'react-router';
 import { NodePicker } from './NodePicker';
+import { selectNodes } from '../lib/redux/selectors';
 import { Link } from './Branded';
 import { useNavigate } from 'react-router-dom';
 import { dispatch } from '../webSocket';
@@ -24,16 +25,8 @@ export const Talk = ({ id, as = 'master', depth = 0 }) => {
   const urlNodeId = useParams().nodeId;
   const nodeId = propNodeId || urlNodeId;
   const nodeIdArray = nodeId ? [nodeId] : [];
-  const { nodes, topLevelNodes } = useNodes(nodeIdArray);
+  const { nodes, topLevelNodes } = useNodes(selectNodes(nodeIdArray));
   const [node] = nodes;
-
-  useOnMount(() => {
-    if (as === 'master' && nodeId) {
-      dispatch({ type: server.READ_NODE, payload: nodeId });
-    }
-
-    return () => console.log(`Talk Unmounting `, id);
-  });
 
   const nodePickerCreateNodeData = (value) => ({
     kind: nodeType,
@@ -68,8 +61,7 @@ export const Talk = ({ id, as = 'master', depth = 0 }) => {
 
   const {
     text = '',
-    rel: { upstreams = [] },
-    downstreams = [],
+    rel: { upstreams = [], downstreams = [] },
   } = node;
 
   if (debug.variables)

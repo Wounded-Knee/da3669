@@ -68,6 +68,10 @@ export class NodeSelector {
     return this;
   }
 
+  get serialize() {
+    return JSON.stringify([this.ids, this.self, this.rel, this.pop]);
+  }
+
   get serverAction() {
     return {
       type: server.SUBSCRIBE_BY_SELECTOR,
