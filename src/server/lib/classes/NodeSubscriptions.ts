@@ -29,6 +29,10 @@ export const broadcastCreatedNodes = (nodeList) => {
   });
 };
 
+// In: nodeIdArray
+// Out: SocketRegistryRecordArray
+const getSubscribersByNodes = () => {};
+
 export const subscribeTo = (nodeList, userId) =>
   new Promise((resolve, reject) => {
     const nodeIdList = getNodeIdList(nodeList);

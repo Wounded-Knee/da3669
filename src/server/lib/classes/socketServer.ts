@@ -2,13 +2,11 @@ import { App as uWS } from 'uWebSockets.js';
 import { WS_SERVER_PORT } from '../../config';
 import { server, client } from '../../../shared/lib/redux/actionTypes';
 import { getSessionById } from '../../authentication';
-import { getNodeTypeByName, defaultNodeType } from '../../../shared/nodes/all';
-import { registerSocket } from './SocketRegistry';
-import { subscribeTo } from './NodeSubscriptions';
+import { registerSocket, getRecordsBySocket } from './SocketRegistry';
+import { processAction } from './processAction';
 
 //@ts-ignore
 const decoder = new TextDecoder('utf-8');
-const { model: DefaultModel } = defaultNodeType;
 const debug = {
   messages: true,
   errors: true,
@@ -45,144 +43,27 @@ export const socketServer = new Promise((resolve) => {
           sessionId,
           promiseId,
         } = JSON.parse(decoder.decode(message));
-
         const { userId } = getSessionById(sessionId);
-
-        const respondWith = (action) => {
-          const response = {
-            action,
-            promiseId,
-          };
-          if (debug.responses) console.log('RESPONSE ', response);
-          ws.send(JSON.stringify(response));
+        const teresaLaughlin = {
+          type,
+          payload,
+          sessionId,
+          promiseId,
+          userId,
+          ws,
+          registryRecord: getRecordsBySocket(ws),
+          honorRequest: !(!userId && requiresUser.indexOf(type)),
+          respondWith: (action) => {
+            const response = {
+              action,
+              promiseId,
+            };
+            if (debug.responses) console.log('RESPONSE ', response);
+            ws.send(JSON.stringify(response));
+          },
         };
-
-        const getNetWorthByUserId = async (userId) => {
-          const { model: EconomyModel } = getNodeTypeByName('Economy');
-          const economyNodes = await EconomyModel.find({
-            author: userId,
-            kind: 'Economy',
-          });
-          return economyNodes.reduce((netWorth, economyNode) => {
-            const { qty } = economyNode;
-            return netWorth - qty;
-          }, 0);
-        };
-
-        if (!userId && requiresUser.indexOf(type)) {
-          respondWith({
-            type: client.SESSION_EXPIRED,
-          });
-          return false;
-        }
-
-        registerSocket(ws, userId.toString());
-
-        if (debug.messages) console.log('MSG ', { type, payload, promiseId });
-        try {
-          switch (type) {
-            case server.ECONOMY_TRANSFER:
-              const { model: EconomyModel } = getNodeTypeByName('Economy');
-              const { qty, destinationId } = payload;
-              new EconomyModel({
-                qty,
-                destinationId,
-                author: userId,
-              })
-                .save()
-                .then(async (transaction) => {
-                  respondWith({
-                    type: client.UPDATE_NET_WORTH,
-                    payload: await getNetWorthByUserId(userId),
-                  });
-                });
-              break;
-
-            case server.GET_USER:
-              const netWorth = await getNetWorthByUserId(userId);
-              respondWith({
-                type: client.ABSORB_NODES,
-                payload: await DefaultModel.findById(userId),
-              });
-              respondWith({
-                type: client.UPDATE_NET_WORTH,
-                payload: netWorth,
-              });
-              break;
-
-            case server.SUBSCRIBE_BY_SELECTOR:
-              let selectedNodes;
-              if (typeof payload === 'string') {
-                const selector = {
-                  TOP_LEVEL: {
-                    rel: {
-                      upstreams: [],
-                    },
-                  },
-                }[payload];
-                selectedNodes = await DefaultModel.find(selector);
-              } else {
-                // Process selector object
-                selectedNodes = [];
-              }
-
-              subscribeTo(selectedNodes, userId).then(() => {
-                respondWith({
-                  type: client.ABSORB_NODES,
-                  payload: selectedNodes,
-                });
-              });
-              break;
-
-            case server.SUBSCRIBE:
-              const nodeIdArray = payload;
-              // Retrieve each subscribed node and its downstreams
-              const nodesOfInterest = await DefaultModel.find({
-                $or: [{ _id: { $in: nodeIdArray } }, { rel: { upstreams: { $in: nodeIdArray } } }],
-              });
-
-              subscribeTo(nodesOfInterest, userId).then(() => {
-                //Return each node
-                respondWith({
-                  type: client.ABSORB_NODES,
-                  payload: nodesOfInterest,
-                });
-              });
-              break;
-
-            case server.ABSORB_NODES:
-              Promise.all(
-                payload.map((nodeData) =>
-                  new DefaultModel({
-                    ...nodeData,
-                    author: userId,
-                  }).save(),
-                ),
-              ).then((newNodes) => {
-                respondWith({
-                  type: client.ABSORB_NODES,
-                  payload: newNodes,
-                });
-              });
-              break;
-
-            default:
-              console.log('Un-handled message type: ', type, payload);
-              respondWith({
-                type: client.NOOP,
-              });
-              break;
-          }
-        } catch (e) {
-          if (debug.errors) console.error(e);
-          respondWith({
-            type: client.ERROR,
-            payload: {
-              message: e.message,
-              action: { type, payload },
-            },
-          });
-        }
+        if (userId) registerSocket(ws, userId.toString(), sessionId);
+        processAction(teresaLaughlin);
       },
 
       close: (ws, code, message) => {
