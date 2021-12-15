@@ -1,5 +1,8 @@
 let records = [];
 const socketUsageDataCap = 100;
+const debug = {
+  registryContents: false,
+};
 
 // Call this on every socket message.
 // It freshens existing records
@@ -32,7 +35,7 @@ export const registerSocket = (socket, userId, sessionId) => {
     });
   }
 
-  console.log('Socket Registry: ', records);
+  if (debug.registryContents) console.log('Socket Registry: ', records);
 };
 
 export const getRecordsByUserId = (userId) => {

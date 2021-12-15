@@ -23,7 +23,7 @@ export const useNodes = (nodeSelector) => {
         setNodes(nodeSelector.nodes);
       });
     }
-  }, [nodeSelector.serialize]);
+  }, [JSON.stringify(nodeSelector.serialize)]);
 
   return {
     nodes,

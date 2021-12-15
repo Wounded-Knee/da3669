@@ -63,6 +63,20 @@ export class NodeSelector {
   }
 
   get serialize() {
-    return JSON.stringify([this.ids, this.self, this.rel, this.pop]);
+    return {
+      ids: this.ids,
+      self: this.self,
+      rel: this.rel,
+      pop: this.pop,
+    };
+  }
+
+  equals(foreignSelector) {
+    console.log('NodeSelector.equals() ', JSON.stringify(foreignSelector), JSON.stringify(this.serialize));
+    if (foreignSelector instanceof NodeSelector) {
+      return JSON.stringify(foreignSelector.serialize) === JSON.stringify(this.serialize);
+    } else {
+      return JSON.stringify(foreignSelector) === JSON.stringify(this.serialize);
+    }
   }
 }

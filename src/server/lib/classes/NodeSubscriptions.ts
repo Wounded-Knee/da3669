@@ -1,10 +1,10 @@
 import { subscriptionTimeoutMs } from '../../config';
 
 const debug = {
-  subscriptions: false,
+  subscriptionReport: true,
+  subscriptions: true,
 };
 let subscriptions = [];
-const getNodeIdList = (nodeList) => nodeList.map(({ _id }) => _id.toString());
 
 export const broadcastCreatedNodes = (nodeList) => {
   new Promise((resolve, reject) => {
@@ -19,15 +19,22 @@ export const broadcastCreatedNodes = (nodeList) => {
 // Out: SocketRegistryRecordArray
 const getSubscribersByNodes = () => {};
 
-export const subscribeTo = (nodeList, userId) =>
+export const subscribeTo = (NodeSelector, userId) =>
   new Promise((resolve, reject) => {
-    const nodeIdList = getNodeIdList(nodeList);
-    const filteredSubscriptions = subscriptions.filter(({ date, userId: thisUserId, _id }) => {
+    let expired = 0,
+      refreshed = 0;
+    const filteredSubscriptions = subscriptions.filter(({ date, userId: thisUserId, selector }) => {
       const keepSubscription = true;
-      const isStale = new Date(date) > new Date(Date.now() - subscriptionTimeoutMs);
+      const subscriptionDate = new Date(date);
+      const subscriptionDeadline = new Date(Date.now() + subscriptionTimeoutMs);
+      const isStale = subscriptionDate > subscriptionDeadline;
+      console.log('Stale: ', subscriptionDate, '>', subscriptionDeadline);
       const userMatched = thisUserId === userId;
-      const nodeMatched = nodeIdList.indexOf(_id) !== -1;
-      const removeSubscription = isStale || (userMatched && nodeMatched);
+      const selectorMatched = NodeSelector.equals(selector);
+      const freshen = userMatched && selectorMatched;
+      const removeSubscription = isStale || freshen;
+      expired = isStale ? expired + 1 : expired;
+      refreshed = freshen ? refreshed + 1 : refreshed;
 
       // Remove because...
       // 1) We are about to add a fresher subscription to the same node for the same user
@@ -37,7 +44,8 @@ export const subscribeTo = (nodeList, userId) =>
 
     const report = {
       nBefore: subscriptions.length,
-      nAdded: nodeIdList.length,
+      nExpired: expired,
+      nFreshened: refreshed,
       nRemoved: subscriptions.length - filteredSubscriptions.length,
     };
 
@@ -45,10 +53,11 @@ export const subscribeTo = (nodeList, userId) =>
       // Unsubscribe this user from expired subscriptions
       ...filteredSubscriptions,
       // Subscribe this user to each node
-      ...nodeList.map(({ _id }) => ({ _id, userId, date: Date.now() })),
+      { selector: NodeSelector.serialize, userId, date: Date.now() },
     ];
 
-    if (debug.subscriptions) console.log('Subscription Report: ', report);
+    if (debug.subscriptionReport) console.log('Subscription Report: ', report);
+    if (debug.subscriptions) console.log('Subscriptions: ', subscriptions);
 
-    resolve([report, nodeList]);
+    resolve([report]);
   });

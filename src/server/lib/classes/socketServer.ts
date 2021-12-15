@@ -8,11 +8,11 @@ import { processAction } from './processAction';
 //@ts-ignore
 const decoder = new TextDecoder('utf-8');
 const debug = {
-  messages: true,
+  messages: false,
   errors: true,
-  responses: true,
-  auth: true,
-  reads: true,
+  responses: false,
+  auth: false,
+  reads: false,
 };
 const requiresUser = Object.freeze([
   server.ABSORB_NODES,
@@ -63,7 +63,9 @@ export const socketServer = new Promise((resolve) => {
           },
         };
         if (userId) registerSocket(ws, userId.toString(), sessionId);
-        processAction(teresaLaughlin);
+        processAction(teresaLaughlin, (changedNodes) => {
+          console.log('Changed Nodes: ', changedNodes);
+        });
       },
 
       close: (ws, code, message) => {

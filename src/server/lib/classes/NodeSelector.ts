@@ -32,10 +32,9 @@ export class NodeSelector extends NodeSelectorParent {
   filterMatchingNodes(nodeArray) {
     return nodeArray.filter((node) => {
       if (this.self && this.ids.indexOf(node._id) !== -1) return true;
-      // this.relationTypes.find(([obverse, converse]) => {
-      //   const [singular, plural] = converse;
-      //   node.rel
-      // })
+      return this.relationTypes.reduce((includeNodeBool, RelationType) => {
+        return includeNodeBool || (RelationType.isVirtual && node.rel[RelationType.literal.plural].contains(node._id));
+      }, false);
     });
   }
 }

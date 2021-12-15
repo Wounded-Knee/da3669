@@ -6,14 +6,17 @@ import { selectNodes } from '../classes/NodeSelector';
 const { model: DefaultModel } = defaultNodeType;
 const debug = {
   errors: true,
-  messages: true,
+  messages: false,
 };
 
-export const processAction = async ({ honorRequest, type, payload, userId, respondWith, promiseId }) => {
+export const processAction = async (
+  { honorRequest, type, payload, userId, respondWith, promiseId },
+  changedNodesCallback = (c) => {},
+) => {
   if (debug.messages) console.log('MSG ', { type, payload, promiseId });
   if (!honorRequest) {
     respondWith({ type: client.SESSION_EXPIRED });
-    return false;
+    return [];
   }
   try {
     switch (type) {
@@ -31,6 +34,7 @@ export const processAction = async ({ honorRequest, type, payload, userId, respo
               type: client.UPDATE_NET_WORTH,
               payload: await getNetWorthByUserId(userId),
             });
+            changedNodesCallback([transaction]);
           });
         break;
 
@@ -62,7 +66,7 @@ export const processAction = async ({ honorRequest, type, payload, userId, respo
           selectedNodes = [];
         }
 
-        subscribeTo(selectedNodes, userId).then(() => {
+        subscribeTo(selectNodes(selectedNodes.map(({ _id }) => _id)), userId).then(() => {
           respondWith({
             type: client.ABSORB_NODES,
             payload: selectedNodes,
@@ -71,9 +75,13 @@ export const processAction = async ({ honorRequest, type, payload, userId, respo
         break;
 
       case server.SUBSCRIBE2:
-        respondWith({
-          type: client.ABSORB_NODES,
-          payload: await selectNodes().load(payload).getNodes(),
+        const thisNodeSelector = selectNodes().load(payload);
+        const nodeList = await thisNodeSelector.getNodes();
+        subscribeTo(thisNodeSelector, userId).then(() => {
+          respondWith({
+            type: client.ABSORB_NODES,
+            payload: nodeList,
+          });
         });
         break;
 
@@ -84,7 +92,7 @@ export const processAction = async ({ honorRequest, type, payload, userId, respo
           $or: [{ _id: { $in: nodeIdArray } }, { rel: { upstreams: { $in: nodeIdArray } } }],
         });
 
-        subscribeTo(nodesOfInterest, userId).then(() => {
+        subscribeTo(selectNodes(nodesOfInterest.map(({ _id }) => _id)), userId).then(() => {
           //Return each node
           respondWith({
             type: client.ABSORB_NODES,
@@ -106,6 +114,7 @@ export const processAction = async ({ honorRequest, type, payload, userId, respo
             type: client.ABSORB_NODES,
             payload: newNodes,
           });
+          changedNodesCallback(newNodes);
         });
         break;
 
