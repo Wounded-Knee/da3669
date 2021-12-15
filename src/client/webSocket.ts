@@ -21,7 +21,7 @@ export const ws = new WebsocketBuilder(WS_URL)
     const packet = JSON.parse(data);
     const { action, promiseId: packetPromiseId } = packet;
     if (action) {
-      if (debug.action) console.log('🔧', action);
+      if (debug.action) console.log('🔧', action.type, action.payload);
       const promiseObj = promises.find(({ promiseId }) => promiseId === packetPromiseId);
 
       if (action.type === 'ERROR') {
@@ -42,7 +42,8 @@ export const send = (data) => {
 };
 
 export const sendJSON = (data) => {
-  if (debug.send) console.info('🌍', data);
+  if (debug.send)
+    console.info('🌍', data.action.type, data.action.payload, { pid: data.promiseId, sid: data.sessionId });
   return send(JSON.stringify(data));
 };
 

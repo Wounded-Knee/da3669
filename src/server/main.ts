@@ -18,5 +18,5 @@ Promise.all([
       }
     }),
 ]).then(() => {
-  console.log('Ready');
+  console.log('******************** Ready ***********************');
 });

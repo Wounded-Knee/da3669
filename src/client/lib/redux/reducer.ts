@@ -3,7 +3,7 @@ import { initialState } from '../../config';
 
 const debug = {
   actions: false,
-  noop: true,
+  noop: false,
 };
 
 export const reducer = (state = initialState, { type, payload }) => {

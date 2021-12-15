@@ -1,4 +1,4 @@
-import { relationTypes } from '../nodes/all';
+import { relationTypes, RelationTypes } from '../nodes/all';
 import { server } from './redux/actionTypes';
 
 function intersect(a, b) {
@@ -53,10 +53,13 @@ export class NodeSelector {
   }
 
   get relationTypes() {
-    return relationTypes.filter(([obverse, converse]) => {
-      // @ts-ignore
-      return this.rel === true || (this.rel instanceof Array && intersect(this.rel, converse).length);
-    });
+    if (this.rel === false) return [];
+    // @ts-ignore
+    return this.rel instanceof Array
+      ? this.rel.map((selector) => RelationTypes(selector))
+      : relationTypes.reduce((relationTypeObjects, tuple) => {
+          return [...relationTypeObjects, ...tuple.map(([selector]) => RelationTypes(selector))];
+        }, []);
   }
 
   get serialize() {
