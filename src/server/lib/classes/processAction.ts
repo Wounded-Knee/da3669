@@ -76,7 +76,9 @@ export const processAction = async (
 
       case server.SUBSCRIBE2:
         const thisNodeSelector = selectNodes().load(payload);
+        // @ts-ignore
         const nodeList = await thisNodeSelector.getNodes();
+        // @ts-ignore
         subscribeTo(thisNodeSelector, userId).then(() => {
           respondWith({
             type: client.ABSORB_NODES,

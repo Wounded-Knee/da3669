@@ -1,7 +1,7 @@
 import { INodeSelectorSerialized, UserId } from '../../../shared/all';
 import { subscriptionTimeoutMs } from '../../config';
 import { NodeSelector, selectNodes } from './NodeSelector';
-import { INodeBase } from '../../../../dist/shared/nodes/Base';
+import { INodeAll } from '../../../../dist/shared/nodes/all';
 
 const debug = {
   subscriptionReport: true,
@@ -15,7 +15,7 @@ interface ISubscription {
 }
 
 interface IBroadcastPlanItem {
-  nodes: INodeBase[];
+  nodes: INodeAll[];
   userId: UserId;
 }
 type BroadcastPlan = IBroadcastPlanItem[];
@@ -24,7 +24,7 @@ type SubscriptionArray = ISubscription[];
 
 let subscriptions: SubscriptionArray = [];
 
-export const getBroadcastPlan = (nodeList: INodeBase[]): BroadcastPlan =>
+export const getBroadcastPlan = (nodeList: INodeAll[]): BroadcastPlan =>
   subscriptions.reduce((broadcastPlan, { userId, selector }) => {
     const NodeSelector = selectNodes(selector);
     const nodesToBroadcast = NodeSelector.filterMatchingNodes(nodeList);

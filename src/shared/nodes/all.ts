@@ -1,5 +1,10 @@
 import { Schema, model } from 'mongoose';
 import { nodeTypes as nodeTypeList } from '../config';
+import { INodeBase } from './Base';
+
+export interface INodeAll extends INodeBase {
+  text: string;
+}
 
 const addSchemaStatics = (schema, statics) => {
   if (statics) Object.keys(statics).forEach((staticName) => (schema.statics[staticName] = statics[staticName]));
