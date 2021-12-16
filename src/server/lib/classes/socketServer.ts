@@ -5,8 +5,8 @@ import { getSessionById } from '../../authentication';
 import { registerSocket, getRecordsBySocket } from './SocketRegistry';
 import { processAction } from './processAction';
 import { getBroadcastPlan } from './NodeSubscriptions';
+import { TextDecoder } from 'util';
 
-//@ts-ignore
 const decoder = new TextDecoder('utf-8');
 const debug = {
   messages: false,

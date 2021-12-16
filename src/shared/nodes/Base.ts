@@ -1,6 +1,11 @@
 import mongoose, { Schema } from 'mongoose';
 import { INodeTypeDefinition, RelationshipArray } from '../all';
 
+export interface INodeBase {
+  _id: string;
+  author: string;
+}
+
 const modelName = 'Base';
 export default <INodeTypeDefinition>{
   name: modelName,
@@ -18,15 +23,6 @@ export default <INodeTypeDefinition>{
   options: { discriminatorKey: 'kind', timestamps: true },
   schemaPaths: {
     author: Schema.Types.ObjectId,
-    reads: [
-      {
-        user: Schema.Types.ObjectId,
-        date: {
-          type: Date,
-          default: Date.now,
-        },
-      },
-    ],
   },
   schemaStatics: {
     persist: async function (node, relations = []) {

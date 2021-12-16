@@ -14,7 +14,7 @@ const debug = {
   subscriptionReport: true,
   subscriptions: true,
 };
-let subscriptions = [];
+let subscriptions: SubscriptionArray = [];
 
 // In: nodeList array of nodes which have been created or changed
 // Out: broadcastPlan
