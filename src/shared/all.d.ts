@@ -3,14 +3,23 @@ export type ArrayItems<T extends Array<any>> = T extends Array<infer TItems> ? T
 export type FixedLengthArray<T extends any[]> = Pick<T, Exclude<keyof T, ArrayLengthMutationKeys>> & {
   [Symbol.iterator]: () => IterableIterator<ArrayItems<T>>;
 };
-export type RelationshipArray = FixedLengthArray<[number, number]>;
 
 // D3
 export type action = { type: string; payload: any };
 export type dispatch = (action) => any;
 
+export type UserId = string;
+export type SessionId = string;
+export type NodeId = string;
+
+export interface ISession {
+  id: SessionId;
+  userId: UserId;
+  date: Date;
+}
+
 export interface INodeSelectorSerialized {
-  ids: string[];
+  ids: NodeId[];
   self: boolean;
   rel: boolean | string[];
   pop: boolean;

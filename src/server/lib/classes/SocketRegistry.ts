@@ -1,13 +1,25 @@
+import { WebSocket } from 'uWebSockets.js';
+
 let records = [];
 const socketUsageDataCap = 100;
 const debug = {
   registryContents: false,
 };
 
+export interface ISocketRecord {
+  socket: WebSocket;
+  userId: string;
+  sessionId: string;
+  dates: {
+    created: Date;
+    uses: Date[];
+  };
+}
+
 // Call this on every socket message.
 // It freshens existing records
 // It registers non-existing records
-export const registerSocket = (socket, userId, sessionId) => {
+export const registerSocket = (socket: WebSocket, userId: string, sessionId: string) => {
   if (getRecordsBySocket(socket).length) {
     records = records.map((record) => {
       const { socket: thisSocket } = record;
@@ -16,7 +28,7 @@ export const registerSocket = (socket, userId, sessionId) => {
           ...record,
           dates: {
             ...record.dates,
-            uses: [Date.now(), ...record.dates.uses.splice(0, socketUsageDataCap - 1)],
+            uses: [new Date(), ...record.dates.uses.splice(0, socketUsageDataCap - 1)],
           },
         };
       } else {
@@ -24,13 +36,13 @@ export const registerSocket = (socket, userId, sessionId) => {
       }
     });
   } else {
-    records.push({
+    records.push(<ISocketRecord>{
       socket,
       userId,
       sessionId,
       dates: {
-        created: Date.now(),
-        uses: [Date.now()],
+        created: new Date(),
+        uses: [new Date()],
       },
     });
   }
@@ -42,7 +54,7 @@ export const getRecordsByUserId = (userId) => {
   return records.filter(({ userId: thisUserId }) => userId === thisUserId);
 };
 
-export const getRecordsBySocket = (socket) => {
+export const getRecordsBySocket = (socket: WebSocket) => {
   return records.filter(({ socket: thisSocket }) => socket === thisSocket);
 };
 

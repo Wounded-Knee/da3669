@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { INodeTypeDefinition, RelationshipArray } from '../all';
+import { INodeTypeDefinition } from '../all';
 
 export interface INodeBase {
   _id: string;

@@ -5,6 +5,7 @@ import { getNodeTypeByName, defaultNodeType } from '../shared/nodes/all';
 import { v4 as uuidv4 } from 'uuid';
 import cookieParser from 'cookie-parser';
 import { cookieName } from './config';
+import { ISession } from '../shared/all';
 
 const debug = {
   auth: false,
@@ -65,7 +66,7 @@ if (debug.auth) console.log(auth.callbackUrl);
 
 const sessions = [];
 
-export const getSessionById = (sessionId) => sessions.find(({ id }) => id === sessionId) || {};
+export const getSessionById = (sessionId): ISession => sessions.find(({ id }) => id === sessionId) || {};
 
 export const setupPassport = (express) => {
   express.use(cookieParser());
@@ -77,10 +78,10 @@ export const setupPassport = (express) => {
     const { userId } = getSessionById(sessionId);
     if (!sessionId || !userId) {
       // Create Session
-      const session = {
+      const session = <ISession>{
         id: uuidv4(),
         userId: req.user._id,
-        date: Date.now(),
+        date: new Date(),
       };
       sessions.push(session);
       const twoDays = 24 * 60 * 60 * 1000 * 2;

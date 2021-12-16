@@ -2,10 +2,11 @@ import { App as uWS } from 'uWebSockets.js';
 import { WS_SERVER_PORT } from '../../config';
 import { server, client } from '../../../shared/lib/redux/actionTypes';
 import { getSessionById } from '../../authentication';
-import { registerSocket, getRecordsBySocket } from './SocketRegistry';
+import { registerSocket, getRecordsBySocket, ISocketRecord } from './SocketRegistry';
 import { processAction } from './processAction';
 import { getBroadcastPlan } from './NodeSubscriptions';
 import { TextDecoder } from 'util';
+import { ISession } from '../../../shared/all';
 
 const decoder = new TextDecoder('utf-8');
 const debug = {
@@ -18,11 +19,16 @@ const debug = {
 const requiresUser = Object.freeze([
   server.ABSORB_NODES,
   server.SUBSCRIBE,
+  server.SUBSCRIBE2,
   server.SUBSCRIBE_BY_SELECTOR,
   server.GET_USER,
   server.ECONOMY_TRANSFER,
 ]);
 let sockets = [];
+
+interface ISessionInfo extends ISession {
+  socketRecords: ISocketRecord[];
+}
 
 export const socketServer = new Promise((resolve) => {
   uWS()
@@ -44,7 +50,13 @@ export const socketServer = new Promise((resolve) => {
           sessionId,
           promiseId,
         } = JSON.parse(decoder.decode(message));
-        const { userId } = getSessionById(sessionId);
+        const sessionInfo = <ISessionInfo>{
+          ...getSessionById(sessionId),
+          socketRecords: getRecordsBySocket(ws),
+        };
+        console.log('Session Info: ');
+        console.dir(sessionInfo, { depth: null });
+        const { userId } = sessionInfo;
         const teresaLaughlin = {
           type,
           payload,

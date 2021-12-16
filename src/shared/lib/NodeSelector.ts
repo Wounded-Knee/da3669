@@ -1,11 +1,5 @@
 import { relationTypes, RelationTypes } from '../nodes/all';
-import { server } from './redux/actionTypes';
-import { INodeSelectorSerialized } from '../all';
-
-function intersect(a, b) {
-  const setB = new Set(b);
-  return [...new Set(a)].filter((x) => setB.has(x));
-}
+import { INodeSelectorSerialized, IRelationType, NodeId } from '../all';
 
 export class NodeSelector {
   ids: string[] = [];
@@ -13,11 +7,11 @@ export class NodeSelector {
   rel: boolean | string[] = false;
   pop: boolean = false;
 
-  constructor(...ids) {
+  constructor(...ids: NodeId[]) {
     this.ids = ids;
   }
 
-  load(obj) {
+  load(obj: INodeSelectorSerialized): NodeSelector {
     const { ids, rel, self, pop } = obj;
     this.self = self;
     this.ids = ids;
@@ -26,17 +20,17 @@ export class NodeSelector {
     return this;
   }
 
-  id(id) {
+  id(id: NodeId): NodeSelector {
     this.ids.push(id);
     return this;
   }
 
-  notSelf() {
+  notSelf(): NodeSelector {
     this.self = false;
     return this;
   }
 
-  andRelations(...relationTypes) {
+  andRelations(...relationTypes: string[]): NodeSelector {
     if (this.rel !== true) {
       if (relationTypes.length === 0) {
         this.rel = true;
@@ -47,7 +41,7 @@ export class NodeSelector {
     return this;
   }
 
-  populate() {
+  populate(): NodeSelector {
     this.pop = true;
     return this;
   }
