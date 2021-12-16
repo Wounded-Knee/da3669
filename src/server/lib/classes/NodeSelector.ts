@@ -30,11 +30,15 @@ export class NodeSelector extends NodeSelectorParent {
   // State: A NodeSelector data set
   // Out: A subset of the original node list denoting which ones fit that selector
   filterMatchingNodes(nodeArray) {
+    console.log('\n'.repeat(10) + 'filterMatchingNodes()');
     return nodeArray.filter((node) => {
-      if (this.self && this.ids.indexOf(node._id) !== -1) return true;
-      return this.relationTypes.reduce((includeNodeBool, RelationType) => {
+      const self = this.self && this.ids.indexOf(node._id) !== -1;
+      console.log(`${node._id} in `, this.ids, node.rel);
+      const relations = this.relationTypes.reduce((includeNodeBool, RelationType) => {
         return includeNodeBool || (RelationType.isVirtual && node.rel[RelationType.literal.plural].contains(node._id));
       }, false);
+      console.log(`${node._id}: ${node.text} ${self && 'Matched as self'} ${self && 'Matched as relation'}`);
+      return self || relations;
     });
   }
 }

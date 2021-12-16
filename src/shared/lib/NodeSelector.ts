@@ -1,5 +1,6 @@
 import { relationTypes, RelationTypes } from '../nodes/all';
 import { server } from './redux/actionTypes';
+import { INodeSelectorSerialized } from '../all';
 
 function intersect(a, b) {
   const setB = new Set(b);
@@ -7,10 +8,10 @@ function intersect(a, b) {
 }
 
 export class NodeSelector {
-  ids = [];
-  self = true;
-  rel = false;
-  pop = false;
+  ids: string[] = [];
+  self: boolean = true;
+  rel: boolean | string[] = false;
+  pop: boolean = false;
 
   constructor(...ids) {
     this.ids = ids;
@@ -40,7 +41,6 @@ export class NodeSelector {
       if (relationTypes.length === 0) {
         this.rel = true;
       } else {
-        //@ts-ignore
         this.rel = relationTypes;
       }
     }
@@ -54,7 +54,6 @@ export class NodeSelector {
 
   get relationTypes() {
     if (this.rel === false) return [];
-    // @ts-ignore
     return this.rel instanceof Array
       ? this.rel.map((selector) => RelationTypes(selector))
       : relationTypes.reduce((relationTypeObjects, tuple) => {
@@ -62,7 +61,7 @@ export class NodeSelector {
         }, []);
   }
 
-  get serialize() {
+  get serialize(): INodeSelectorSerialized {
     return {
       ids: this.ids,
       self: this.self,
@@ -71,8 +70,7 @@ export class NodeSelector {
     };
   }
 
-  equals(foreignSelector) {
-    console.log('NodeSelector.equals() ', JSON.stringify(foreignSelector), JSON.stringify(this.serialize));
+  equals(foreignSelector: INodeSelectorSerialized): boolean {
     if (foreignSelector instanceof NodeSelector) {
       return JSON.stringify(foreignSelector.serialize) === JSON.stringify(this.serialize);
     } else {

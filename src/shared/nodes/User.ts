@@ -1,4 +1,6 @@
-export default {
+import { INodeTypeDefinition } from '../all';
+
+export default <INodeTypeDefinition>{
   name: 'User',
   extending: 'Base',
   relationTypes: [

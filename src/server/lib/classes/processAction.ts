@@ -114,7 +114,7 @@ export const processAction = async (
             type: client.ABSORB_NODES,
             payload: newNodes,
           });
-          changedNodesCallback(newNodes);
+          changedNodesCallback(newNodes.map(({ _doc }) => _doc));
         });
         break;
 

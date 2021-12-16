@@ -4,6 +4,7 @@ import { server, client } from '../../../shared/lib/redux/actionTypes';
 import { getSessionById } from '../../authentication';
 import { registerSocket, getRecordsBySocket } from './SocketRegistry';
 import { processAction } from './processAction';
+import { getBroadcastPlan } from './NodeSubscriptions';
 
 //@ts-ignore
 const decoder = new TextDecoder('utf-8');
@@ -64,7 +65,9 @@ export const socketServer = new Promise((resolve) => {
         };
         if (userId) registerSocket(ws, userId.toString(), sessionId);
         processAction(teresaLaughlin, (changedNodes) => {
-          console.log('Changed Nodes: ', changedNodes);
+          console.log('Changed Nodes: ');
+          console.dir(changedNodes, { depth: null });
+          console.log('Broadcast Plan: ', getBroadcastPlan(changedNodes));
         });
       },
 

@@ -1,4 +1,14 @@
+import { INodeSelectorSerialized } from '../../../shared/all';
 import { subscriptionTimeoutMs } from '../../config';
+import { selectNodes } from './NodeSelector';
+
+interface ISubscription {
+  selector: INodeSelectorSerialized;
+  userId: string;
+  date: Date;
+}
+
+type SubscriptionArray = ISubscription[];
 
 const debug = {
   subscriptionReport: true,
@@ -6,29 +16,41 @@ const debug = {
 };
 let subscriptions = [];
 
-export const broadcastCreatedNodes = (nodeList) => {
-  new Promise((resolve, reject) => {
-    // For each node
-    //    Which users are subscribed to it?
-    //      getUsersSubscribedToNodes(nodeList) -> userList
-    //
-  });
-};
-
-// In: nodeIdArray
-// Out: SocketRegistryRecordArray
-const getSubscribersByNodes = () => {};
+// In: nodeList array of nodes which have been created or changed
+// Out: broadcastPlan
+/*
+  [
+    {
+      nodes: nodeArray,
+      user: userId,
+    }
+  ]
+*/
+export const getBroadcastPlan = (nodeList) =>
+  subscriptions.reduce((broadcastPlan, { userId, selector }) => {
+    const NodeSelector = selectNodes(selector);
+    const nodesToBroadcast = NodeSelector.filterMatchingNodes(nodeList);
+    if (nodesToBroadcast.length) {
+      return [
+        ...broadcastPlan,
+        {
+          nodes: nodesToBroadcast,
+          userId,
+        },
+      ];
+    } else {
+      return broadcastPlan;
+    }
+  }, []);
 
 export const subscribeTo = (NodeSelector, userId) =>
   new Promise((resolve, reject) => {
     let expired = 0,
       refreshed = 0;
     const filteredSubscriptions = subscriptions.filter(({ date, userId: thisUserId, selector }) => {
-      const keepSubscription = true;
       const subscriptionDate = new Date(date);
       const subscriptionDeadline = new Date(Date.now() + subscriptionTimeoutMs);
       const isStale = subscriptionDate > subscriptionDeadline;
-      console.log('Stale: ', subscriptionDate, '>', subscriptionDeadline);
       const userMatched = thisUserId === userId;
       const selectorMatched = NodeSelector.equals(selector);
       const freshen = userMatched && selectorMatched;
@@ -49,7 +71,7 @@ export const subscribeTo = (NodeSelector, userId) =>
       nRemoved: subscriptions.length - filteredSubscriptions.length,
     };
 
-    subscriptions = [
+    subscriptions = <SubscriptionArray>[
       // Unsubscribe this user from expired subscriptions
       ...filteredSubscriptions,
       // Subscribe this user to each node
@@ -57,7 +79,10 @@ export const subscribeTo = (NodeSelector, userId) =>
     ];
 
     if (debug.subscriptionReport) console.log('Subscription Report: ', report);
-    if (debug.subscriptions) console.log('Subscriptions: ', subscriptions);
+    if (debug.subscriptions) {
+      console.log('Subscriptions: ');
+      console.dir(subscriptions, { depth: null });
+    }
 
     resolve([report]);
   });

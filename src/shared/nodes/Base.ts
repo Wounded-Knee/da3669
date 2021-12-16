@@ -1,23 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { RelationshipArray } from '../all';
-
-// [singular, plural]
-interface IRelationTuple {
-  length: 2;
-  0: string;
-  1: string;
-}
-// [literal, virtual]
-interface IRelationType {
-  length: 2;
-  0: IRelationTuple;
-  1: IRelationTuple;
-}
-interface INodeTypeDefinition {
-  name: string;
-  default?: boolean;
-  relationTypes: IRelationType[];
-}
+import { INodeTypeDefinition, RelationshipArray } from '../all';
 
 const modelName = 'Base';
 export default <INodeTypeDefinition>{

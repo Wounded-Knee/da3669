@@ -9,26 +9,27 @@ export type RelationshipArray = FixedLengthArray<[number, number]>;
 export type action = { type: string; payload: any };
 export type dispatch = (action) => any;
 
-export interface IEntity {
-  id: number;
-  type: string;
-  date: {
-    created: Date;
-    published: Date;
-  };
+export interface INodeSelectorSerialized {
+  ids: string[];
+  self: boolean;
+  rel: boolean | string[];
+  pop: boolean;
 }
 
-interface IState {
-  entities: [IEntity];
+// [singular, plural]
+export interface IRelationTuple {
+  length: 2;
+  0: string;
+  1: string;
 }
-
-export type IServerState = IState;
-
-export interface ICoreConfig {
-  store: any;
-  host: string;
-  port: number;
-  date: {
-    [key: string]: Date;
-  };
+// [literal, virtual]
+export interface IRelationType {
+  length: 2;
+  0: IRelationTuple;
+  1: IRelationTuple;
+}
+export interface INodeTypeDefinition {
+  name: string;
+  default?: boolean;
+  relationTypes: IRelationType[];
 }
