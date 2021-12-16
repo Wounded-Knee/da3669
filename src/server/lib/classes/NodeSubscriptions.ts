@@ -1,6 +1,12 @@
-import { INodeSelectorSerialized } from '../../../shared/all';
+import { INodeSelectorSerialized, UserId } from '../../../shared/all';
 import { subscriptionTimeoutMs } from '../../config';
-import { selectNodes } from './NodeSelector';
+import { NodeSelector, selectNodes } from './NodeSelector';
+import { INodeBase } from '../../../../dist/shared/nodes/Base';
+
+const debug = {
+  subscriptionReport: true,
+  subscriptions: true,
+};
 
 interface ISubscription {
   selector: INodeSelectorSerialized;
@@ -8,30 +14,22 @@ interface ISubscription {
   date: Date;
 }
 
+interface IBroadcastPlanItem {
+  nodes: INodeBase[];
+  userId: UserId;
+}
+type BroadcastPlan = IBroadcastPlanItem[];
+
 type SubscriptionArray = ISubscription[];
 
-const debug = {
-  subscriptionReport: true,
-  subscriptions: true,
-};
 let subscriptions: SubscriptionArray = [];
 
-// In: nodeList array of nodes which have been created or changed
-// Out: broadcastPlan
-/*
-  [
-    {
-      nodes: nodeArray,
-      user: userId,
-    }
-  ]
-*/
-export const getBroadcastPlan = (nodeList) =>
+export const getBroadcastPlan = (nodeList: INodeBase[]): BroadcastPlan =>
   subscriptions.reduce((broadcastPlan, { userId, selector }) => {
     const NodeSelector = selectNodes(selector);
     const nodesToBroadcast = NodeSelector.filterMatchingNodes(nodeList);
     if (nodesToBroadcast.length) {
-      return [
+      return <BroadcastPlan>[
         ...broadcastPlan,
         {
           nodes: nodesToBroadcast,
@@ -43,7 +41,7 @@ export const getBroadcastPlan = (nodeList) =>
     }
   }, []);
 
-export const subscribeTo = (NodeSelector, userId) =>
+export const subscribeTo = (NodeSelector: NodeSelector, userId: UserId): Promise<any> =>
   new Promise((resolve, reject) => {
     let expired = 0,
       refreshed = 0;
@@ -57,10 +55,6 @@ export const subscribeTo = (NodeSelector, userId) =>
       const removeSubscription = isStale || freshen;
       expired = isStale ? expired + 1 : expired;
       refreshed = freshen ? refreshed + 1 : refreshed;
-
-      // Remove because...
-      // 1) We are about to add a fresher subscription to the same node for the same user
-      // 2) This subscription is outright stale.
       return !removeSubscription;
     });
 

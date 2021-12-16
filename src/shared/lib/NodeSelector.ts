@@ -1,5 +1,5 @@
 import { relationTypes, RelationTypes } from '../nodes/all';
-import { INodeSelectorSerialized, IRelationType, NodeId } from '../all';
+import { INodeSelectorSerialized, NodeId } from '../all';
 
 export class NodeSelector {
   ids: string[] = [];
