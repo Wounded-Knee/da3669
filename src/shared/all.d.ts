@@ -10,6 +10,7 @@ export type dispatch = (action) => any;
 
 export type UserId = string;
 export type SessionId = string;
+export type PromiseId = string;
 export type NodeId = string;
 
 export interface ISession {
