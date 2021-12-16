@@ -1,5 +1,6 @@
 import { relationTypes, RelationTypes } from '../nodes/all';
 import { INodeSelectorSerialized, NodeId } from '../all';
+import { server } from './redux/actionTypes';
 
 export class NodeSelector {
   ids: string[] = [];
@@ -8,7 +9,7 @@ export class NodeSelector {
   pop: boolean = false;
 
   constructor(...ids: NodeId[]) {
-    this.ids = ids;
+    this.ids = ids.filter((id) => typeof id === 'string');
   }
 
   load(obj: INodeSelectorSerialized): NodeSelector {
@@ -70,5 +71,19 @@ export class NodeSelector {
     } else {
       return JSON.stringify(foreignSelector) === JSON.stringify(this.serialize);
     }
+  }
+
+  get serverAction() {
+    return {
+      type: server.SUBSCRIBE,
+      payload: this.serialize,
+    };
+  }
+
+  get serverUnsubscribe() {
+    return {
+      type: server.UNSUBSCRIBE,
+      payload: this.serialize,
+    };
   }
 }

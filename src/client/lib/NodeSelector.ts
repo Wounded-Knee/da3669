@@ -1,6 +1,5 @@
 import { NodeSelector as NodeSelectorParent } from '../../shared/lib/NodeSelector';
 import { store } from './redux/store';
-import { server } from '../../shared/lib/redux/actionTypes';
 
 export class NodeSelector extends NodeSelectorParent {
   get nodes() {
@@ -28,18 +27,6 @@ export class NodeSelector extends NodeSelectorParent {
         },
       };
     });
-  }
-
-  get serverAction() {
-    return {
-      type: server.SUBSCRIBE2,
-      payload: {
-        ids: this.ids,
-        self: this.self,
-        pop: this.pop,
-        rel: this.rel,
-      },
-    };
   }
 }
 

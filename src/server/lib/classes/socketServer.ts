@@ -19,7 +19,6 @@ const debug = {
 const requiresUser = Object.freeze([
   server.ABSORB_NODES,
   server.SUBSCRIBE,
-  server.SUBSCRIBE2,
   server.SUBSCRIBE_BY_SELECTOR,
   server.GET_USER,
   server.ECONOMY_TRANSFER,
@@ -51,12 +50,13 @@ export const socketServer = new Promise((resolve) => {
           promiseId,
         } = JSON.parse(decoder.decode(message));
         const sessionInfo = <ISessionInfo>{
+          userId: undefined,
           ...getSessionById(sessionId),
           socketRecords: getRecordsBySocket(ws),
         };
         console.log('Session Info: ');
         console.dir(sessionInfo, { depth: null });
-        const { userId } = sessionInfo;
+        const userId = sessionInfo.userId && sessionInfo.userId.toString();
         const teresaLaughlin = {
           type,
           payload,

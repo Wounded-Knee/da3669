@@ -80,7 +80,7 @@ export const setupPassport = (express) => {
       // Create Session
       const session = <ISession>{
         id: uuidv4(),
-        userId: req.user._id,
+        userId: req.user._id.toString(),
         date: new Date(),
       };
       sessions.push(session);

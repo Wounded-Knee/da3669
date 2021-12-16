@@ -6,8 +6,17 @@ import { Google as GoogleIcon } from '@mui/icons-material';
 import { Typography, Grid } from '@mui/material';
 import { Link } from '@mui/material';
 import { BrandScreen } from './BrandScreen';
+import { autoLogin } from '../config';
+import { useOnMount } from '../lib/useOnMount';
 
 export const LoginPrompt = () => {
+  useOnMount(() => {
+    if (autoLogin) {
+      console.log('Auto-Login Enabled');
+      window.location.href = '/google';
+    }
+  });
+
   return (
     <Link href={'/google'} underline='none'>
       <BrandScreen speed={15}>

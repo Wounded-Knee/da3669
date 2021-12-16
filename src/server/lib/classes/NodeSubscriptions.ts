@@ -41,6 +41,23 @@ export const getBroadcastPlan = (nodeList: INodeAll[]): BroadcastPlan =>
     }
   }, []);
 
+export const unSubscribeFrom = (NodeSelector: NodeSelector, userId: UserId): Promise<any> =>
+  new Promise((resolve, reject) => {
+    const originalLength = subscriptions.length;
+    subscriptions = subscriptions.filter((sub) => {
+      return JSON.stringify(sub.selector) !== JSON.stringify(NodeSelector.serialize) && userId !== sub.userId;
+    });
+    const report = {
+      nUnsubscribed: originalLength - subscriptions.length,
+    };
+    if (debug.subscriptionReport) console.log('Subscription Report: ', report);
+    if (debug.subscriptions) {
+      console.log('Subscriptions: ');
+      console.dir(subscriptions, { depth: null });
+    }
+    resolve(report);
+  });
+
 export const subscribeTo = (NodeSelector: NodeSelector, userId: UserId): Promise<any> =>
   new Promise((resolve, reject) => {
     let expired = 0,

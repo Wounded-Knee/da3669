@@ -1,7 +1,7 @@
 import { getNetWorthByUserId } from './getNetWorthByUserId';
 import { server, client } from '../../../shared/lib/redux/actionTypes';
 import { getNodeTypeByName, defaultNodeType } from '../../../shared/nodes/all';
-import { subscribeTo } from './NodeSubscriptions';
+import { subscribeTo, unSubscribeFrom } from './NodeSubscriptions';
 import { selectNodes } from '../classes/NodeSelector';
 const { model: DefaultModel } = defaultNodeType;
 const debug = {
@@ -12,11 +12,11 @@ const debug = {
 export const processAction = async (
   { honorRequest, type, payload, userId, respondWith, promiseId },
   changedNodesCallback = (c) => {},
-) => {
+): Promise<void> => {
   if (debug.messages) console.log('MSG ', { type, payload, promiseId });
   if (!honorRequest) {
     respondWith({ type: client.SESSION_EXPIRED });
-    return [];
+    return void 0;
   }
   try {
     switch (type) {
@@ -74,7 +74,7 @@ export const processAction = async (
         });
         break;
 
-      case server.SUBSCRIBE2:
+      case server.SUBSCRIBE:
         const thisNodeSelector = selectNodes().load(payload);
         // @ts-ignore
         const nodeList = await thisNodeSelector.getNodes();
@@ -87,21 +87,11 @@ export const processAction = async (
         });
         break;
 
-      case server.SUBSCRIBE:
-        const nodeIdArray = payload;
-        // Retrieve each subscribed node and its downstreams
-        const nodesOfInterest = await DefaultModel.find({
-          $or: [{ _id: { $in: nodeIdArray } }, { rel: { upstreams: { $in: nodeIdArray } } }],
+      case server.UNSUBSCRIBE:
+        // @ts-ignore
+        unSubscribeFrom(selectNodes().load(payload), userId).then((report) => {
+          console.log('REPORT ', report);
         });
-
-        subscribeTo(selectNodes(nodesOfInterest.map(({ _id }) => _id)), userId).then(() => {
-          //Return each node
-          respondWith({
-            type: client.ABSORB_NODES,
-            payload: nodesOfInterest,
-          });
-        });
-        break;
 
       case server.ABSORB_NODES:
         Promise.all(
