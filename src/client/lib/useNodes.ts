@@ -19,11 +19,15 @@ export const useNodes = (nodeSelector) => {
   useEffect(() => {
     if (nodeSelector.ids.length) {
       dispatch(nodeSelector.serverAction);
-      return store.subscribe(() => {
+      const storeUnsubscribe = store.subscribe(() => {
         setNodes(nodeSelector.nodes);
       });
+      return () => {
+        storeUnsubscribe();
+        dispatch(nodeSelector.serverUnsubscribe);
+      };
     }
-  }, [nodeSelector.serialize]);
+  }, [JSON.stringify(nodeSelector.serialize)]);
 
   return {
     nodes,

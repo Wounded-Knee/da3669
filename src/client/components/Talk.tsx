@@ -1,6 +1,6 @@
 /** @jsxFrag React.Fragment */
 /** @jsx jsx */
-import React from 'react';
+import React, { useContext } from 'react';
 import { css, jsx } from '@emotion/react';
 import { useNodes } from '../lib/useNodes';
 import { useParams } from 'react-router';
@@ -9,6 +9,7 @@ import { selectNodes } from '../lib/redux/selectors';
 import { Link } from './Branded';
 import { useNavigate } from 'react-router-dom';
 import { Types } from 'mongoose';
+import { PassportContext } from './PassportContext';
 
 const maxDepth = 10;
 const debug = {
@@ -18,6 +19,7 @@ const urlPath = `/talk/`;
 const nodeType = 'Message';
 
 export const Talk = ({ id, as = 'master', depth = 0 }) => {
+  const userProfile = useContext(PassportContext);
   const navigate = useNavigate();
   const propNodeId = id;
   const urlNodeId = useParams().nodeId;
@@ -31,6 +33,7 @@ export const Talk = ({ id, as = 'master', depth = 0 }) => {
     text: value,
     rel: {
       ['upstreams']: nodeIdArray.map((id) => new Types.ObjectId(id)),
+      ['authors']: [userProfile._id],
     },
   });
 

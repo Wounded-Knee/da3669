@@ -1,6 +1,5 @@
 import { NodeSelector as NodeSelectorParent } from '../../shared/lib/NodeSelector';
 import { store } from './redux/store';
-import { server } from '../../shared/lib/redux/actionTypes';
 
 export class NodeSelector extends NodeSelectorParent {
   get nodes() {
@@ -12,10 +11,15 @@ export class NodeSelector extends NodeSelectorParent {
         rel: {
           ...thisNode.rel,
           ...this.relationTypes.reduce(
-            (rel, [obverse, converse]) => ({
+            (rel, RelationType) => ({
               ...rel,
-              [converse[1]]: allNodes
-                .filter(({ rel }) => rel && rel[obverse[1]] && rel[obverse[1]].indexOf(thisNode._id) !== -1)
+              [RelationType.virtual.plural]: allNodes
+                .filter(
+                  ({ rel }) =>
+                    rel &&
+                    rel[RelationType.literal.plural] &&
+                    rel[RelationType.literal.plural].indexOf(thisNode._id) !== -1,
+                )
                 .map((node) => (this.pop ? node : node._id)),
             }),
             {},
@@ -23,18 +27,6 @@ export class NodeSelector extends NodeSelectorParent {
         },
       };
     });
-  }
-
-  get serverAction() {
-    return {
-      type: server.SUBSCRIBE2,
-      payload: {
-        ids: this.ids,
-        self: this.self,
-        pop: this.pop,
-        rel: this.rel,
-      },
-    };
   }
 }
 

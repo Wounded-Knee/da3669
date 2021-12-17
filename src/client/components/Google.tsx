@@ -6,17 +6,11 @@ import { Google as GoogleIcon } from '@mui/icons-material';
 import { Typography, Grid } from '@mui/material';
 import { Link } from '@mui/material';
 import { BrandScreen } from './BrandScreen';
-import { autoLogin } from '../config';
-import { useOnMount } from '../lib/useOnMount';
+import { appName } from '../config';
+import { useParams } from 'react-router-dom';
 
-export const LoginPrompt = () => {
-  useOnMount(() => {
-    if (autoLogin) {
-      console.log('Auto-Login Enabled');
-      window.location.href = '/google';
-    }
-  });
-
+export const Google = () => {
+  const { message } = useParams();
   return (
     <Link href={'/google'} underline='none'>
       <BrandScreen speed={15}>
@@ -26,10 +20,11 @@ export const LoginPrompt = () => {
           </Grid>
           <Grid item>
             <Typography variant='h5' noWrap>
-              Login
+              Sorry.
             </Typography>
           </Grid>
         </Grid>
+        <p>You haven&apos;t been authorized to access {appName} yet. Contact ɐʞoʎǝH for help.</p>
       </BrandScreen>
     </Link>
   );

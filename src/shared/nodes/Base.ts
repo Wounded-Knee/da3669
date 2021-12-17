@@ -1,7 +1,16 @@
 import mongoose, { Schema } from 'mongoose';
+import { INodeTypeDefinition, NodeId } from '../all';
+
+export interface INodeBase {
+  _id: string;
+  author: string;
+  rel: {
+    [key: string]: NodeId[];
+  };
+}
 
 const modelName = 'Base';
-export default {
+export default <INodeTypeDefinition>{
   name: modelName,
   default: true,
   relationTypes: [
@@ -17,29 +26,5 @@ export default {
   options: { discriminatorKey: 'kind', timestamps: true },
   schemaPaths: {
     author: Schema.Types.ObjectId,
-    reads: [
-      {
-        user: Schema.Types.ObjectId,
-        date: {
-          type: Date,
-          default: Date.now,
-        },
-      },
-    ],
-  },
-  schemaStatics: {
-    persist: async function (node, relations = []) {
-      const { _id, __v, createdAt, updatedAt, ...cleanNode } = node;
-      if (_id) {
-        return await new Promise((resolve, reject) => {
-          this.findOneAndUpdate({ _id }, cleanNode, { upsert: true, returnDocument: 'after' }, (nothing, node) =>
-            resolve(node),
-          );
-        });
-      } else {
-        //console.log(`New ${modelName} `, _id, cleanNode, node);
-        return await new this(cleanNode).save();
-      }
-    },
   },
 };

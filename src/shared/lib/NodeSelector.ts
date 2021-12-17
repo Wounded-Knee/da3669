@@ -1,22 +1,18 @@
-import { relationTypes } from '../nodes/all';
+import { relationTypes, RelationTypes } from '../nodes/all';
+import { INodeSelectorSerialized, NodeId } from '../all';
 import { server } from './redux/actionTypes';
 
-function intersect(a, b) {
-  const setB = new Set(b);
-  return [...new Set(a)].filter((x) => setB.has(x));
-}
-
 export class NodeSelector {
-  ids = [];
-  self = true;
-  rel = false;
-  pop = false;
+  ids: string[] = [];
+  self: boolean = true;
+  rel: boolean | string[] = false;
+  pop: boolean = false;
 
-  constructor(...ids) {
-    this.ids = ids;
+  constructor(...ids: NodeId[]) {
+    this.ids = ids.filter((id) => typeof id === 'string');
   }
 
-  load(obj) {
+  load(obj: INodeSelectorSerialized): NodeSelector {
     const { ids, rel, self, pop } = obj;
     this.self = self;
     this.ids = ids;
@@ -25,41 +21,69 @@ export class NodeSelector {
     return this;
   }
 
-  id(id) {
+  id(id: NodeId): NodeSelector {
     this.ids.push(id);
     return this;
   }
 
-  notSelf() {
+  notSelf(): NodeSelector {
     this.self = false;
     return this;
   }
 
-  andRelations(...relationTypes) {
+  andRelations(...relationTypes: string[]): NodeSelector {
     if (this.rel !== true) {
       if (relationTypes.length === 0) {
         this.rel = true;
       } else {
-        //@ts-ignore
         this.rel = relationTypes;
       }
     }
     return this;
   }
 
-  populate() {
+  populate(): NodeSelector {
     this.pop = true;
     return this;
   }
 
   get relationTypes() {
-    return relationTypes.filter(([obverse, converse]) => {
-      // @ts-ignore
-      return this.rel === true || (this.rel instanceof Array && intersect(this.rel, converse).length);
-    });
+    if (this.rel === false) return [];
+    return this.rel instanceof Array
+      ? this.rel.map((selector) => RelationTypes(selector))
+      : relationTypes.reduce((relationTypeObjects, tuple) => {
+          return [...relationTypeObjects, ...tuple.map(([selector]) => RelationTypes(selector))];
+        }, []);
   }
 
-  get serialize() {
-    return JSON.stringify([this.ids, this.self, this.rel, this.pop]);
+  get serialize(): INodeSelectorSerialized {
+    return {
+      ids: this.ids,
+      self: this.self,
+      rel: this.rel,
+      pop: this.pop,
+    };
+  }
+
+  equals(foreignSelector: INodeSelectorSerialized): boolean {
+    if (foreignSelector instanceof NodeSelector) {
+      return JSON.stringify(foreignSelector.serialize) === JSON.stringify(this.serialize);
+    } else {
+      return JSON.stringify(foreignSelector) === JSON.stringify(this.serialize);
+    }
+  }
+
+  get serverAction() {
+    return {
+      type: server.SUBSCRIBE,
+      payload: this.serialize,
+    };
+  }
+
+  get serverUnsubscribe() {
+    return {
+      type: server.UNSUBSCRIBE,
+      payload: this.serialize,
+    };
   }
 }
