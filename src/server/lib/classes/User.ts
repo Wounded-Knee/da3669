@@ -1,5 +1,5 @@
 import { WebSocket } from 'uWebSockets.js';
-import { NodeSelector } from './NodeSelector';
+import { NodeSelector, selectNodes } from './NodeSelector';
 import { PromiseId, SessionId, UserId } from '../../../shared/all';
 import { getNodeTypeByName } from '../../../shared/nodes/all';
 import { v4 as uuidv4 } from 'uuid';
@@ -23,13 +23,7 @@ interface IOrder {
   payload: any;
   dates?: {
     create: Date;
-  };
-}
-interface IFulfillment {
-  promiseId: PromiseId;
-  action: {
-    type: string;
-    payload: any;
+    fulfilled?: Date;
   };
 }
 interface ISubscription {
@@ -65,11 +59,11 @@ class Users {
   orders = <IOrder[]>[];
   subscriptions = <ISubscription[]>[];
 
-  orderProcess() {
-    this.orders.forEach(async (order: IOrder) => {
+  async orderProcess(order: IOrder) {
+    if (!order.dates.fulfilled) {
       if (debug.orders) console.log('Processing ', order);
 
-      const { type, sessionId } = order;
+      const { type, payload, sessionId } = order;
       const session = this.sessionFetchById(sessionId);
       if (session) {
         const { userId } = session;
@@ -81,20 +75,35 @@ class Users {
             });
             break;
         }
+        if (userId) {
+          switch (type) {
+            case server.SUBSCRIBE:
+              const thisNodeSelector = <NodeSelector>selectNodes().load(payload);
+              this.subscribe(thisNodeSelector, userId);
+              this.orderFulfill(order, {
+                type: client.ABSORB_NODES,
+                payload: await thisNodeSelector.getNodes(),
+              });
+              break;
+          }
+        } else {
+          // No userId
+        }
       } else {
         // No Session
       }
-    });
+    }
   }
 
   orderAdd(order: IOrder) {
-    this.orders.push({
+    const thisOrder = {
       ...order,
       dates: {
         create: new Date(),
       },
-    });
-    this.orderProcess();
+    };
+    this.orders.push(thisOrder);
+    this.orderProcess(thisOrder);
   }
 
   orderFulfill(order: IOrder, action) {
@@ -106,6 +115,17 @@ class Users {
         action,
       }),
     );
+    this.orders = this.orders.map((thisOrder) => {
+      return thisOrder === order
+        ? {
+            ...order,
+            dates: {
+              ...order.dates,
+              fulfilled: new Date(),
+            },
+          }
+        : order;
+    });
   }
 
   sessionFetchById(sessionId: SessionId): ISession {
