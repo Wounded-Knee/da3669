@@ -1,9 +1,10 @@
 import { WebSocket } from 'uWebSockets.js';
 import { NodeSelector, selectNodes } from './NodeSelector';
 import { PromiseId, SessionId, UserId } from '../../../shared/all';
-import { getNodeTypeByName } from '../../../shared/nodes/all';
+import { getNodeTypeByName, defaultNodeType } from '../../../shared/nodes/all';
 import { v4 as uuidv4 } from 'uuid';
 import { server, client } from '../../../shared/lib/redux/actionTypes';
+import { getNetWorthByUserId } from './getNetWorthByUserId';
 
 const debug = {
   orders: true,
@@ -52,7 +53,9 @@ interface IUserProfileGoogle {
 }
 type UserProfile = IUserProfileGoogle;
 
-const UserModel = getNodeTypeByName('User').model;
+const { model: UserModel } = getNodeTypeByName('User');
+const { model: EconomyModel } = getNodeTypeByName('Economy');
+const DefaultModel = defaultNodeType.model;
 class Users {
   sessions = <ISession[]>[];
   sockets = <ISocket[]>[];
@@ -70,18 +73,50 @@ class Users {
         switch (type) {
           case server.GET_USER:
             this.orderFulfill(order, {
-              type: client.ABSORB_NODES,
+              type: client.STASH,
               payload: await UserModel.findById(userId),
             });
             break;
         }
         if (userId) {
           switch (type) {
+            case server.ECONOMY_TRANSFER:
+              const { qty, destinationId } = payload;
+              new EconomyModel({
+                qty,
+                destinationId,
+                author: userId,
+              })
+                .save()
+                .then(async (transaction) => {
+                  this.orderFulfill(order, {
+                    type: client.UPDATE_NET_WORTH,
+                    payload: await getNetWorthByUserId(userId),
+                  });
+                });
+              break;
+
+            case server.CREATE:
+              Promise.all(
+                payload.map((nodeData) =>
+                  new DefaultModel({
+                    ...nodeData,
+                    author: userId,
+                  }).save(),
+                ),
+              ).then((newNodes) => {
+                this.orderFulfill(order, {
+                  type: client.STASH,
+                  payload: newNodes,
+                });
+              });
+              break;
+
             case server.SUBSCRIBE:
               const thisNodeSelector = <NodeSelector>selectNodes().load(payload);
               this.subscribe(thisNodeSelector, userId);
               this.orderFulfill(order, {
-                type: client.ABSORB_NODES,
+                type: client.STASH,
                 payload: await thisNodeSelector.getNodes(),
               });
               break;

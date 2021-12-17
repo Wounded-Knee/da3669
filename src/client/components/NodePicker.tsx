@@ -22,7 +22,7 @@ export const NodePicker = ({
     switch (reason) {
       case 'createOption':
         dispatch({
-          type: server.ABSORB_NODES,
+          type: server.CREATE,
           payload: [nodeGenerator(value)],
         }).then(({ payload: newNodes }) => onPick(newNodes));
       case 'selectOption':

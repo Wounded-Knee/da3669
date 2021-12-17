@@ -24,7 +24,7 @@ export const reducer = (state = initialState, { type, payload }) => {
         },
       };
 
-    case client.ABSORB_NODES:
+    case client.STASH:
       if (payload === undefined) throw new Error(`${type}: Payload is undefined`);
       const newNodes = (payload instanceof Array ? payload : [payload]).filter((newNode) => {
         const oldNode = state.nodes.find(({ _id }) => _id === newNode._id);
