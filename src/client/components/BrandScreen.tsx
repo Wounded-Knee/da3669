@@ -1,10 +1,16 @@
 /** @jsxFrag React.Fragment */
 /** @jsx jsx */
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { css, jsx } from '@emotion/react';
 import { Grid } from '@mui/material';
 
-export const BrandScreen: React.FunctionComponent = ({ speed = 1.5, children }) => {
+export const BrandScreen: React.FunctionComponent = ({
+  speed = 1.5,
+  children,
+}: {
+  speed: number;
+  children: ReactNode;
+}) => {
   return (
     <Grid container direction='column' justifyContent='center' alignItems='center' style={{ height: '95vh' }}>
       <Grid

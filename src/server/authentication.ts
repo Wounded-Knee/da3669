@@ -33,18 +33,29 @@ export const setupPassport = (express) => {
   express.use(Passport.initialize());
   express.use(Passport.session());
   express.get('/google', Passport.authenticate('google', { scope: 'profile' }));
-  express.get('/google/loginCallback', Passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
-    console.log('Browser SID: ', req.cookies[cookieName]);
-    if (!UserManager.sessionFetchById(req.cookies[cookieName])) {
-      const session = UserManager.sessionCreate(req.user._id.toString());
-      console.log('Created a new session', session);
-      const twoDays = 24 * 60 * 60 * 1000 * 2;
-      res.cookie(cookieName, session.sessionId, {
-        maxAge: twoDays,
-        httpOnly: false,
-        secure: false,
-      });
-    }
-    res.redirect('/talk/');
+  express.get('/google/loginCallback', function (req, res, next) {
+    // @ts-ignore
+    Passport.authenticate('google', function (err, user, info) {
+      if (err) {
+        console.error(err, info);
+      } else {
+        console.log('Browser SID: ', req.cookies[cookieName]);
+        if (user) {
+          if (!UserManager.sessionFetchById(req.cookies[cookieName])) {
+            const session = UserManager.sessionCreate(user._id.toString());
+            console.log('Created a new session', session);
+            const twoDays = 24 * 60 * 60 * 1000 * 2;
+            res.cookie(cookieName, session.sessionId, {
+              maxAge: twoDays,
+              httpOnly: false,
+              secure: false,
+            });
+          }
+          res.redirect('/talk/');
+        } else {
+          console.error('No user info returned ', user, info);
+        }
+      }
+    })(req, res, next);
   });
 };

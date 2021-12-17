@@ -5,6 +5,7 @@ import { getNodeTypeByName, defaultNodeType } from '../../../shared/nodes/all';
 import { v4 as uuidv4 } from 'uuid';
 import { server, client } from '../../../shared/lib/redux/actionTypes';
 import { getNetWorthByUserId } from './getNetWorthByUserId';
+import { INodeAll } from '../../../../dist/shared/nodes/all';
 
 const debug = {
   orders: true,
@@ -98,16 +99,18 @@ class Users {
 
             case server.CREATE:
               Promise.all(
-                payload.map((nodeData) =>
-                  new DefaultModel({
-                    ...nodeData,
-                    author: userId,
-                  }).save(),
+                payload.map(
+                  (nodeData): INodeAll =>
+                    new DefaultModel({
+                      ...nodeData,
+                      author: userId,
+                    }).save(),
                 ),
-              ).then((newNodes) => {
+                //@ts-ignore
+              ).then((newNodes: INodeAll[]): void => {
                 this.orderFulfill(order, {
                   type: client.STASH,
-                  payload: newNodes,
+                  payload: this.broadcast(newNodes),
                 });
               });
               break;
@@ -163,6 +166,31 @@ class Users {
           }
         : order;
     });
+  }
+
+  broadcast(nodes: INodeAll[]): INodeAll[] {
+    this.subscriptions.forEach(({ selector, userId }) => {
+      const matchingNodes = selector.filterMatchingNodes(nodes);
+      if (matchingNodes.length) {
+        const { sessionId } = this.sessionFetchByUserId(userId);
+        const sockets = this.socketsGetBySessionId(sessionId);
+        sockets.forEach(({ socket }) => {
+          socket.send(
+            JSON.stringify({
+              action: {
+                type: client.STASH,
+                payload: matchingNodes,
+              },
+            }),
+          );
+        });
+      }
+    });
+    return nodes;
+  }
+
+  sessionFetchByUserId(userId: UserId): ISession {
+    return this.sessions.find(({ userId: thisUserId }) => thisUserId === userId);
   }
 
   sessionFetchById(sessionId: SessionId): ISession {

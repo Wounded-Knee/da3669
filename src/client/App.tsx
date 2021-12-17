@@ -19,6 +19,7 @@ import { DataView } from './components/DataView';
 import { InfoView } from './components/InfoView';
 import { PassportContext } from './components/PassportContext';
 import { LoginPrompt } from './components/LoginPrompt';
+import { Google } from './components/Google';
 
 store.subscribe(() => {
   const { user, ui } = store.getState();
@@ -72,7 +73,10 @@ export const App: FC = () => {
               )}
             </Routes>
           ) : (
-            <LoginPrompt />
+            <Routes>
+              <Route path='/google/:message' element={<Google />} />
+              <Route path='*' element={<LoginPrompt />} />
+            </Routes>
           )}
         </Box>
       </Box>
