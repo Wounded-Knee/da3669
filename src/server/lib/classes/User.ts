@@ -3,21 +3,33 @@ import { NodeSelector } from './NodeSelector';
 import { PromiseId, SessionId, UserId } from '../../../shared/all';
 import { getNodeTypeByName } from '../../../shared/nodes/all';
 import { v4 as uuidv4 } from 'uuid';
+import { server, client } from '../../../shared/lib/redux/actionTypes';
+
+const debug = {
+  orders: true,
+};
 
 interface ISocket {
-  userId?: UserId;
+  sessionId?: SessionId;
   socket: WebSocket;
   dates: {
     create: Date;
   };
 }
 interface IOrder {
-  userId?: UserId;
+  sessionId: SessionId;
   promiseId: PromiseId;
   type: string;
   payload: any;
   dates?: {
     create: Date;
+  };
+}
+interface IFulfillment {
+  promiseId: PromiseId;
+  action: {
+    type: string;
+    payload: any;
   };
 }
 interface ISubscription {
@@ -53,6 +65,28 @@ class Users {
   orders = <IOrder[]>[];
   subscriptions = <ISubscription[]>[];
 
+  orderProcess() {
+    this.orders.forEach(async (order: IOrder) => {
+      if (debug.orders) console.log('Processing ', order);
+
+      const { type, sessionId } = order;
+      const session = this.sessionFetchById(sessionId);
+      if (session) {
+        const { userId } = session;
+        switch (type) {
+          case server.GET_USER:
+            this.orderFulfill(order, {
+              type: client.ABSORB_NODES,
+              payload: await UserModel.findById(userId),
+            });
+            break;
+        }
+      } else {
+        // No Session
+      }
+    });
+  }
+
   orderAdd(order: IOrder) {
     this.orders.push({
       ...order,
@@ -60,6 +94,18 @@ class Users {
         create: new Date(),
       },
     });
+    this.orderProcess();
+  }
+
+  orderFulfill(order: IOrder, action) {
+    const { sessionId, promiseId } = order;
+    const { socket } = this.socketGetBySessionId(sessionId);
+    socket.send(
+      JSON.stringify({
+        promiseId,
+        action,
+      }),
+    );
   }
 
   sessionFetchById(sessionId: SessionId): ISession {
@@ -103,22 +149,22 @@ class Users {
   async userFetchByProfile(userProfile: UserProfile): Promise<IUser | boolean> {
     const query = { $and: [{ googleId: userProfile.id }, { googleId: { $ne: '' } }] };
     const foundUser = await UserModel.findOne(query).exec();
-    console.log('Found User ', foundUser);
     return foundUser;
   }
 
   // Retrieves a user by ID
   async userFetchById(userId: UserId): Promise<IUser | boolean> {
-    return await UserModel.findById(userId);
+    const foundUser = await UserModel.findById(userId);
+    return foundUser;
   }
 
   // Identifies a websocket with a user
-  socketUse(ws: WebSocket, userId: UserId) {
-    this.sockets.map((socket) => {
+  socketUse(ws: WebSocket, sessionId: SessionId) {
+    this.sockets = this.sockets.map((socket) => {
       return socket.socket === ws
         ? {
             ...socket,
-            userId,
+            sessionId,
           }
         : socket;
     });
@@ -142,6 +188,10 @@ class Users {
   // Returns the record of information concerning the socket
   socketQuery(ws: WebSocket) {
     return this.sockets.find(({ socket }) => socket === ws);
+  }
+
+  socketGetBySessionId(sessionId: SessionId) {
+    return this.sockets.find(({ sessionId: thisSessionId }) => thisSessionId === sessionId);
   }
 
   // Subscribes given user to the given selector

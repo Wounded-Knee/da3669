@@ -34,10 +34,12 @@ export const setupPassport = (express) => {
   express.use(Passport.session());
   express.get('/google', Passport.authenticate('google', { scope: 'profile' }));
   express.get('/google/loginCallback', Passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
+    console.log('Browser SID: ', req.cookies[cookieName]);
     if (!UserManager.sessionFetchById(req.cookies[cookieName])) {
-      const { sessionId } = UserManager.sessionCreate(req.user._id.toString());
+      const session = UserManager.sessionCreate(req.user._id.toString());
+      console.log('Created a new session', session);
       const twoDays = 24 * 60 * 60 * 1000 * 2;
-      res.cookie(cookieName, sessionId, {
+      res.cookie(cookieName, session.sessionId, {
         maxAge: twoDays,
         httpOnly: false,
         secure: false,

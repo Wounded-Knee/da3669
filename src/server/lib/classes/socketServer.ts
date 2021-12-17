@@ -20,9 +20,11 @@ export const socketServer = new Promise((resolve) => {
           sessionId,
           promiseId,
         } = JSON.parse(decoder.decode(message));
-        const { userId } = UserManager.socketQuery(ws);
+        UserManager.socketUse(ws, sessionId);
+        const socketInfo = UserManager.socketQuery(ws);
+        console.log('Socket Info ', socketInfo);
         UserManager.orderAdd({
-          userId,
+          sessionId,
           promiseId,
           type,
           payload,
