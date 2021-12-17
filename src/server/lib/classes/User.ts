@@ -9,6 +9,9 @@ import { INodeAll } from '../../../../dist/shared/nodes/all';
 
 const debug = {
   orders: true,
+  [server.SUBSCRIBE]: false,
+  [server.UNSUBSCRIBE]: false,
+  [server.SUBSCRIBE_BY_SELECTOR]: false,
 };
 
 interface ISocket {
@@ -50,7 +53,7 @@ interface IUser {
 interface IUserProfileGoogle {
   id: string;
   displayName: string;
-  photos: { value: string }[];
+  photos?: { value: string }[];
 }
 type UserProfile = IUserProfileGoogle;
 
@@ -65,9 +68,8 @@ class Users {
 
   async orderProcess(order: IOrder) {
     if (!order.dates.fulfilled) {
-      if (debug.orders) console.log('Processing ', order);
-
       const { type, payload, sessionId } = order;
+      if (debug.orders && debug[server[type]] !== false) console.log('Processing ', order);
       const session = this.sessionFetchById(sessionId);
       if (session) {
         const { userId } = session;
@@ -211,7 +213,9 @@ class Users {
 
   async userCreateOrFetchByProfile(userProfile: UserProfile): Promise<IUser> {
     const foundUser = await this.userFetchByProfile(userProfile);
-    if (typeof foundUser === 'object') return foundUser;
+    if (typeof foundUser === 'object' && foundUser !== null) {
+      return foundUser;
+    }
 
     const {
       displayName: name,
@@ -227,7 +231,7 @@ class Users {
 
   // Creates a new user
   async userCreate(user: IUser): Promise<IUser> {
-    return await new UserModel(user);
+    return await new UserModel(user).save();
   }
 
   // Retrieves a user by Google OAuth2.0 ID

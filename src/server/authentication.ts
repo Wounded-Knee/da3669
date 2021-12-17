@@ -33,7 +33,7 @@ export const setupPassport = (express) => {
   express.use(Passport.initialize());
   express.use(Passport.session());
   express.get('/google', Passport.authenticate('google', { scope: 'profile' }));
-  express.get('/google/loginCallback', function (req, res, next) {
+  express.get(auth.callbackUrlPath, function (req, res, next) {
     // @ts-ignore
     Passport.authenticate('google', function (err, user, info) {
       if (err) {
@@ -51,7 +51,7 @@ export const setupPassport = (express) => {
               secure: false,
             });
           }
-          res.redirect('/talk/');
+          res.redirect('/talk/61b7d9765db289d1ed135c31');
         } else {
           console.error('No user info returned ', user, info);
         }

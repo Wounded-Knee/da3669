@@ -39,8 +39,10 @@ if (!process.env.AUTH_GOOGLE_CLIENT_ID || !process.env.MONGODB_URL || !process.e
 }
 
 // Authentication
+const callbackUrlPath = '/google/loginCallback';
 export const auth = {
-  callbackUrl: `http://${WS_SERVER_HOST}:${HTTP_SERVER_PORT}/google/loginCallback`,
+  callbackUrlPath,
+  callbackUrl: `http://${WS_SERVER_HOST}:${HTTP_SERVER_PORT}${callbackUrlPath}`,
   google: {
     clientId: process.env.AUTH_GOOGLE_CLIENT_ID,
     clientSecret: process.env.AUTH_GOOGLE_CLIENT_SECRET,

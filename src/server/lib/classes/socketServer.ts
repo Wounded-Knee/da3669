@@ -21,8 +21,6 @@ export const socketServer = new Promise((resolve) => {
           promiseId,
         } = JSON.parse(decoder.decode(message));
         UserManager.socketUse(ws, sessionId);
-        const socketInfo = UserManager.socketQuery(ws);
-        console.log('Socket Info ', socketInfo);
         UserManager.orderAdd({
           sessionId,
           promiseId,

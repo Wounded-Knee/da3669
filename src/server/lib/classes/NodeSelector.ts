@@ -37,8 +37,12 @@ export class NodeSelector extends NodeSelectorParent {
       const self = this.self && this.ids.indexOf(node._id) !== -1;
       console.log(`${node._id} in `, this.ids, node.rel);
       const relations = this.relationTypes.reduce((includeNodeBool, RelationType) => {
-        // @ts-ignore
-        return includeNodeBool || (RelationType.isVirtual && node.rel[RelationType.literal.plural].contains(node._id));
+        return (
+          includeNodeBool ||
+          (RelationType.isVirtual &&
+            node.rel[RelationType.literal.plural] instanceof Array &&
+            node.rel[RelationType.literal.plural].includes(node._id))
+        );
       }, false);
       console.log(`${node._id}: ${node.text} ${self && 'Matched as self'} ${self && 'Matched as relation'}`);
       return self || relations;
