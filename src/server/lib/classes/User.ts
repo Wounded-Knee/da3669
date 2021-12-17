@@ -143,13 +143,15 @@ class Users {
 
   orderFulfill(order: IOrder, action) {
     const { sessionId, promiseId } = order;
-    const { socket } = this.socketGetBySessionId(sessionId);
-    socket.send(
-      JSON.stringify({
-        promiseId,
-        action,
-      }),
-    );
+    const sockets = this.socketsGetBySessionId(sessionId);
+    sockets.forEach(({ socket }) => {
+      socket.send(
+        JSON.stringify({
+          promiseId,
+          action,
+        }),
+      );
+    });
     this.orders = this.orders.map((thisOrder) => {
       return thisOrder === order
         ? {
@@ -245,8 +247,8 @@ class Users {
     return this.sockets.find(({ socket }) => socket === ws);
   }
 
-  socketGetBySessionId(sessionId: SessionId) {
-    return this.sockets.find(({ sessionId: thisSessionId }) => thisSessionId === sessionId);
+  socketsGetBySessionId(sessionId: SessionId): ISocket[] {
+    return this.sockets.filter(({ sessionId: thisSessionId }) => thisSessionId === sessionId);
   }
 
   // Subscribes given user to the given selector
