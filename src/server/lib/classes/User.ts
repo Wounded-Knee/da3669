@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { server, client } from '../../../shared/lib/redux/actionTypes';
 import { getNetWorthByUserId } from './getNetWorthByUserId';
 import { INodeAll } from '../../../../dist/shared/nodes/all';
+import { Model } from 'mongoose';
 
 const debug = {
   orders: true,
@@ -109,10 +110,10 @@ class Users {
                     }).save(),
                 ),
                 //@ts-ignore
-              ).then((newNodes: INodeAll[]): void => {
+              ).then((mongooseObjects: Model): void => {
                 this.orderFulfill(order, {
                   type: client.STASH,
-                  payload: this.broadcast(newNodes),
+                  payload: this.broadcast(this.modelsToNodes(mongooseObjects)),
                 });
               });
               break;
@@ -171,12 +172,17 @@ class Users {
   }
 
   broadcast(nodes: INodeAll[]): INodeAll[] {
+    let broadcastCount = 0;
+    let socketCount = 0;
     this.subscriptions.forEach(({ selector, userId }) => {
-      const matchingNodes = selector.filterMatchingNodes(nodes);
+      const candidateNodes = this.stringifyNodeIds(nodes);
+      const matchingNodes = selector.filterMatchingNodes(candidateNodes);
       if (matchingNodes.length) {
+        broadcastCount++;
         const { sessionId } = this.sessionFetchByUserId(userId);
         const sockets = this.socketsGetBySessionId(sessionId);
         sockets.forEach(({ socket }) => {
+          socketCount++;
           socket.send(
             JSON.stringify({
               action: {
@@ -188,6 +194,7 @@ class Users {
         });
       }
     });
+    console.log(`Broadcast ${broadcastCount} nodes to ${socketCount} sockets.`);
     return nodes;
   }
 
@@ -212,6 +219,7 @@ class Users {
   }
 
   async userCreateOrFetchByProfile(userProfile: UserProfile): Promise<IUser> {
+    // We should update profile data here, too.
     const foundUser = await this.userFetchByProfile(userProfile);
     if (typeof foundUser === 'object' && foundUser !== null) {
       return foundUser;
@@ -299,6 +307,18 @@ class Users {
     this.subscriptions.filter(
       (subscription) => subscription.userId !== userId || !subscription.selector.equals(selector),
     );
+  }
+
+  stringifyNodeIds(nodeArray: INodeAll[]): INodeAll[] {
+    return nodeArray.map((node) => ({
+      ...node,
+      _id: node._id.toString(),
+    }));
+  }
+
+  // @ts-ignore
+  modelsToNodes(modelArray: Model[]): INodeAll[] {
+    return modelArray.map((mongooseObject): INodeAll => mongooseObject.toObject());
   }
 }
 

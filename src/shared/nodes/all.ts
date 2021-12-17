@@ -2,6 +2,9 @@ import { Schema, model } from 'mongoose';
 import { nodeTypes as nodeTypeList } from '../config';
 import { INodeBase } from './Base';
 
+const debug = {
+  typesLoaded: false,
+};
 export interface INodeAll extends INodeBase {
   text: string;
 }
@@ -138,16 +141,17 @@ class RelationType {
   }
 }
 
-console.log(
-  'Node Types Loaded: ',
-  nodeTypesMore.map((nodeType) => {
-    const { name, model, schemaPaths } = nodeType;
-    return {
-      name,
-      model: !!model,
-      schemaPaths: JSON.stringify(schemaPaths),
-    };
-  }),
-  '\nRelation Types: ',
-  relationTypes,
-);
+if (debug.typesLoaded)
+  console.log(
+    'Node Types Loaded: ',
+    nodeTypesMore.map((nodeType) => {
+      const { name, model, schemaPaths } = nodeType;
+      return {
+        name,
+        model: !!model,
+        schemaPaths: JSON.stringify(schemaPaths),
+      };
+    }),
+    '\nRelation Types: ',
+    relationTypes,
+  );
