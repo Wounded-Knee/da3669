@@ -20,35 +20,32 @@ export class NodeSelector extends NodeSelectorParent {
   }
 
   async getNodes(): Promise<INodeBase[]> {
-    const baseNodes = this.self ? await defaultModel.find({ _id: { $in: this.mongooseNodeIds } }) : [];
+    const baseNodes = this.self ? await this.getBaseNodes() : [];
     const query = {
       $or: this.relationTypes.reduce((queries, RelationType) => {
         return [...queries, { [`rel.${RelationType.literal.plural}`]: { $in: this.ids } }];
       }, []),
     };
-    const relations = this.relationTypes.length ? await defaultModel.find(query) : [];
+    const relations = this.relationTypes.length ? await DefaultModel.find(query) : [];
     return [...baseNodes, ...relations];
+  }
+
+  async getBaseNodes(): Promise<INodeBase[]> {
+    return await DefaultModel.find({ _id: { $in: this.mongooseNodeIds } });
   }
 
   // In: Candidates for Broadcast: List of nodes which have been created or updated
   // State: A NodeSelector data set
   // Out: A subset of the original node list denoting which ones fit that selector
-  filterMatchingNodes(nodeArray: INodeAll[]): INodeAll[] {
-    return nodeArray.filter(({ rel, _id, text }) => {
-      let relations = false;
-      const self = this.self && this.ids.indexOf(_id) !== -1;
-      if (rel) {
-        relations = this.relationTypes.reduce((includeNodeBool, RelationType) => {
-          return (
-            includeNodeBool ||
-            (RelationType.isVirtual &&
-              rel &&
-              rel[RelationType.literal.plural] instanceof Array &&
-              rel[RelationType.literal.plural].filter((value) => this.ids.includes(value)).length)
-          );
-        }, false);
-      }
-      return self || relations;
+  async filterMatchingNodes(candidateNodes: INodeAll[]): INodeAll[] {
+    const baseNodes = await this.getBaseNodes();
+    return candidateNodes.filter((candidateNode) => {
+      this.relationTypes.reduce((candidateVerified, RelationType) => {
+        if (RelationType.isVirtual) {
+          return candidateVerified;
+        } else if (RelationType.isLiteral) {
+        }
+      });
     });
   }
 }

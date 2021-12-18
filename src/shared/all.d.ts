@@ -31,6 +31,7 @@ export interface INodeSelectorSerialized {
   ids: NodeId[];
   self: boolean;
   rel: boolean | string[];
+  without: boolean | string[];
   pop: boolean;
 }
 

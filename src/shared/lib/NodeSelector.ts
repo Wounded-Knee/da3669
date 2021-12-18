@@ -6,6 +6,7 @@ export class NodeSelector {
   ids: string[] = [];
   self: boolean = true;
   rel: boolean | string[] = false;
+  without: boolean | string[] = false;
   pop: boolean = false;
 
   constructor(...ids: NodeId[]) {
@@ -13,11 +14,12 @@ export class NodeSelector {
   }
 
   load(obj: INodeSelectorSerialized): NodeSelector {
-    const { ids, rel, self, pop } = obj;
+    const { ids, rel, self, pop, without } = obj;
     this.self = self;
     this.ids = ids;
     this.rel = rel;
     this.pop = pop;
+    this.without = without;
     return this;
   }
 
@@ -28,6 +30,17 @@ export class NodeSelector {
 
   notSelf(): NodeSelector {
     this.self = false;
+    return this;
+  }
+
+  withoutRelations(...relationTypes: string[]): NodeSelector {
+    if (this.without !== true) {
+      if (relationTypes.length === 0) {
+        this.without = true;
+      } else {
+        this.without = relationTypes;
+      }
+    }
     return this;
   }
 
@@ -56,12 +69,22 @@ export class NodeSelector {
         }, []);
   }
 
+  get withoutRelationTypes() {
+    if (this.without === false) return [];
+    return this.without instanceof Array
+      ? this.without.map((selector) => RelationTypes(selector))
+      : relationTypes.reduce((relationTypeObjects, tuple) => {
+          return [...relationTypeObjects, ...tuple.map(([selector]) => RelationTypes(selector))];
+        }, []);
+  }
+
   get serialize(): INodeSelectorSerialized {
     return {
       ids: this.ids,
       self: this.self,
       rel: this.rel,
       pop: this.pop,
+      without: this.without,
     };
   }
 

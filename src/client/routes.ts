@@ -1,12 +1,13 @@
 // Icons
 import {
   Article,
-  ReportGmailerrorred as PanicIcon,
+  EmojiEmotions as PanicIcon,
   Gavel as JudgementIcon,
   Google as GoogleIcon,
   BackupTable as ContextStackerIcon,
   Savings as SavingsIcon,
   Forum as TalkIcon,
+  ListAlt as DirectoryIcon,
 } from '@mui/icons-material';
 
 // Components
@@ -23,8 +24,15 @@ export const routes = [
     route: '/panic',
     path: '/panic',
     icon: PanicIcon,
-    text: 'Panic',
+    text: "Don't Panic",
     component: Loading,
+  },
+  {
+    route: '/directory',
+    path: '/directory',
+    icon: DirectoryIcon,
+    text: 'Directory',
+    component: Directory,
   },
   {
     route: '/context',

@@ -105,6 +105,9 @@ class Users {
                   (nodeData): INodeAll =>
                     new DefaultModel({
                       ...nodeData,
+                      rel: Object.keys(nodeData.rel).reduce((rel, relName) => {
+                        return { ...rel, [relName]: nodeData.rel[relName].map((_id) => new ObjectId(_id)) };
+                      }, {}),
                       author: userId,
                     }).save(),
                 ),

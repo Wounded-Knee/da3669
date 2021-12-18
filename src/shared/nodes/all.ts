@@ -1,4 +1,6 @@
-import { INodeBase } from '../all';
+import { Schema, model } from 'mongoose';
+import { nodeTypes as nodeTypeList } from '../config';
+import { INodeBase } from './Base';
 
 export interface INodeAll extends INodeBase {
   text: string;
@@ -30,8 +32,6 @@ export const relationTypes = <RelationTypeGroup[]>[
     ['work', 'works'],
   ],
 ];
-
-export const RelationTypes = (selector: RelationTypeSelector): RelationType => new RelationType(selector);
 
 export class RelationType {
   group = [];
