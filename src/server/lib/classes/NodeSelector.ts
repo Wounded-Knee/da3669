@@ -53,6 +53,31 @@ export class NodeSelector {
     return this;
   }
 
+  filterMatchingNodes(nodeArray: INodeAll[]): INodeAll[] {
+    const {
+      cfg: { myRelations, me },
+    } = this;
+
+    return nodeArray.filter((node) => {
+      return Object.keys(myRelations).reduce((useThis: boolean, rel: string) => {
+        if (myRelations[rel] === null) return useThis;
+
+        return useThis || RelationTypes(rel).isLiteral
+          ? !!me.filter((value) => node.rel[rel].includes(value)).length
+          : {
+              [`rel.${RelationTypes(rel).literal.plural}`]:
+                myRelations[rel] === null
+                  ? [] // Must have zero relations of this type
+                  : { [myRelations[rel] ? '$in' : '$nin']: me.map((idObj) => idObj.toString()) }, // Must have (or lack) one relation to me of this type
+            };
+      }, false);
+    });
+
+    console.log(selectors);
+    // @ts-ignore
+    return selectors;
+  }
+
   get query(): any {
     const {
       cfg: { myRelations, me },
