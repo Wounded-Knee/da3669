@@ -1,52 +1,126 @@
-import mongoose from 'mongoose';
-import { NodeSelector as NodeSelectorParent } from '../../../shared/lib/NodeSelector';
-import { getModelByName, defaultModel } from '../nodes/all';
-import { INodeBase, NodeId } from '../../../shared/all';
+import { defaultNodeType, INodeAll, relationTypes, RelationTypes } from '../../../shared/nodes/all';
+import { NodeId } from '../../../shared/all';
+const { model: DefaultModel } = defaultNodeType;
 
-export interface INodeAll extends INodeBase {
-  text: string;
+const flatRelationTypes = relationTypes.flat(2).filter((relationType) => RelationTypes(relationType).isPlural);
+
+interface INodeSelectorCfg {
+  me: NodeId[];
+  myRelations: {
+    [key: string]: boolean | null;
+  };
 }
 
-export class NodeSelector extends NodeSelectorParent {
-  get mongooseNodeIds(): NodeId[] {
-    const { ObjectId } = mongoose.Types;
-    return this.ids.reduce((baseNodeIds, id) => {
-      try {
-        return [...baseNodeIds, new ObjectId(id)];
-      } catch (e) {
-        return baseNodeIds;
-      }
-    }, []);
+export class NodeSelector {
+  cfg = <INodeSelectorCfg>{
+    me: [],
+    myRelations: {},
+  };
+
+  constructor(...nodeIds: NodeId[]) {
+    return this.nodeIds(nodeIds);
   }
 
-  async getNodes(): Promise<INodeBase[]> {
-    const baseNodes = this.self ? await this.getBaseNodes() : [];
-    const query = {
-      $or: this.relationTypes.reduce((queries, RelationType) => {
-        return [...queries, { [`rel.${RelationType.literal.plural}`]: { $in: this.ids } }];
-      }, []),
-    };
-    const relations = this.relationTypes.length ? await DefaultModel.find(query) : [];
-    return [...baseNodes, ...relations];
+  nodeId(nodeId: NodeId): NodeSelector {
+    return this.nodeIds([nodeId]);
   }
 
-  async getBaseNodes(): Promise<INodeBase[]> {
-    return await DefaultModel.find({ _id: { $in: this.mongooseNodeIds } });
+  nodeIds(nodeIds: NodeId[]): NodeSelector {
+    this.cfg.me = [...this.cfg.me, ...nodeIds];
+    return this;
   }
 
-  // In: Candidates for Broadcast: List of nodes which have been created or updated
-  // State: A NodeSelector data set
-  // Out: A subset of the original node list denoting which ones fit that selector
-  async filterMatchingNodes(candidateNodes: INodeAll[]): INodeAll[] {
-    const baseNodes = await this.getBaseNodes();
-    return candidateNodes.filter((candidateNode) => {
-      this.relationTypes.reduce((candidateVerified, RelationType) => {
-        if (RelationType.isVirtual) {
-          return candidateVerified;
-        } else if (RelationType.isLiteral) {
-        }
-      });
+  populateRelation(...relationTypes: string[]): NodeSelector {
+    return this.addRelations(null, relationTypes);
+  }
+
+  lacksRelation(...relationTypes: string[]): NodeSelector {
+    return this.addRelations(false, relationTypes);
+  }
+
+  hasRelation(...relationTypes: string[]): NodeSelector {
+    return this.addRelations(true, relationTypes);
+  }
+
+  /**
+   * @param bool null: Populate, bool: hasRelation / lacksRelation
+   */
+  addRelations(bool: boolean | null, relationTypes: string[]): NodeSelector {
+    const theseRelationTypes = relationTypes.length ? relationTypes : flatRelationTypes;
+    theseRelationTypes.forEach((relationType) => {
+      this.cfg.myRelations[relationType] = bool;
     });
+    return this;
+  }
+
+  get query(): any {
+    const {
+      cfg: { myRelations, me },
+    } = this;
+
+    const matches = {
+      ...(me.length ? { _id: me } : {}),
+      ...Object.keys(myRelations).reduce((match, rel) => {
+        return myRelations[rel] !== null
+          ? {
+              ...match,
+              [`rel.${RelationTypes(rel).literal.plural}`]: (() => {
+                if (myRelations[rel] === true) {
+                  return { $not: { $size: 0 } };
+                } else if (myRelations[rel] === false) {
+                  return { $size: 0 };
+                } else {
+                  return {};
+                }
+              })(),
+            }
+          : {};
+      }, {}),
+    };
+
+    return [
+      ...(Object.keys(matches).length
+        ? [
+            {
+              $match: matches,
+            },
+          ]
+        : []),
+      ...Object.keys(myRelations).reduce((lookups, rel) => {
+        if (myRelations[rel] === null) {
+          return RelationTypes(rel).isLiteral
+            ? [
+                ...lookups,
+                {
+                  $lookup: {
+                    from: 'bases',
+                    localField: `rel.${RelationTypes(rel).literal.plural}`,
+                    foreignField: '_id',
+                    as: `rel.${RelationTypes(rel).literal.plural}`,
+                  },
+                },
+              ]
+            : [
+                ...lookups,
+                {
+                  $lookup: {
+                    from: 'bases',
+                    localField: '_id',
+                    foreignField: `rel.${RelationTypes(rel).literal.plural}`,
+                    as: `rel.${RelationTypes(rel).virtual.plural}`,
+                  },
+                },
+              ];
+        } else {
+          return [];
+        }
+      }, []),
+    ];
+  }
+
+  async get(): Promise<any> {
+    const query = this.query;
+    return await DefaultModel.aggregate(query).exec();
   }
 }
 
