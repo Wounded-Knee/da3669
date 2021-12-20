@@ -1,8 +1,7 @@
 import mongoose from 'mongoose';
 import { NodeSelector as NodeSelectorParent } from '../../../shared/lib/NodeSelector';
 import { getModelByName, defaultModel } from '../nodes/all';
-import { NodeId } from '../../../shared/all';
-import { INodeBase } from '../nodes/Base';
+import { INodeBase, NodeId } from '../../../shared/all';
 
 export interface INodeAll extends INodeBase {
   text: string;

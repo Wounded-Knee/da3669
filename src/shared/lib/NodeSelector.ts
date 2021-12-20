@@ -1,4 +1,4 @@
-import { relationTypes, RelationTypes } from '../nodes/all';
+import { relationTypes, RelationType } from '../nodes/all';
 import { INodeSelectorSerialized, NodeId } from '../all';
 import { server } from './redux/actionTypes';
 
@@ -50,9 +50,9 @@ export class NodeSelector {
   get relationTypes() {
     if (this.rel === false) return [];
     return this.rel instanceof Array
-      ? this.rel.map((selector) => RelationTypes(selector))
+      ? this.rel.map((selector) => new RelationType(selector))
       : relationTypes.reduce((relationTypeObjects, tuple) => {
-          return [...relationTypeObjects, ...tuple.map(([selector]) => RelationTypes(selector))];
+          return [...relationTypeObjects, ...tuple.map(([selector]) => new RelationType(selector))];
         }, []);
   }
 

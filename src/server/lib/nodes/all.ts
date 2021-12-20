@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+import mongoose, { Schema, model, Model } from 'mongoose';
 import { nodeTypes as nodeTypeNames } from '../../../shared/config';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -8,9 +8,9 @@ const getNodeDefinitionByName = (nodeTypeName) => nodeDefinitions.find(({ name }
 
 const { name: defaultNodeDefinitionName } = nodeDefinitions.find((definition) => definition && definition.default);
 
-export const getModelByName = (modelName: string) => {
+export const getModelByName = (modelName: string): Model<any> => {
   // Find the model and return it
-  const extantModel = model(modelName);
+  const extantModel = mongoose.modelNames().includes(modelName) && model(modelName);
   if (extantModel) return extantModel;
 
   // Create the model and return it

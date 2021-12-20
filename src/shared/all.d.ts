@@ -13,6 +13,14 @@ export type SessionId = string;
 export type PromiseId = string;
 export type NodeId = string;
 
+export interface INodeBase {
+  _id: string;
+  author: string;
+  rel: {
+    [key: string]: NodeId[];
+  };
+}
+
 export interface ISession {
   id: SessionId;
   userId: UserId;
