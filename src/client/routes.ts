@@ -2,7 +2,6 @@
 import {
   Article,
   ReportGmailerrorred as PanicIcon,
-  Language as AtmosphereIcon,
   Gavel as JudgementIcon,
   Google as GoogleIcon,
   BackupTable as ContextStackerIcon,
@@ -11,10 +10,8 @@ import {
 } from '@mui/icons-material';
 
 // Components
-import NodeManager from './wireframes/docstore/NodeManager';
 import { Chat } from './wireframes/chat/Chat';
 import { Office } from './components/Office';
-import Atmosphere from './components/Atmosphere';
 import { Bank } from './components/Banksy';
 import { Index as ContextStacker } from './wireframes/context-stacking/Index';
 import { Loading } from './components/Loading';
@@ -57,17 +54,6 @@ export const routes = [
   //   icon: Article,
   //   text: 'Node Manager',
   //   component: NodeManager,
-  // },
-  // {
-  //   route: '/atmosphere',
-  //   path: '/atmosphere',
-  //   icon: AtmosphereIcon,
-  //   text: 'Atmosphere',
-  //   component: Atmosphere,
-  // },
-  // {
-  //   path: '/atmosphere/:nodeId',
-  //   component: Atmosphere,
   // },
   // {
   //   route: '/judgement',
