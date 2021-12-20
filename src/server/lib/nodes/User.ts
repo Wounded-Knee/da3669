@@ -1,4 +1,4 @@
-import { INodeTypeDefinition } from '../all';
+import { INodeTypeDefinition } from '../../../shared/all';
 
 export default <INodeTypeDefinition>{
   name: 'User',

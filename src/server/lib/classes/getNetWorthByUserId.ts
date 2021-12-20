@@ -1,7 +1,7 @@
-import { getNodeTypeByName } from '../../../shared/nodes/all';
+import { getModelByName } from '../nodes/all';
 
-export const getNetWorthByUserId = async (userId) => {
-  const { model: EconomyModel } = getNodeTypeByName('Economy');
+export const getNetWorthByUserId = async (userId): Promise<number> => {
+  const EconomyModel = getModelByName('Economy');
   const economyNodes = await EconomyModel.find({
     author: userId,
     kind: 'Economy',

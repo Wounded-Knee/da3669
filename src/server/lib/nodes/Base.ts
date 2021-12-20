@@ -1,5 +1,4 @@
-import mongoose, { Schema } from 'mongoose';
-import { INodeTypeDefinition, NodeId } from '../all';
+import { INodeTypeDefinition, NodeId } from '../../../shared/all';
 
 export interface INodeBase {
   _id: string;
@@ -22,9 +21,11 @@ export default <INodeTypeDefinition>{
       ['child', 'children'],
       ['parent', 'parents'],
     ],
+    [
+      ['author', 'authors'],
+      ['work', 'works'],
+    ],
   ],
   options: { discriminatorKey: 'kind', timestamps: true },
-  schemaPaths: {
-    author: Schema.Types.ObjectId,
-  },
+  schemaPaths: {},
 };

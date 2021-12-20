@@ -53,7 +53,7 @@ const config: Configuration = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: [['@babel/env', { modules: false, targets }], '@babel/react', '@babel/typescript'],
+            presets: [['@babel/env', { modules: false, loose: true, targets }], '@babel/react', '@babel/typescript'],
             plugins: [
               '@babel/proposal-numeric-separator',
               '@babel/plugin-transform-runtime',
