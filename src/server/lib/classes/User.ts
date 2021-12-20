@@ -1,12 +1,11 @@
 import { WebSocket } from 'uWebSockets.js';
-import { NodeSelector, selectNodes } from './NodeSelector';
+import { INodeAll, NodeSelector, selectNodes } from './NodeSelector';
 import { PromiseId, SessionId, UserId } from '../../../shared/all';
-import { getNodeTypeByName, defaultNodeType } from '../../../shared/nodes/all';
 import { v4 as uuidv4 } from 'uuid';
 import { server, client } from '../../../shared/lib/redux/actionTypes';
 import { getNetWorthByUserId } from './getNetWorthByUserId';
-import { INodeAll } from '../../../../dist/shared/nodes/all';
 import { Model } from 'mongoose';
+import { defaultModel, getModelByName } from '../nodes/all';
 
 const debug = {
   orders: true,
@@ -58,9 +57,9 @@ interface IUserProfileGoogle {
 }
 type UserProfile = IUserProfileGoogle;
 
-const { model: UserModel } = getNodeTypeByName('User');
-const { model: EconomyModel } = getNodeTypeByName('Economy');
-const DefaultModel = defaultNodeType.model;
+const UserModel = getModelByName('User');
+const EconomyModel = getModelByName('Economy');
+const DefaultModel = defaultModel;
 class Users {
   sessions = <ISession[]>[];
   sockets = <ISocket[]>[];

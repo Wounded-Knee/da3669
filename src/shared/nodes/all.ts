@@ -1,78 +1,39 @@
-import { Schema, model } from 'mongoose';
-import { nodeTypes as nodeTypeList } from '../config';
-import { INodeBase } from './Base';
+import { INodeBase } from '../all';
 
-const debug = {
-  typesLoaded: false,
-};
 export interface INodeAll extends INodeBase {
   text: string;
 }
 
-const addSchemaStatics = (schema, statics) => {
-  if (statics) Object.keys(statics).forEach((staticName) => (schema.statics[staticName] = statics[staticName]));
-};
+type RelationTypeSelector = string;
+type RelationTypeSingular = RelationTypeSelector;
+type RelationTypePlural = RelationTypeSelector;
+type RelationTypeTuple = [RelationTypeSingular, RelationTypePlural];
+type RelationTypeGroup = [RelationTypeTuple, RelationTypeTuple];
 
-const addRelationPaths = (modelName, schemaPaths, relationTypes = []) => ({
-  ...schemaPaths,
-  rel: {
-    ...relationTypes.reduce(
-      (schemaPaths, [[singular, pathName]]) => ({
-        ...schemaPaths,
-        [pathName]: { type: [Schema.Types.Mixed], ref: 'Message' },
-      }),
-      {},
-    ),
-  },
-});
+interface IRelationTypeSelectorSet {
+  singular: RelationTypeSingular;
+  plural: RelationTypePlural;
+}
 
-export const getNodeTypeByName = (soughtName) => nodeTypesMore.find(({ name }) => name === soughtName);
+// Hardcoded and horrible
+export const relationTypes = <RelationTypeGroup[]>[
+  [
+    ['upstream', 'upstreams'],
+    ['downstream', 'downstreams'],
+  ],
+  [
+    ['child', 'children'],
+    ['parent', 'parents'],
+  ],
+  [
+    ['author', 'authors'],
+    ['work', 'works'],
+  ],
+];
 
-const IS_NODE = typeof global === 'object' && '[object global]' === global.toString.call(global);
+export const RelationTypes = (selector: RelationTypeSelector): RelationType => new RelationType(selector);
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-export const nodeTypes = nodeTypeList.map((type) => require(`./${type}`).default);
-export const nodeTypesMore = nodeTypes.map((nodeType) => {
-  const {
-    extending,
-    options: protoOptions,
-    schemaPaths: protoSchemaPaths,
-    schemaStatics,
-    name,
-    relationTypes,
-  } = nodeType;
-  const souper = extending ? nodeTypes.find(({ name }) => name === extending) : undefined;
-  const schemaPaths = extending
-    ? addRelationPaths(name, { ...souper.schemaPaths, ...protoSchemaPaths }, relationTypes)
-    : addRelationPaths(name, protoSchemaPaths, relationTypes);
-  const options = extending
-    ? {
-        ...(souper.options || {}),
-        ...protoOptions,
-      }
-    : protoOptions;
-  const schema = new Schema(schemaPaths, { strict: false, ...options });
-  addSchemaStatics(schema, schemaStatics);
-
-  return {
-    ...nodeType,
-    schemaPaths,
-    model: IS_NODE ? (extending ? model(souper.name).discriminator(name, schema) : model(name, schema)) : undefined,
-    relationTypes,
-    schema,
-  };
-});
-
-export const defaultNodeType = nodeTypesMore.find((nodeType) => !!nodeType.default);
-
-export const relationTypes = nodeTypes.reduce(
-  (allRelationTypes, { relationTypes }) => [...allRelationTypes, ...(relationTypes || [])],
-  [],
-);
-
-export const RelationTypes = (...args) => new RelationType(...args);
-
-class RelationType {
+export class RelationType {
   group = [];
   currentSelector = '';
   lit = [0, 1];
@@ -80,42 +41,39 @@ class RelationType {
   sin = [0, 2];
   plu = [1, 3];
 
-  constructor(selector = undefined) {
-    if (typeof selector === 'string') {
-      this.currentSelector = selector;
-    } else if (selector !== 'undefined') {
-    }
+  constructor(selector: RelationTypeSelector = undefined) {
+    this.selector = selector;
   }
 
-  set selector(relationTypeName) {
+  set selector(relationTypeName: RelationTypeSelector) {
     this.currentSelector = relationTypeName;
   }
 
-  get selector() {
+  get selector(): RelationTypeSelector {
     return this.currentSelector;
   }
 
-  get isLiteral() {
+  get isLiteral(): boolean {
     return this.lit.includes(this.getCursorPosition());
   }
 
-  get isVirtual() {
+  get isVirtual(): boolean {
     return this.vir.includes(this.getCursorPosition());
   }
 
-  get isSingular() {
+  get isSingular(): boolean {
     return this.sin.includes(this.getCursorPosition());
   }
 
-  get isPlural() {
+  get isPlural(): boolean {
     return this.plu.includes(this.getCursorPosition());
   }
 
-  get converse() {
+  get converse(): IRelationTypeSelectorSet {
     return this.isVirtual ? this.literal : this.virtual;
   }
 
-  get virtual() {
+  get virtual(): IRelationTypeSelectorSet {
     const tupleIndex = 1;
     return {
       singular: this.getGroup()[tupleIndex][0],
@@ -123,7 +81,7 @@ class RelationType {
     };
   }
 
-  get literal() {
+  get literal(): IRelationTypeSelectorSet {
     const tupleIndex = 0;
     return {
       singular: this.getGroup()[tupleIndex][0],
@@ -131,27 +89,14 @@ class RelationType {
     };
   }
 
-  getCursorPosition(selector = this.currentSelector, group = this.getGroup()) {
+  getCursorPosition(selector: RelationTypeSelector = this.currentSelector, group = this.getGroup()): number {
+    console.log(relationTypes, selector, group);
+    // @ts-ignore
     return group.flat(1).indexOf(selector);
   }
 
-  getGroup(selector = this.currentSelector) {
-    const group = relationTypes.find((group) => group.find((tuple) => tuple.includes(this.currentSelector)).length > 0);
-    return group.length ? group : false;
+  getGroup(selector: RelationTypeSelector = this.currentSelector): RelationTypeGroup {
+    const group = relationTypes.find((group) => group.find((tuple) => tuple.includes(selector)).length > 0);
+    return group.length && group;
   }
 }
-
-if (debug.typesLoaded)
-  console.log(
-    'Node Types Loaded: ',
-    nodeTypesMore.map((nodeType) => {
-      const { name, model, schemaPaths } = nodeType;
-      return {
-        name,
-        model: !!model,
-        schemaPaths: JSON.stringify(schemaPaths),
-      };
-    }),
-    '\nRelation Types: ',
-    relationTypes,
-  );

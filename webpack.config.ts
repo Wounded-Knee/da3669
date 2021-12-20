@@ -53,7 +53,7 @@ const config: Configuration = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: [['@babel/env', { modules: false, targets }], '@babel/react', '@babel/typescript'],
+            presets: [['@babel/env', { modules: false, loose: true, targets }], '@babel/react', '@babel/typescript'],
             plugins: [
               '@babel/proposal-numeric-separator',
               '@babel/plugin-transform-runtime',
@@ -102,7 +102,7 @@ const config: Configuration = {
   devServer: {
     port: WEBPACK_PORT,
     overlay: IS_DEV,
-    open: IS_DEV,
+    open: false,
     openPage: `http://localhost:${SERVER_PORT}`,
   },
   plugins,

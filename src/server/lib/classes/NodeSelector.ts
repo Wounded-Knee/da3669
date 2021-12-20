@@ -1,9 +1,11 @@
 import mongoose from 'mongoose';
 import { NodeSelector as NodeSelectorParent } from '../../../shared/lib/NodeSelector';
-import { defaultNodeType, INodeAll } from '../../../shared/nodes/all';
-import { INodeBase } from '../../../../dist/shared/nodes/Base';
-import { NodeId } from '../../../shared/all';
-const { model: DefaultModel } = defaultNodeType;
+import { getModelByName, defaultModel } from '../nodes/all';
+import { INodeBase, NodeId } from '../../../shared/all';
+
+export interface INodeAll extends INodeBase {
+  text: string;
+}
 
 export class NodeSelector extends NodeSelectorParent {
   get mongooseNodeIds(): NodeId[] {
@@ -18,13 +20,13 @@ export class NodeSelector extends NodeSelectorParent {
   }
 
   async getNodes(): Promise<INodeBase[]> {
-    const baseNodes = this.self ? await DefaultModel.find({ _id: { $in: this.mongooseNodeIds } }) : [];
+    const baseNodes = this.self ? await defaultModel.find({ _id: { $in: this.mongooseNodeIds } }) : [];
     const query = {
       $or: this.relationTypes.reduce((queries, RelationType) => {
         return [...queries, { [`rel.${RelationType.literal.plural}`]: { $in: this.ids } }];
       }, []),
     };
-    const relations = this.relationTypes.length ? await DefaultModel.find(query) : [];
+    const relations = this.relationTypes.length ? await defaultModel.find(query) : [];
     return [...baseNodes, ...relations];
   }
 
