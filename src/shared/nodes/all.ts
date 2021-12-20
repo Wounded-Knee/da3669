@@ -1,6 +1,4 @@
-import { Schema, model } from 'mongoose';
-import { nodeTypes as nodeTypeList } from '../config';
-import { INodeBase } from './Base';
+import { INodeBase } from '../all';
 
 export interface INodeAll extends INodeBase {
   text: string;
@@ -96,22 +94,7 @@ export class RelationType {
   }
 
   getGroup(selector: RelationTypeSelector = this.currentSelector): RelationTypeGroup {
-    const group = relationTypes.find((group) => group.find((tuple) => tuple.includes(selector)).length > 0);
+    const group = relationTypes.find((group) => group.find((tuple) => tuple.includes(selector)));
     return group.length && group;
   }
 }
-
-if (debug.typesLoaded)
-  console.log(
-    'Node Types Loaded: ',
-    nodeTypesMore.map((nodeType) => {
-      const { name, model, schemaPaths } = nodeType;
-      return {
-        name,
-        model: !!model,
-        schemaPaths: JSON.stringify(schemaPaths),
-      };
-    }),
-    '\nRelation Types: ',
-    relationTypes,
-  );

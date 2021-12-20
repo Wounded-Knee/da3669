@@ -1,11 +1,14 @@
 import { WebSocket } from 'uWebSockets.js';
-import { INodeAll, NodeSelector, selectNodes } from './NodeSelector';
+import { INodeSelectorCfg, NodeSelector, selectNodes } from './NodeSelector';
 import { PromiseId, SessionId, UserId } from '../../../shared/all';
 import { v4 as uuidv4 } from 'uuid';
 import { server, client } from '../../../shared/lib/redux/actionTypes';
 import { getNetWorthByUserId } from './getNetWorthByUserId';
-import { Model } from 'mongoose';
+import { Model, Types, ObjectId } from 'mongoose';
 import { defaultModel, getModelByName } from '../nodes/all';
+import { INodeAll } from '../../../shared/nodes/all';
+
+const { ObjectId } = Types;
 
 const debug = {
   orders: true,

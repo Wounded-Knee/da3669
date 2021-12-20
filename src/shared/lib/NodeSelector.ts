@@ -72,9 +72,9 @@ export class NodeSelector {
   get withoutRelationTypes() {
     if (this.without === false) return [];
     return this.without instanceof Array
-      ? this.without.map((selector) => RelationTypes(selector))
+      ? this.without.map((selector) => new RelationType(selector))
       : relationTypes.reduce((relationTypeObjects, tuple) => {
-          return [...relationTypeObjects, ...tuple.map(([selector]) => RelationTypes(selector))];
+          return [...relationTypeObjects, ...tuple.map(([selector]) => new RelationType(selector))];
         }, []);
   }
 
