@@ -1,10 +1,11 @@
-import { defaultNodeType, INodeAll, relationTypes, RelationTypes } from '../../../shared/nodes/all';
+import { INodeAll, relationTypes, RelationTypes } from '../../../shared/nodes/all';
+import { defaultNodeType } from '../nodes/all';
 import { NodeId } from '../../../shared/all';
 const { model: DefaultModel } = defaultNodeType;
 
 const flatRelationTypes = relationTypes.flat(2).filter((relationType) => RelationTypes(relationType).isPlural);
 
-interface INodeSelectorCfg {
+export interface INodeSelectorCfg {
   me: NodeId[];
   myRelations: {
     [key: string]: boolean | null;
@@ -19,6 +20,15 @@ export class NodeSelector {
 
   constructor(...nodeIds: NodeId[]) {
     return this.nodeIds(nodeIds);
+  }
+
+  serialize(): INodeSelectorCfg {
+    return this.cfg;
+  }
+
+  deserialize(cfg: INodeSelectorCfg): NodeSelector {
+    this.cfg = cfg;
+    return this;
   }
 
   nodeId(nodeId: NodeId): NodeSelector {
@@ -53,29 +63,46 @@ export class NodeSelector {
     return this;
   }
 
-  filterMatchingNodes(nodeArray: INodeAll[]): INodeAll[] {
+  equals(foreignSelector: INodeSelectorCfg | NodeSelector): boolean {
+    if (foreignSelector instanceof NodeSelector) {
+      return JSON.stringify(foreignSelector.serialize) === JSON.stringify(this.serialize);
+    } else {
+      return JSON.stringify(foreignSelector) === JSON.stringify(this.serialize);
+    }
+  }
+
+  async filterMatchingNodes(nodeArray: INodeAll[]): Promise<INodeAll[]> {
     const {
       cfg: { myRelations, me },
     } = this;
+
+    if (!DefaultModel) {
+      console.error('DefaultModel Problem ', DefaultModel);
+      return [];
+    }
+
+    const myNodes = await Promise.all(
+      me.map(async (myNodeId) => {
+        const node = await DefaultModel.findById(myNodeId).exec();
+        console.log('Map ', myNodeId, node);
+        return node;
+      }),
+    );
+    console.log('My Nodes ', myNodes);
 
     return nodeArray.filter((node) => {
       return Object.keys(myRelations).reduce((useThis: boolean, rel: string) => {
         if (myRelations[rel] === null) return useThis;
 
+        const myRealRelations = myNodes.reduce((relations, myNode) => {
+          return [...relations, ...(myNode.rel[RelationTypes(rel).literal.plural] || [])];
+        }, []);
+
         return useThis || RelationTypes(rel).isLiteral
-          ? !!me.filter((value) => node.rel[rel].includes(value)).length
-          : {
-              [`rel.${RelationTypes(rel).literal.plural}`]:
-                myRelations[rel] === null
-                  ? [] // Must have zero relations of this type
-                  : { [myRelations[rel] ? '$in' : '$nin']: me.map((idObj) => idObj.toString()) }, // Must have (or lack) one relation to me of this type
-            };
+          ? myRealRelations.includes(node._id)
+          : !!me.filter((value) => (node.rel[RelationTypes(rel).literal.plural] || []).includes(value)).length;
       }, false);
     });
-
-    console.log(selectors);
-    // @ts-ignore
-    return selectors;
   }
 
   get query(): any {
@@ -143,7 +170,7 @@ export class NodeSelector {
     ];
   }
 
-  async get(): Promise<any> {
+  async getNodes(): Promise<any> {
     const query = this.query;
     return await DefaultModel.aggregate(query).exec();
   }

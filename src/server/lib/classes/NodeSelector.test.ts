@@ -1,6 +1,21 @@
 import { NodeSelector } from './NodeSelector';
+import mongoose from 'mongoose';
+import mockingoose from 'mockingoose';
+const { ObjectId } = mongoose.Types;
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const util = require('util');
+
+beforeAll(
+  () =>
+    new Promise((resolve, reject) => {
+      mongoose
+        .connect(
+          'mongodb+srv://DA3669-pw:wmX7v7AedZXBEBS@da3669.tgcx8.mongodb.net/development?retryWrites=true&w=majority',
+        )
+        .then(resolve)
+        .catch(reject);
+    }),
+);
 
 describe('Query Generation', () => {
   describe('Without base node', () => {
@@ -325,12 +340,12 @@ describe('Query Generation', () => {
 });
 
 describe('Node Matching', () => {
-  test('Matching nodes are filtered', () => {
-    const ns = new NodeSelector('xyzzy').lacksRelation('upstreams');
+  test('Matching nodes are filtered', async () => {
+    const ns = new NodeSelector('61be23e15d55c9e5d68a2492').lacksRelation('upstreams');
     console.log(
-      ns.filterMatchingNodes([
+      await ns.filterMatchingNodes([
         {
-          _id: 'xyzzy',
+          _id: new ObjectId('61be23585d55c9e5d68a247d'),
           text: 'Cookie',
           author: 'plugh',
           rel: {},

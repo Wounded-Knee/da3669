@@ -33,7 +33,7 @@ interface IOrder {
 }
 interface ISubscription {
   userId: UserId;
-  selector: NodeSelector;
+  selector: INodeSelectorCfg;
   dates: {
     create: Date;
   };
@@ -121,7 +121,7 @@ class Users {
               break;
 
             case server.SUBSCRIBE:
-              const thisNodeSelector = <NodeSelector>selectNodes().load(payload);
+              const thisNodeSelector = <NodeSelector>selectNodes().deserialize(payload);
               this.subscribe(thisNodeSelector, userId);
               this.orderFulfill(order, {
                 type: client.STASH,
@@ -173,12 +173,12 @@ class Users {
     });
   }
 
-  broadcast(nodes: INodeAll[]): INodeAll[] {
+  async broadcast(nodes: INodeAll[]): Promise<INodeAll[]> {
     let broadcastCount = 0;
     let socketCount = 0;
-    this.subscriptions.forEach(({ selector, userId }) => {
+    this.subscriptions.forEach(async ({ selector: selectorCfg, userId }) => {
       const candidateNodes = this.stringifyNodeIds(nodes);
-      const matchingNodes = selector.filterMatchingNodes(candidateNodes);
+      const matchingNodes = await selectNodes(selectorCfg).filterMatchingNodes(candidateNodes);
       if (matchingNodes.length) {
         broadcastCount++;
         const { sessionId } = this.sessionFetchByUserId(userId);
@@ -224,9 +224,10 @@ class Users {
     // We should update profile data here, too.
     const foundUser = await this.userFetchByProfile(userProfile);
     if (typeof foundUser === 'object' && foundUser !== null) {
+      console.log('Found user ', foundUser);
       return foundUser;
     }
-
+    console.log('Creating user');
     const {
       displayName: name,
       photos: [{ value: pictureUrl }],
@@ -297,7 +298,7 @@ class Users {
   subscribe(selector: NodeSelector, userId: UserId) {
     this.subscriptions.push({
       userId,
-      selector,
+      selector: selector.serialize(),
       dates: {
         create: new Date(),
       },
@@ -307,7 +308,8 @@ class Users {
   // Unsubscribes the given user from the given selector
   unSubscribe(selector: NodeSelector, userId: UserId) {
     this.subscriptions.filter(
-      (subscription) => subscription.userId !== userId || !subscription.selector.equals(selector),
+      (subscription) =>
+        subscription.userId !== userId || !selectNodes().deserialize(subscription.selector).equals(selector),
     );
   }
 

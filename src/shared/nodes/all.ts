@@ -100,3 +100,18 @@ export class RelationType {
     return group.length && group;
   }
 }
+
+if (debug.typesLoaded)
+  console.log(
+    'Node Types Loaded: ',
+    nodeTypesMore.map((nodeType) => {
+      const { name, model, schemaPaths } = nodeType;
+      return {
+        name,
+        model: !!model,
+        schemaPaths: JSON.stringify(schemaPaths),
+      };
+    }),
+    '\nRelation Types: ',
+    relationTypes,
+  );
