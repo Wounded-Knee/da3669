@@ -1,9 +1,10 @@
 import { NodeSelector as SuperNodeSelector } from '../../shared/lib/NodeSelector';
-import { RelationType } from '../../shared/nodes/all';
+import { RelationType } from '../../shared/lib/RelationType';
 import { store } from './redux/store';
+import { NodeId, INodeAll } from '../../shared/all';
 
 export class NodeSelector extends SuperNodeSelector {
-  get nodes() {
+  get nodes(): INodeAll[] {
     const { me, myRelations } = this.cfg;
     const allNodes = store.getState().nodes;
     const myNodes = allNodes.filter(({ _id }) => me.length === 0 || me.indexOf(_id) !== -1);
@@ -13,7 +14,7 @@ export class NodeSelector extends SuperNodeSelector {
         if (myRelations[rel] === null) return useThis;
 
         const myRealRelations = myNodes.reduce((relations, myNode) => {
-          return [...relations, ...(myNode.rel[new RelationType(rel).literal.plural] || [])];
+          return [...relations, ...((myNode.rel && myNode.rel[new RelationType(rel).literal.plural]) || [])];
         }, []);
 
         return useThis || new RelationType(rel).isLiteral
@@ -24,4 +25,4 @@ export class NodeSelector extends SuperNodeSelector {
   }
 }
 
-export const selectNodes = (...args) => new NodeSelector(...args);
+export const selectNodes = (...nodeIds: NodeId[]): NodeSelector => new NodeSelector(...nodeIds);

@@ -1,7 +1,8 @@
-import { relationTypes, RelationType, INodeAll } from '../nodes/all';
-import { INodeSelectorSerialized, NodeId } from '../all';
-import { server } from './redux/actionTypes';
-
+import { relationTypes, RelationType } from './RelationType';
+import { NodeId } from '../all';
+const debug = {
+  addNodeIds: true,
+};
 const flatRelationTypes = relationTypes.flat(2).filter((relationType) => new RelationType(relationType).isPlural);
 
 export interface INodeSelectorCfg {
@@ -40,7 +41,12 @@ export class NodeSelector {
   }
 
   nodeIds(nodeIds: NodeId[]): NodeSelector {
-    this.cfg.me = [...this.cfg.me, ...nodeIds];
+    if (debug.addNodeIds) console.log('Adding Node IDs ', nodeIds);
+    if (nodeIds.includes(undefined) || nodeIds.includes('undefined') || nodeIds === undefined) {
+      debugger;
+      console.error('Undefined Found');
+    }
+    this.cfg.me = [...this.cfg.me, ...nodeIds.filter((nodeId) => nodeId !== undefined)];
     return this;
   }
 
@@ -66,9 +72,9 @@ export class NodeSelector {
 
   equals(foreignSelector: INodeSelectorCfg | NodeSelector): boolean {
     if (foreignSelector instanceof NodeSelector) {
-      return JSON.stringify(foreignSelector.serialize) === JSON.stringify(this.serialize);
+      return JSON.stringify(foreignSelector.serialize()) === JSON.stringify(this.serialize());
     } else {
-      return JSON.stringify(foreignSelector) === JSON.stringify(this.serialize);
+      return JSON.stringify(foreignSelector) === JSON.stringify(this.serialize());
     }
   }
 }

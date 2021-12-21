@@ -1,7 +1,13 @@
-import { INodeAll, relationTypes, RelationType } from '../../../shared/nodes/all';
+import { relationTypes, RelationType } from '../../../shared/lib/RelationType';
 import { defaultModel } from '../nodes/all';
-import { NodeId } from '../../../shared/all';
 import { NodeSelector as SuperNodeSelector } from '../../../shared/lib/NodeSelector';
+import { inspect } from 'util';
+import { INodeAll } from '../../../shared/all';
+
+const debug = {
+  getNodes: false,
+  filterMatchingNodes: false,
+};
 
 export class NodeSelector extends SuperNodeSelector {
   get query(): any {
@@ -69,9 +75,16 @@ export class NodeSelector extends SuperNodeSelector {
     ];
   }
 
-  async getNodes(): Promise<any> {
+  async getNodes(): Promise<INodeAll[]> {
     const query = this.query;
-    return await defaultModel.aggregate(query).exec();
+    try {
+      const nodes = await defaultModel.aggregate(query).exec();
+      if (debug.getNodes) console.log('Nodes ', nodes, inspect(query, { depth: null }));
+      return nodes;
+    } catch (e) {
+      console.error('Query Error ', inspect(query, { depth: null }), e);
+      return [];
+    }
   }
 
   async filterMatchingNodes(nodeArray: INodeAll[]): Promise<INodeAll[]> {
@@ -86,12 +99,16 @@ export class NodeSelector extends SuperNodeSelector {
 
     const myNodes = await Promise.all(
       me.map(async (myNodeId) => {
-        const node = await defaultModel.findById(myNodeId).exec();
-        console.log('Map ', myNodeId, node);
-        return node;
+        try {
+          const node = await defaultModel.findById(myNodeId).exec();
+          if (debug.filterMatchingNodes) console.log('Map ', myNodeId, node);
+          return node;
+        } catch (e) {
+          console.error('Problem finding myNodes ', myNodeId, me, e);
+        }
       }),
     );
-    console.log('My Nodes ', myNodes);
+    if (debug.filterMatchingNodes) console.log('My Nodes ', myNodes);
 
     return nodeArray.filter((node) => {
       return Object.keys(myRelations).reduce((useThis: boolean, rel: string) => {

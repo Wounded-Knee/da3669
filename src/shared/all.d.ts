@@ -20,6 +20,9 @@ export interface INodeBase {
     [key: string]: NodeId[];
   };
 }
+export interface INodeAll extends INodeBase {
+  text: string;
+}
 
 export interface ISession {
   id: SessionId;

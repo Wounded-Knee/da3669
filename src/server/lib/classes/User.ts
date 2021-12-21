@@ -1,21 +1,23 @@
 import { WebSocket } from 'uWebSockets.js';
 import { NodeSelector, selectNodes } from './NodeSelector';
-import { PromiseId, SessionId, UserId } from '../../../shared/all';
+import { INodeAll, PromiseId, SessionId, UserId } from '../../../shared/all';
 import { v4 as uuidv4 } from 'uuid';
 import { server, client } from '../../../shared/lib/redux/actionTypes';
 import { getNetWorthByUserId } from './getNetWorthByUserId';
 import { Model, Types, ObjectId } from 'mongoose';
 import { defaultModel, getModelByName } from '../nodes/all';
-import { INodeAll } from '../../../shared/nodes/all';
 import { INodeSelectorCfg } from '../../../shared/lib/NodeSelector';
 
 const { ObjectId } = Types;
 
 const debug = {
-  orders: true,
-  [server.SUBSCRIBE]: false,
+  orders: false,
+  createUser: false,
+  findUser: false,
+  [server.SUBSCRIBE]: true,
   [server.UNSUBSCRIBE]: false,
   [server.SUBSCRIBE_BY_SELECTOR]: false,
+  [server.CREATE]: true,
 };
 
 interface ISocket {
@@ -106,17 +108,22 @@ class Users {
             case server.CREATE:
               Promise.all(
                 payload.map(
-                  (nodeData): INodeAll =>
-                    new DefaultModel({
-                      ...nodeData,
-                      rel: Object.keys(nodeData.rel).reduce((rel, relName) => {
-                        return { ...rel, [relName]: nodeData.rel[relName].map((_id) => new ObjectId(_id)) };
+                  (receivedNodeData): INodeAll => {
+                    const Model = getModelByName(receivedNodeData.kind);
+                    const nodeData = {
+                      ...receivedNodeData,
+                      rel: Object.keys(receivedNodeData.rel).reduce((rel, relName) => {
+                        return { ...rel, [relName]: receivedNodeData.rel[relName].map((_id) => new ObjectId(_id)) };
                       }, {}),
                       author: userId,
-                    }).save(),
+                    };
+                    if (debug[server.CREATE]) console.log('Create -> DB ', nodeData);
+                    return new Model(nodeData).save();
+                  },
                 ),
                 //@ts-ignore
               ).then((mongooseObjects: Model): void => {
+                if (debug[server.CREATE]) console.log('Create <- DB ', mongooseObjects);
                 this.orderFulfill(order, {
                   type: client.STASH,
                   payload: this.broadcast(this.modelsToNodes(mongooseObjects)),
@@ -126,7 +133,7 @@ class Users {
 
             case server.SUBSCRIBE:
               const thisNodeSelector = <NodeSelector>selectNodes().deserialize(payload);
-              console.log('Subscribe ', payload, thisNodeSelector);
+              if (debug[server.SUBSCRIBE]) console.log('Subscribe ', { payload, thisNodeSelector });
               this.subscribe(thisNodeSelector, userId);
               this.orderFulfill(order, {
                 type: client.STASH,
@@ -183,7 +190,8 @@ class Users {
     let socketCount = 0;
     this.subscriptions.forEach(async ({ selector: selectorCfg, userId }) => {
       const candidateNodes = this.stringifyNodeIds(nodes);
-      const matchingNodes = await selectNodes(selectorCfg).filterMatchingNodes(candidateNodes);
+      // @ts-ignore
+      const matchingNodes = await selectNodes().deserialize(selectorCfg).filterMatchingNodes(candidateNodes);
       if (matchingNodes.length) {
         broadcastCount++;
         const { sessionId } = this.sessionFetchByUserId(userId);
@@ -201,7 +209,7 @@ class Users {
         });
       }
     });
-    console.log(`Broadcast ${broadcastCount} nodes to ${socketCount} sockets.`);
+    if (debug.broadcast) console.log(`Broadcast ${broadcastCount} nodes to ${socketCount} sockets.`);
     return nodes;
   }
 
@@ -229,10 +237,10 @@ class Users {
     // We should update profile data here, too.
     const foundUser = await this.userFetchByProfile(userProfile);
     if (typeof foundUser === 'object' && foundUser !== null) {
-      console.log('Found user ', foundUser);
+      if (debug.findUser) console.log('Found user ', foundUser);
       return foundUser;
     }
-    console.log('Creating user');
+    if (debug.createUser) console.log('Creating user');
     const {
       displayName: name,
       photos: [{ value: pictureUrl }],
@@ -301,13 +309,15 @@ class Users {
 
   // Subscribes given user to the given selector
   subscribe(selector: NodeSelector, userId: UserId) {
-    this.subscriptions.push({
+    const subscription = {
       userId,
       selector: selector.serialize(),
       dates: {
         create: new Date(),
       },
-    });
+    };
+    if (debug[server.SUBSCRIBE]) console.log('New Subscription: ', subscription);
+    this.subscriptions.push(subscription);
   }
 
   // Unsubscribes the given user from the given selector

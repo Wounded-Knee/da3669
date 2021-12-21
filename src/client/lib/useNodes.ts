@@ -1,9 +1,15 @@
 import { useState, useEffect } from 'react';
+import { INodeAll } from '../../shared/all';
 import { server } from '../../shared/lib/redux/actionTypes';
 import { dispatch } from '../webSocket';
+import { NodeSelector } from './NodeSelector';
 import { store } from './redux/store';
 
-export const useNodes = (nodeSelector) => {
+interface IUseNodesReturn {
+  nodes: INodeAll[];
+}
+
+export const useNodes = (nodeSelector: NodeSelector): IUseNodesReturn => {
   const [nodes, setNodes] = useState(nodeSelector.nodes);
 
   useEffect(() => {
