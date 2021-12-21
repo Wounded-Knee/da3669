@@ -18,6 +18,7 @@ import { Index as ContextStacker } from './wireframes/context-stacking/Index';
 import { Loading } from './components/Loading';
 import { Talk } from './components/Talk';
 import { KungFury } from './components/KungFury';
+import { Directory } from './components/Directory';
 
 export const routes = [
   {

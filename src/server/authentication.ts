@@ -51,7 +51,7 @@ export const setupPassport = (express) => {
               secure: false,
             });
           }
-          res.redirect('/talk/61b7d9765db289d1ed135c31');
+          res.redirect('/directory');
         } else {
           console.error('No user info returned ', user, info);
         }

@@ -1,5 +1,5 @@
 import { WebSocket } from 'uWebSockets.js';
-import { INodeSelectorCfg, NodeSelector, selectNodes } from './NodeSelector';
+import { NodeSelector, selectNodes } from './NodeSelector';
 import { PromiseId, SessionId, UserId } from '../../../shared/all';
 import { v4 as uuidv4 } from 'uuid';
 import { server, client } from '../../../shared/lib/redux/actionTypes';
@@ -7,6 +7,7 @@ import { getNetWorthByUserId } from './getNetWorthByUserId';
 import { Model, Types, ObjectId } from 'mongoose';
 import { defaultModel, getModelByName } from '../nodes/all';
 import { INodeAll } from '../../../shared/nodes/all';
+import { INodeSelectorCfg } from '../../../shared/lib/NodeSelector';
 
 const { ObjectId } = Types;
 
@@ -125,6 +126,7 @@ class Users {
 
             case server.SUBSCRIBE:
               const thisNodeSelector = <NodeSelector>selectNodes().deserialize(payload);
+              console.log('Subscribe ', payload, thisNodeSelector);
               this.subscribe(thisNodeSelector, userId);
               this.orderFulfill(order, {
                 type: client.STASH,
