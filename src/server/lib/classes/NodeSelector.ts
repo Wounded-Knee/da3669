@@ -3,11 +3,16 @@ import { defaultModel } from '../nodes/all';
 import { NodeSelector as SuperNodeSelector } from '../../../shared/lib/NodeSelector';
 import { inspect } from 'util';
 import { INodeAll } from '../../../shared/all';
+import mongoose from 'mongoose';
 
 const debug = {
-  getNodes: false,
+  getNodes: true,
   filterMatchingNodes: false,
 };
+
+const {
+  Types: { ObjectId },
+} = mongoose;
 
 export class NodeSelector extends SuperNodeSelector {
   get query(): any {
@@ -16,7 +21,7 @@ export class NodeSelector extends SuperNodeSelector {
     } = this;
 
     const matches = {
-      ...(me.length ? { _id: me } : {}),
+      ...(me.length ? { _id: { $in: me.map((id) => new ObjectId(id)) } } : {}),
       ...Object.keys(myRelations).reduce((match, rel) => {
         return myRelations[rel] !== null
           ? {

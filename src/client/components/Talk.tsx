@@ -60,8 +60,8 @@ export const Talk = ({
   const navigate = useNavigate();
   const nodeId = getNodeIdObject(id, useParams().nodeId);
   if (debugNodeId(nodeId)) return <h1>Halted for NodeID debug</h1>;
-  const node = nodeId && useNodes(selectNodes(nodeId)).nodes[0];
-  const { nodes: topLevelNodes } = useNodes(selectNodes().lacksRelation('upstream'));
+  const { nodes } = useNodes(selectNodes(nodeId));
+  const node = nodes.length > 0 && nodes[0];
 
   const nodePickerCreateNodeData = (value) => ({
     kind: nodeType,
@@ -127,15 +127,16 @@ export const Talk = ({
         return <div>Invalid view as {as}</div>;
     }
   } else if (nodeId) {
-    return <h1>Loading</h1>;
+    return <h1>Loading {nodeId.toString()}</h1>;
   } else {
     return (
       <>
+        {/*
         {topLevelNodes.map((node, index) => (
           <div key={node._id}>
             <View node={node} />
           </div>
-        ))}
+        ))}*/}
 
         <NodePicker label='Speak' nodeGenerator={nodePickerCreateNodeData} onPick={([node]) => navigateToNode(node)} />
       </>

@@ -1,7 +1,7 @@
 import { relationTypes, RelationType } from './RelationType';
 import { NodeId } from '../all';
 const debug = {
-  addNodeIds: true,
+  addNodeIds: false,
 };
 const flatRelationTypes = relationTypes.flat(2).filter((relationType) => new RelationType(relationType).isPlural);
 
@@ -41,11 +41,6 @@ export class NodeSelector {
   }
 
   nodeIds(nodeIds: NodeId[]): NodeSelector {
-    if (debug.addNodeIds) console.log('Adding Node IDs ', nodeIds);
-    if (nodeIds.includes(undefined) || nodeIds.includes('undefined') || nodeIds === undefined) {
-      debugger;
-      console.error('Undefined Found');
-    }
     this.cfg.me = [...this.cfg.me, ...nodeIds.filter((nodeId) => nodeId !== undefined)];
     return this;
   }

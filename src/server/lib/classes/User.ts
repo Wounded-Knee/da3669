@@ -122,22 +122,25 @@ class Users {
                   },
                 ),
                 //@ts-ignore
-              ).then((mongooseObjects: Model): void => {
-                if (debug[server.CREATE]) console.log('Create <- DB ', mongooseObjects);
-                this.orderFulfill(order, {
-                  type: client.STASH,
-                  payload: this.broadcast(this.modelsToNodes(mongooseObjects)),
-                });
-              });
+              ).then(
+                async (nodes: INodeAll[]): Promise<void> => {
+                  if (debug[server.CREATE]) console.log('Create <- DB ', nodes);
+                  this.orderFulfill(order, {
+                    type: client.STASH,
+                    payload: await this.broadcast(nodes),
+                  });
+                },
+              );
               break;
 
             case server.SUBSCRIBE:
               const thisNodeSelector = <NodeSelector>selectNodes().deserialize(payload);
-              if (debug[server.SUBSCRIBE]) console.log('Subscribe ', { payload, thisNodeSelector });
               this.subscribe(thisNodeSelector, userId);
+              const gotNodes = await thisNodeSelector.getNodes();
+              if (debug[server.SUBSCRIBE]) console.log('Subscribe ', { payload, thisNodeSelector, gotNodes });
               this.orderFulfill(order, {
                 type: client.STASH,
-                payload: await thisNodeSelector.getNodes(),
+                payload: gotNodes,
               });
               break;
           }
