@@ -9,19 +9,22 @@ export class NodeSelector extends SuperNodeSelector {
     const allNodes = store.getState().nodes;
     const myNodes = allNodes.filter(({ _id }) => me.length === 0 || me.indexOf(_id) !== -1);
 
-    return allNodes.filter((node) => {
-      return Object.keys(myRelations).reduce((useThis: boolean, rel: string) => {
-        if (myRelations[rel] === null) return useThis;
+    return [
+      ...myNodes,
+      ...allNodes.filter((node) => {
+        return Object.keys(myRelations).reduce((useThis: boolean, rel: string) => {
+          if (myRelations[rel] === null) return useThis;
 
-        const myRealRelations = myNodes.reduce((relations, myNode) => {
-          return [...relations, ...((myNode.rel && myNode.rel[new RelationType(rel).literal.plural]) || [])];
-        }, []);
+          const myRealRelations = myNodes.reduce((relations, myNode) => {
+            return [...relations, ...((myNode.rel && myNode.rel[new RelationType(rel).literal.plural]) || [])];
+          }, []);
 
-        return useThis || new RelationType(rel).isLiteral
-          ? myRealRelations.includes(node._id)
-          : !!me.filter((value) => (node.rel[new RelationType(rel).literal.plural] || []).includes(value)).length;
-      }, false);
-    });
+          return useThis || new RelationType(rel).isLiteral
+            ? myRealRelations.includes(node._id)
+            : !!me.filter((value) => (node.rel[new RelationType(rel).literal.plural] || []).includes(value)).length;
+        }, false);
+      }),
+    ];
   }
 }
 

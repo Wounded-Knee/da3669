@@ -41,7 +41,10 @@ export class NodeSelector {
   }
 
   nodeIds(nodeIds: NodeId[]): NodeSelector {
-    this.cfg.me = [...this.cfg.me, ...nodeIds.filter((nodeId) => nodeId !== undefined)];
+    this.cfg.me = [
+      ...this.cfg.me,
+      ...nodeIds.filter((nodeId) => nodeId !== undefined).map((nodeId) => nodeId.toString()),
+    ];
     return this;
   }
 

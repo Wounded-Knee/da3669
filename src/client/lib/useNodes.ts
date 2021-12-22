@@ -18,8 +18,10 @@ export const useNodes = (nodeSelector: NodeSelector): IUseNodesReturn => {
       payload: nodeSelector.serialize(),
     });
     const storeUnsubscribe = store.subscribe(() => {
+      console.log('Store updated ', nodeSelector.cfg, nodeSelector.nodes);
       setNodes(nodeSelector.nodes);
     });
+
     return () => {
       storeUnsubscribe();
       dispatch({

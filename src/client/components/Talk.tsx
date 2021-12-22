@@ -78,9 +78,8 @@ export const Talk = ({
   };
 
   if (nodeId && node) {
-    const {
-      rel: { upstreams = [], downstreams = [] },
-    } = node;
+    const upstreams = node.rel ? node.rel.upstreams : [];
+    const downstreams = node.rel ? node.rel.downstreams : [];
 
     if (debug.variables)
       console.info('Debug Talk.tsx', {
