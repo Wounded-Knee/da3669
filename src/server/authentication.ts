@@ -35,7 +35,7 @@ export const setupPassport = (express) => {
   express.get('/google', Passport.authenticate('google', { scope: 'profile' }));
   express.get(auth.callbackUrlPath, function (req, res, next) {
     // @ts-ignore
-    Passport.authenticate('google', function (err, user, info) {
+    Passport.authenticate('google', { session: false }, function (err, user, info) {
       if (err) {
         console.error(err, info);
       } else {

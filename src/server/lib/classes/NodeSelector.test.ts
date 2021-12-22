@@ -1,21 +1,13 @@
+// @ts-nocheck
 import { NodeSelector } from './NodeSelector';
 import mongoose from 'mongoose';
 import mockingoose from 'mockingoose';
+import '../../config';
 const { ObjectId } = mongoose.Types;
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const util = require('util');
 
-beforeAll(
-  () =>
-    new Promise((resolve, reject) => {
-      mongoose
-        .connect(
-          'mongodb+srv://DA3669-pw:wmX7v7AedZXBEBS@da3669.tgcx8.mongodb.net/development?retryWrites=true&w=majority',
-        )
-        .then(resolve)
-        .catch(reject);
-    }),
-);
+beforeAll(() => mongoose.connect(process.env.MONGODB_URL));
 
 describe('Query Generation', () => {
   describe('Without base node', () => {
