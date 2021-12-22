@@ -1,89 +1,78 @@
-import { relationTypes, RelationType } from '../nodes/all';
-import { INodeSelectorSerialized, NodeId } from '../all';
-import { server } from './redux/actionTypes';
+import { relationTypes, RelationType } from './RelationType';
+import { NodeId } from '../all';
+const debug = {
+  addNodeIds: false,
+};
+const flatRelationTypes = relationTypes.flat(2).filter((relationType) => new RelationType(relationType).isPlural);
+
+export interface INodeSelectorCfg {
+  me: NodeId[];
+  myRelations: {
+    /*
+     * null: Populate
+     * true: hasRelation
+     * false: lacksRelation
+     */
+    [key: string]: boolean | null;
+  };
+}
 
 export class NodeSelector {
-  ids: string[] = [];
-  self: boolean = true;
-  rel: boolean | string[] = false;
-  pop: boolean = false;
+  cfg = <INodeSelectorCfg>{
+    me: [],
+    myRelations: {},
+  };
 
-  constructor(...ids: NodeId[]) {
-    this.ids = ids.filter((id) => typeof id === 'string');
+  constructor(...nodeIds: NodeId[]) {
+    return this.nodeIds(nodeIds);
   }
 
-  load(obj: INodeSelectorSerialized): NodeSelector {
-    const { ids, rel, self, pop } = obj;
-    this.self = self;
-    this.ids = ids;
-    this.rel = rel;
-    this.pop = pop;
+  serialize(): INodeSelectorCfg {
+    return this.cfg;
+  }
+
+  deserialize(cfg: INodeSelectorCfg): NodeSelector {
+    this.cfg = cfg;
     return this;
   }
 
-  id(id: NodeId): NodeSelector {
-    this.ids.push(id);
+  nodeId(nodeId: NodeId): NodeSelector {
+    return this.nodeIds([nodeId]);
+  }
+
+  nodeIds(nodeIds: NodeId[]): NodeSelector {
+    this.cfg.me = [
+      ...this.cfg.me,
+      ...nodeIds.filter((nodeId) => nodeId !== undefined).map((nodeId) => nodeId.toString()),
+    ];
     return this;
   }
 
-  notSelf(): NodeSelector {
-    this.self = false;
+  populateRelation(...relationTypes: string[]): NodeSelector {
+    return this.addRelations(null, relationTypes);
+  }
+
+  lacksRelation(...relationTypes: string[]): NodeSelector {
+    return this.addRelations(false, relationTypes);
+  }
+
+  hasRelation(...relationTypes: string[]): NodeSelector {
+    return this.addRelations(true, relationTypes);
+  }
+
+  addRelations(bool: boolean | null, relationTypes: string[]): NodeSelector {
+    const theseRelationTypes = relationTypes.length ? relationTypes : flatRelationTypes;
+    theseRelationTypes.forEach((relationType) => {
+      this.cfg.myRelations[relationType] = bool;
+    });
     return this;
   }
 
-  andRelations(...relationTypes: string[]): NodeSelector {
-    if (this.rel !== true) {
-      if (relationTypes.length === 0) {
-        this.rel = true;
-      } else {
-        this.rel = relationTypes;
-      }
-    }
-    return this;
-  }
-
-  populate(): NodeSelector {
-    this.pop = true;
-    return this;
-  }
-
-  get relationTypes() {
-    if (this.rel === false) return [];
-    return this.rel instanceof Array
-      ? this.rel.map((selector) => new RelationType(selector))
-      : relationTypes.reduce((relationTypeObjects, tuple) => {
-          return [...relationTypeObjects, ...tuple.map(([selector]) => new RelationType(selector))];
-        }, []);
-  }
-
-  get serialize(): INodeSelectorSerialized {
-    return {
-      ids: this.ids,
-      self: this.self,
-      rel: this.rel,
-      pop: this.pop,
-    };
-  }
-
-  equals(foreignSelector: INodeSelectorSerialized): boolean {
+  equals(foreignSelector: INodeSelectorCfg | NodeSelector): boolean {
     if (foreignSelector instanceof NodeSelector) {
-      return JSON.stringify(foreignSelector.serialize) === JSON.stringify(this.serialize);
+      return JSON.stringify(foreignSelector.serialize()) === JSON.stringify(this.serialize());
     } else {
-      return JSON.stringify(foreignSelector) === JSON.stringify(this.serialize);
+      return JSON.stringify(foreignSelector) === JSON.stringify(this.serialize());
     }
-  }
-
-  get serverAction() {
-    return {
-      type: server.SUBSCRIBE,
-      payload: this.serialize,
-    };
-  }
-
-  get serverUnsubscribe() {
-    return {
-      type: server.UNSUBSCRIBE,
-      payload: this.serialize,
-    };
   }
 }

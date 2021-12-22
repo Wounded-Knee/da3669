@@ -7,5 +7,5 @@ import { addHelper } from '../debug';
 export const store = createStore(reducer, composeWithDevTools(applyMiddleware(thunkMiddleware)));
 
 addHelper({
-  store: store.getState,
+  getState: store.getState,
 });

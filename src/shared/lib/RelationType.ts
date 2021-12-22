@@ -1,8 +1,4 @@
-import { INodeBase } from '../all';
-
-export interface INodeAll extends INodeBase {
-  text: string;
-}
+import { INodeBase, INodeAll } from '../all';
 
 type RelationTypeSelector = string;
 type RelationTypeSingular = RelationTypeSelector;
@@ -30,8 +26,6 @@ export const relationTypes = <RelationTypeGroup[]>[
     ['work', 'works'],
   ],
 ];
-
-export const RelationTypes = (selector: RelationTypeSelector): RelationType => new RelationType(selector);
 
 export class RelationType {
   group = [];
@@ -90,13 +84,11 @@ export class RelationType {
   }
 
   getCursorPosition(selector: RelationTypeSelector = this.currentSelector, group = this.getGroup()): number {
-    console.log(relationTypes, selector, group);
-    // @ts-ignore
     return group.flat(1).indexOf(selector);
   }
 
   getGroup(selector: RelationTypeSelector = this.currentSelector): RelationTypeGroup {
-    const group = relationTypes.find((group) => group.find((tuple) => tuple.includes(selector)).length > 0);
+    const group = relationTypes.find((group) => group.find((tuple) => tuple.includes(selector)));
     return group.length && group;
   }
 }

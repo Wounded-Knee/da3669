@@ -1,17 +1,23 @@
 import { WebSocket } from 'uWebSockets.js';
-import { INodeAll, NodeSelector, selectNodes } from './NodeSelector';
-import { PromiseId, SessionId, UserId } from '../../../shared/all';
+import { NodeSelector, selectNodes } from './NodeSelector';
+import { INodeAll, PromiseId, SessionId, UserId } from '../../../shared/all';
 import { v4 as uuidv4 } from 'uuid';
 import { server, client } from '../../../shared/lib/redux/actionTypes';
 import { getNetWorthByUserId } from './getNetWorthByUserId';
-import { Model } from 'mongoose';
+import { Model, Types, ObjectId } from 'mongoose';
 import { defaultModel, getModelByName } from '../nodes/all';
+import { INodeSelectorCfg } from '../../../shared/lib/NodeSelector';
+
+const { ObjectId } = Types;
 
 const debug = {
-  orders: true,
-  [server.SUBSCRIBE]: false,
+  orders: false,
+  createUser: false,
+  findUser: false,
+  [server.SUBSCRIBE]: true,
   [server.UNSUBSCRIBE]: false,
   [server.SUBSCRIBE_BY_SELECTOR]: false,
+  [server.CREATE]: true,
 };
 
 interface ISocket {
@@ -33,7 +39,7 @@ interface IOrder {
 }
 interface ISubscription {
   userId: UserId;
-  selector: NodeSelector;
+  selector: INodeSelectorCfg;
   dates: {
     create: Date;
   };
@@ -102,27 +108,39 @@ class Users {
             case server.CREATE:
               Promise.all(
                 payload.map(
-                  (nodeData): INodeAll =>
-                    new DefaultModel({
-                      ...nodeData,
+                  (receivedNodeData): INodeAll => {
+                    const Model = getModelByName(receivedNodeData.kind);
+                    const nodeData = {
+                      ...receivedNodeData,
+                      rel: Object.keys(receivedNodeData.rel).reduce((rel, relName) => {
+                        return { ...rel, [relName]: receivedNodeData.rel[relName].map((_id) => new ObjectId(_id)) };
+                      }, {}),
                       author: userId,
-                    }).save(),
+                    };
+                    if (debug[server.CREATE]) console.log('Create -> DB ', nodeData);
+                    return new Model(nodeData).save();
+                  },
                 ),
                 //@ts-ignore
-              ).then((mongooseObjects: Model): void => {
-                this.orderFulfill(order, {
-                  type: client.STASH,
-                  payload: this.broadcast(this.modelsToNodes(mongooseObjects)),
-                });
-              });
+              ).then(
+                async (nodes: INodeAll[]): Promise<void> => {
+                  if (debug[server.CREATE]) console.log('Create <- DB ', nodes);
+                  this.orderFulfill(order, {
+                    type: client.STASH,
+                    payload: await this.broadcast(nodes),
+                  });
+                },
+              );
               break;
 
             case server.SUBSCRIBE:
-              const thisNodeSelector = <NodeSelector>selectNodes().load(payload);
+              const thisNodeSelector = <NodeSelector>selectNodes().deserialize(payload);
               this.subscribe(thisNodeSelector, userId);
+              const gotNodes = await thisNodeSelector.getNodes();
+              if (debug[server.SUBSCRIBE]) console.log('Subscribe ', { payload, thisNodeSelector, gotNodes });
               this.orderFulfill(order, {
                 type: client.STASH,
-                payload: await thisNodeSelector.getNodes(),
+                payload: gotNodes,
               });
               break;
           }
@@ -170,12 +188,13 @@ class Users {
     });
   }
 
-  broadcast(nodes: INodeAll[]): INodeAll[] {
+  async broadcast(nodes: INodeAll[]): Promise<INodeAll[]> {
     let broadcastCount = 0;
     let socketCount = 0;
-    this.subscriptions.forEach(({ selector, userId }) => {
+    this.subscriptions.forEach(async ({ selector: selectorCfg, userId }) => {
       const candidateNodes = this.stringifyNodeIds(nodes);
-      const matchingNodes = selector.filterMatchingNodes(candidateNodes);
+      // @ts-ignore
+      const matchingNodes = await selectNodes().deserialize(selectorCfg).filterMatchingNodes(candidateNodes);
       if (matchingNodes.length) {
         broadcastCount++;
         const { sessionId } = this.sessionFetchByUserId(userId);
@@ -193,7 +212,7 @@ class Users {
         });
       }
     });
-    console.log(`Broadcast ${broadcastCount} nodes to ${socketCount} sockets.`);
+    if (debug.broadcast) console.log(`Broadcast ${broadcastCount} nodes to ${socketCount} sockets.`);
     return nodes;
   }
 
@@ -221,9 +240,10 @@ class Users {
     // We should update profile data here, too.
     const foundUser = await this.userFetchByProfile(userProfile);
     if (typeof foundUser === 'object' && foundUser !== null) {
+      if (debug.findUser) console.log('Found user ', foundUser);
       return foundUser;
     }
-
+    if (debug.createUser) console.log('Creating user');
     const {
       displayName: name,
       photos: [{ value: pictureUrl }],
@@ -292,19 +312,22 @@ class Users {
 
   // Subscribes given user to the given selector
   subscribe(selector: NodeSelector, userId: UserId) {
-    this.subscriptions.push({
+    const subscription = {
       userId,
-      selector,
+      selector: selector.serialize(),
       dates: {
         create: new Date(),
       },
-    });
+    };
+    if (debug[server.SUBSCRIBE]) console.log('New Subscription: ', subscription);
+    this.subscriptions.push(subscription);
   }
 
   // Unsubscribes the given user from the given selector
   unSubscribe(selector: NodeSelector, userId: UserId) {
     this.subscriptions.filter(
-      (subscription) => subscription.userId !== userId || !subscription.selector.equals(selector),
+      (subscription) =>
+        subscription.userId !== userId || !selectNodes().deserialize(subscription.selector).equals(selector),
     );
   }
 

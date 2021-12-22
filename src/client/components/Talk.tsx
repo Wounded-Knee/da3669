@@ -8,31 +8,66 @@ import { NodePicker } from './NodePicker';
 import { selectNodes } from '../lib/redux/selectors';
 import { Link } from './Branded';
 import { useNavigate } from 'react-router-dom';
-import { Types } from 'mongoose';
+import mongoose from 'mongoose';
 import { PassportContext } from './PassportContext';
+import { NodeId } from '../../shared/all';
 
-const maxDepth = 10;
 const debug = {
   variables: false,
+  nodeId: false,
 };
+
+const {
+  Types: { ObjectId },
+} = mongoose;
+const maxDepth = 10;
 const urlPath = `/talk/`;
 const nodeType = 'Message';
+const viewType = Object.freeze({
+  MASTER: 'MASTER',
+  UPSTREAM: 'UPSTREAM',
+  DOWNSTREAM: 'DOWNSTREAM',
+});
 
-export const Talk = ({ id, as = 'master', depth = 0 }) => {
+const getNodeIdObject = (...candidates) =>
+  candidates.reduce((id, candidateId) => (ObjectId.isValid(candidateId) ? new ObjectId(candidateId) : id), undefined);
+
+const debugNodeId = (nodeId) => {
+  if (debug.nodeId) {
+    if (nodeId) {
+      console.log('Node ID ', nodeId.toString());
+    } else {
+      console.log('No node ID');
+    }
+    return true;
+  }
+};
+
+export const Talk = ({
+  id,
+  as = viewType.MASTER,
+  depth = 0,
+}: {
+  id: NodeId;
+  as: string;
+  depth: number;
+}): JSX.Element => {
+  if (depth >= maxDepth) {
+    return <div>Max Depth Reached</div>;
+  }
+
   const userProfile = useContext(PassportContext);
   const navigate = useNavigate();
-  const propNodeId = id;
-  const urlNodeId = useParams().nodeId;
-  const nodeId = propNodeId || urlNodeId;
-  const nodeIdArray = nodeId ? [nodeId] : [];
-  const { nodes, topLevelNodes } = useNodes(selectNodes(...nodeIdArray).andRelations('downstreams'));
-  const [node] = nodes;
+  const nodeId = getNodeIdObject(id, useParams().nodeId);
+  if (debugNodeId(nodeId)) return <h1>Halted for NodeID debug</h1>;
+  const { nodes } = useNodes(selectNodes(nodeId));
+  const node = nodes.length > 0 && nodes[0];
 
   const nodePickerCreateNodeData = (value) => ({
     kind: nodeType,
     text: value,
     rel: {
-      ['upstreams']: nodeIdArray.map((id) => new Types.ObjectId(id)),
+      ['upstreams']: [nodeId],
       ['authors']: [userProfile._id],
     },
   });
@@ -42,73 +77,69 @@ export const Talk = ({ id, as = 'master', depth = 0 }) => {
     navigate(url);
   };
 
-  if (depth >= maxDepth) {
-    return <div>Max Depth Reached</div>;
-  }
+  if (nodeId && node) {
+    const upstreams = node.rel ? node.rel.upstreams || [] : [];
+    const downstreams = node.rel ? node.rel.downstreams || [] : [];
 
-  if (!node || !nodeId) {
+    if (debug.variables)
+      console.info('Debug Talk.tsx', {
+        as,
+        nodeId,
+        node,
+        downstreams,
+      });
+
+    switch (as) {
+      case viewType.MASTER:
+        return (
+          <>
+            <Talk key={nodeId} as={viewType.UPSTREAM} depth={depth + 1} id={nodeId} />
+
+            <NodePicker
+              nodeGenerator={nodePickerCreateNodeData}
+              label='Reply'
+              options={downstreams}
+              onPick={([node]) => navigateToNode(node)}
+            />
+
+            {downstreams.map((_id) => (
+              <Talk key={_id} as={viewType.DOWNSTREAM} id={_id} depth={depth + 1} />
+            ))}
+          </>
+        );
+
+      case viewType.DOWNSTREAM:
+        return <View note={viewType.DOWNSTREAM} node={node} />;
+
+      case viewType.UPSTREAM:
+        return (
+          <>
+            {upstreams.map((_id, index) => (
+              <Talk key={_id} as={viewType.UPSTREAM} depth={depth + 1} id={_id} />
+            ))}
+
+            <View note={viewType.UPSTREAM} node={node} />
+          </>
+        );
+
+      default:
+        return <div>Invalid view as {as}</div>;
+    }
+  } else if (nodeId) {
+    return <h1>Loading {nodeId.toString()}</h1>;
+  } else {
     return (
       <>
+        {/*
         {topLevelNodes.map((node, index) => (
           <div key={node._id}>
             <View node={node} />
           </div>
-        ))}
+        ))}*/}
 
         <NodePicker label='Speak' nodeGenerator={nodePickerCreateNodeData} onPick={([node]) => navigateToNode(node)} />
       </>
     );
-  }
-
-  const {
-    text = '',
-    rel: { upstreams = [], downstreams = [] },
-  } = node;
-
-  if (debug.variables)
-    console.info('Debug Talk.tsx', {
-      as,
-      propNodeId,
-      nodeId,
-      node,
-      downstreams,
-    });
-
-  switch (as) {
-    case 'master':
-      return (
-        <>
-          <Talk key={nodeId} as='upstream' depth={depth + 1} id={nodeId} />
-
-          <NodePicker
-            nodeGenerator={nodePickerCreateNodeData}
-            label='Reply'
-            options={downstreams}
-            onPick={([node]) => navigateToNode(node)}
-          />
-
-          {downstreams.map((_id) => (
-            <Talk key={_id} as='downstream' id={_id} />
-          ))}
-        </>
-      );
-
-    case 'downstream':
-      return <View note='downstream' node={node} />;
-
-    case 'upstream':
-      return (
-        <>
-          {upstreams.map((_id, index) => (
-            <Talk key={_id} as='upstream' depth={depth + 1} id={_id} />
-          ))}
-
-          <View note='upstream' node={node} />
-        </>
-      );
-
-    default:
-      return <div>Invalid view as {as}</div>;
   }
 };
 

@@ -20,6 +20,9 @@ export interface INodeBase {
     [key: string]: NodeId[];
   };
 }
+export interface INodeAll extends INodeBase {
+  text: string;
+}
 
 export interface ISession {
   id: SessionId;
@@ -31,6 +34,7 @@ export interface INodeSelectorSerialized {
   ids: NodeId[];
   self: boolean;
   rel: boolean | string[];
+  without: boolean | string[];
   pop: boolean;
 }
 

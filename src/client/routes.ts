@@ -1,12 +1,13 @@
 // Icons
 import {
   Article,
-  ReportGmailerrorred as PanicIcon,
+  EmojiEmotions as PanicIcon,
   Gavel as JudgementIcon,
   Google as GoogleIcon,
   BackupTable as ContextStackerIcon,
   Savings as SavingsIcon,
   Forum as TalkIcon,
+  ListAlt as DirectoryIcon,
 } from '@mui/icons-material';
 
 // Components
@@ -17,14 +18,22 @@ import { Index as ContextStacker } from './wireframes/context-stacking/Index';
 import { Loading } from './components/Loading';
 import { Talk } from './components/Talk';
 import { KungFury } from './components/KungFury';
+import { Directory } from './components/Directory';
 
 export const routes = [
   {
     route: '/panic',
     path: '/panic',
     icon: PanicIcon,
-    text: 'Panic',
+    text: "Don't Panic",
     component: Loading,
+  },
+  {
+    route: '/directory',
+    path: '/directory',
+    icon: DirectoryIcon,
+    text: 'Directory',
+    component: Directory,
   },
   {
     route: '/context',
