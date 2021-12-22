@@ -120,7 +120,7 @@ export class NodeSelector extends SuperNodeSelector {
         if (myRelations[rel] === null) return useThis;
 
         const myRealRelations = myNodes.reduce((relations, myNode) => {
-          return [...relations, ...(myNode.rel[new RelationType(rel).literal.plural] || [])];
+          return [...relations, ...((myNode.rel && myNode.rel[new RelationType(rel).literal.plural]) || [])];
         }, []);
 
         return useThis || new RelationType(rel).isLiteral

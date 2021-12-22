@@ -84,6 +84,7 @@ export class RelationType {
   }
 
   getCursorPosition(selector: RelationTypeSelector = this.currentSelector, group = this.getGroup()): number {
+    // @ts-ignore
     return group.flat(1).indexOf(selector);
   }
 

@@ -1,0 +1,360 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Query Generation With base node hasRelation() All 1`] = `
+Array [
+  Object {
+    "$match": Object {
+      "_id": Object {
+        "$in": Array [
+          "61be22843bb15b2d14696c25",
+        ],
+      },
+      "rel.authors": Object {
+        "$not": Object {
+          "$size": 0,
+        },
+      },
+      "rel.children": Object {
+        "$not": Object {
+          "$size": 0,
+        },
+      },
+      "rel.upstreams": Object {
+        "$not": Object {
+          "$size": 0,
+        },
+      },
+    },
+  },
+]
+`;
+
+exports[`Query Generation With base node hasRelation() Multiple 1`] = `
+Array [
+  Object {
+    "$match": Object {
+      "_id": Object {
+        "$in": Array [
+          "61be22843bb15b2d14696c25",
+        ],
+      },
+      "rel.authors": Object {
+        "$not": Object {
+          "$size": 0,
+        },
+      },
+      "rel.upstreams": Object {
+        "$not": Object {
+          "$size": 0,
+        },
+      },
+    },
+  },
+]
+`;
+
+exports[`Query Generation With base node hasRelation() Single 1`] = `
+Array [
+  Object {
+    "$match": Object {
+      "_id": Object {
+        "$in": Array [
+          "61be22843bb15b2d14696c25",
+        ],
+      },
+      "rel.upstreams": Object {
+        "$not": Object {
+          "$size": 0,
+        },
+      },
+    },
+  },
+]
+`;
+
+exports[`Query Generation With base node lacksRelation() Single 1`] = `
+Array [
+  Object {
+    "$match": Object {
+      "_id": Object {
+        "$in": Array [
+          "61be22843bb15b2d14696c25",
+        ],
+      },
+      "rel.upstreams": Object {
+        "$size": 0,
+      },
+    },
+  },
+]
+`;
+
+exports[`Query Generation With base node populateRelation() All 1`] = `
+Array [
+  Object {
+    "$match": Object {
+      "_id": Object {
+        "$in": Array [
+          "61be22843bb15b2d14696c25",
+        ],
+      },
+    },
+  },
+  Object {
+    "$lookup": Object {
+      "as": "rel.upstreams",
+      "foreignField": "_id",
+      "from": "bases",
+      "localField": "rel.upstreams",
+    },
+  },
+  Object {
+    "$lookup": Object {
+      "as": "rel.downstreams",
+      "foreignField": "rel.upstreams",
+      "from": "bases",
+      "localField": "_id",
+    },
+  },
+  Object {
+    "$lookup": Object {
+      "as": "rel.children",
+      "foreignField": "_id",
+      "from": "bases",
+      "localField": "rel.children",
+    },
+  },
+  Object {
+    "$lookup": Object {
+      "as": "rel.parents",
+      "foreignField": "rel.children",
+      "from": "bases",
+      "localField": "_id",
+    },
+  },
+  Object {
+    "$lookup": Object {
+      "as": "rel.authors",
+      "foreignField": "_id",
+      "from": "bases",
+      "localField": "rel.authors",
+    },
+  },
+  Object {
+    "$lookup": Object {
+      "as": "rel.works",
+      "foreignField": "rel.authors",
+      "from": "bases",
+      "localField": "_id",
+    },
+  },
+]
+`;
+
+exports[`Query Generation With base node populateRelation() Multiple 1`] = `
+Array [
+  Object {
+    "$match": Object {
+      "_id": Object {
+        "$in": Array [
+          "61be22843bb15b2d14696c25",
+        ],
+      },
+    },
+  },
+  Object {
+    "$lookup": Object {
+      "as": "rel.upstreams",
+      "foreignField": "_id",
+      "from": "bases",
+      "localField": "rel.upstreams",
+    },
+  },
+  Object {
+    "$lookup": Object {
+      "as": "rel.authors",
+      "foreignField": "_id",
+      "from": "bases",
+      "localField": "rel.authors",
+    },
+  },
+]
+`;
+
+exports[`Query Generation With base node populateRelation() Single 1`] = `
+Array [
+  Object {
+    "$match": Object {
+      "_id": Object {
+        "$in": Array [
+          "61be22843bb15b2d14696c25",
+        ],
+      },
+    },
+  },
+  Object {
+    "$lookup": Object {
+      "as": "rel.upstreams",
+      "foreignField": "_id",
+      "from": "bases",
+      "localField": "rel.upstreams",
+    },
+  },
+]
+`;
+
+exports[`Query Generation Without base node hasRelation() All 1`] = `
+Array [
+  Object {
+    "$match": Object {
+      "rel.authors": Object {
+        "$not": Object {
+          "$size": 0,
+        },
+      },
+      "rel.children": Object {
+        "$not": Object {
+          "$size": 0,
+        },
+      },
+      "rel.upstreams": Object {
+        "$not": Object {
+          "$size": 0,
+        },
+      },
+    },
+  },
+]
+`;
+
+exports[`Query Generation Without base node hasRelation() Multiple 1`] = `
+Array [
+  Object {
+    "$match": Object {
+      "rel.authors": Object {
+        "$not": Object {
+          "$size": 0,
+        },
+      },
+      "rel.upstreams": Object {
+        "$not": Object {
+          "$size": 0,
+        },
+      },
+    },
+  },
+]
+`;
+
+exports[`Query Generation Without base node hasRelation() Single 1`] = `
+Array [
+  Object {
+    "$match": Object {
+      "rel.upstreams": Object {
+        "$not": Object {
+          "$size": 0,
+        },
+      },
+    },
+  },
+]
+`;
+
+exports[`Query Generation Without base node lacksRelation() Single 1`] = `
+Array [
+  Object {
+    "$match": Object {
+      "rel.upstreams": Object {
+        "$size": 0,
+      },
+    },
+  },
+]
+`;
+
+exports[`Query Generation Without base node populateRelation() All 1`] = `
+Array [
+  Object {
+    "$lookup": Object {
+      "as": "rel.upstreams",
+      "foreignField": "_id",
+      "from": "bases",
+      "localField": "rel.upstreams",
+    },
+  },
+  Object {
+    "$lookup": Object {
+      "as": "rel.downstreams",
+      "foreignField": "rel.upstreams",
+      "from": "bases",
+      "localField": "_id",
+    },
+  },
+  Object {
+    "$lookup": Object {
+      "as": "rel.children",
+      "foreignField": "_id",
+      "from": "bases",
+      "localField": "rel.children",
+    },
+  },
+  Object {
+    "$lookup": Object {
+      "as": "rel.parents",
+      "foreignField": "rel.children",
+      "from": "bases",
+      "localField": "_id",
+    },
+  },
+  Object {
+    "$lookup": Object {
+      "as": "rel.authors",
+      "foreignField": "_id",
+      "from": "bases",
+      "localField": "rel.authors",
+    },
+  },
+  Object {
+    "$lookup": Object {
+      "as": "rel.works",
+      "foreignField": "rel.authors",
+      "from": "bases",
+      "localField": "_id",
+    },
+  },
+]
+`;
+
+exports[`Query Generation Without base node populateRelation() Multiple 1`] = `
+Array [
+  Object {
+    "$lookup": Object {
+      "as": "rel.upstreams",
+      "foreignField": "_id",
+      "from": "bases",
+      "localField": "rel.upstreams",
+    },
+  },
+  Object {
+    "$lookup": Object {
+      "as": "rel.authors",
+      "foreignField": "_id",
+      "from": "bases",
+      "localField": "rel.authors",
+    },
+  },
+]
+`;
+
+exports[`Query Generation Without base node populateRelation() Single 1`] = `
+Array [
+  Object {
+    "$lookup": Object {
+      "as": "rel.upstreams",
+      "foreignField": "_id",
+      "from": "bases",
+      "localField": "rel.upstreams",
+    },
+  },
+]
+`;

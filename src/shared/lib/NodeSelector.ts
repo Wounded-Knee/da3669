@@ -3,6 +3,7 @@ import { NodeId } from '../all';
 const debug = {
   addNodeIds: false,
 };
+// @ts-ignore
 const flatRelationTypes = relationTypes.flat(2).filter((relationType) => new RelationType(relationType).isPlural);
 
 export interface INodeSelectorCfg {
