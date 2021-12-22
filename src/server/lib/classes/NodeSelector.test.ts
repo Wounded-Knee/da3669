@@ -43,7 +43,26 @@ describe('Query Generation', () => {
 
       test('Multiple', () => {
         const ns = new NodeSelector().populateRelation('upstreams', 'authors');
-        expect(ns.query).toMatchSnapshot();
+        expect(JSON.stringify(ns.query)).toBe(
+          JSON.stringify([
+            {
+              $lookup: {
+                from: 'bases',
+                localField: 'rel.upstreams',
+                foreignField: '_id',
+                as: 'rel.upstreams',
+              },
+            },
+            {
+              $lookup: {
+                from: 'bases',
+                localField: 'rel.authors',
+                foreignField: '_id',
+                as: 'rel.authors',
+              },
+            },
+          ]),
+        );
       });
 
       test('All', () => {
@@ -65,7 +84,17 @@ describe('Query Generation', () => {
 
       test('All', () => {
         const ns = new NodeSelector().hasRelation();
-        expect(ns.query).toMatchSnapshot();
+        expect(JSON.stringify(ns.query)).toBe(
+          JSON.stringify([
+            {
+              $match: {
+                'rel.upstreams': { $not: { $size: 0 } },
+                'rel.children': { $not: { $size: 0 } },
+                'rel.authors': { $not: { $size: 0 } },
+              },
+            },
+          ]),
+        );
       });
     });
 

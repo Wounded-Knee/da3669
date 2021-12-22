@@ -13,7 +13,6 @@ export const useNodes = (nodeSelector: NodeSelector): IUseNodesReturn => {
   const [nodes, setNodes] = useState(nodeSelector.nodes);
 
   useEffect(() => {
-    console.log('UseNodes UseEffect ', nodeSelector.serialize());
     dispatch({
       type: server.SUBSCRIBE,
       payload: nodeSelector.serialize(),
