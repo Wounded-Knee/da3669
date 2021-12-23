@@ -83,7 +83,53 @@ export class NodeSelector extends SuperNodeSelector {
   async getNodes(): Promise<INodeAll[]> {
     const query = this.query;
     try {
-      const nodes = await defaultModel.aggregate(query).exec();
+      const node: INodeAll[] = await defaultModel.aggregate(query).exec();
+
+      const nodes: INodeAll[] = [
+        // Extract embedded nodes
+        ...node.reduce((nodes, thisNode) => {
+          return [
+            ...nodes,
+            ...Object.keys(thisNode.rel).reduce((nodes, relationType) => {
+              return [
+                ...nodes,
+                ...(thisNode.rel[relationType]
+                  ? thisNode.rel[relationType].reduce((nodes, relation) => {
+                      // @ts-ignore
+                      console.log('Relation ', relation instanceof ObjectId);
+                      // @ts-ignore
+                      return [...nodes, ...(relation instanceof ObjectId ? [] : [relation])];
+                    }, [])
+                  : []),
+              ];
+            }, []),
+          ];
+        }, []),
+
+        // Include the original node, relations cleaned (just IDs)
+        ...node.reduce((nodes, thisNode) => {
+          return [
+            ...nodes,
+            {
+              ...thisNode,
+              rel: {
+                ...Object.keys(thisNode.rel).reduce((rel, relationType) => {
+                  return {
+                    ...rel,
+                    ...(thisNode.rel[relationType]
+                      ? thisNode.rel[relationType].reduce((rel, relation) => {
+                          // @ts-ignore
+                          return { ...rel, [relationType]: relation instanceof Object ? relation._id : relation };
+                        }, {})
+                      : {}),
+                  };
+                }, []),
+              },
+            },
+          ];
+        }, []),
+      ];
+
       if (debug.getNodes) console.log('Nodes ', nodes, inspect(query, { depth: null }));
       return nodes;
     } catch (e) {

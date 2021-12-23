@@ -1,4 +1,4 @@
-// Pallette rotation hook
+// Pallette rotation hook (Britta)
 import { useState, useEffect } from 'react';
 
 export const useRainbow = (saturation = 30, lightness = 30, offset = 0) => {

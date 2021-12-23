@@ -60,7 +60,7 @@ export const Talk = ({
   const navigate = useNavigate();
   const nodeId = getNodeIdObject(useParams().nodeId, id);
   if (debugNodeId(nodeId)) return <h1>Halted for NodeID debug</h1>;
-  const { nodes } = useNodes(selectNodes(nodeId));
+  const { nodes } = useNodes(selectNodes(nodeId).populateRelation('downstreams'));
   const node = nodes.length > 0 && nodes[0];
 
   const nodePickerCreateNodeData = (value) => ({
