@@ -32,7 +32,10 @@ export const setupPassport = (express) => {
   express.use(cookieParser());
   express.use(Passport.initialize());
   express.use(Passport.session());
-  express.get('/google', Passport.authenticate('google', { scope: 'profile' }));
+  express.get('/google', (req, res, next) => {
+    req.session.redirectTo = req.get('Referrer');
+    return Passport.authenticate('google', { scope: 'profile' })(req, res, next);
+  });
   express.get(auth.callbackUrlPath, function (req, res, next) {
     // @ts-ignore
     Passport.authenticate('google', { session: false }, function (err, user, info) {
@@ -51,7 +54,7 @@ export const setupPassport = (express) => {
               secure: false,
             });
           }
-          res.redirect('/directory');
+          res.redirect(req.session.redirectTo);
         } else {
           console.error('No user info returned ', user, info);
         }

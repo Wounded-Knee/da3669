@@ -10,7 +10,7 @@ import { Link } from './Branded';
 import { useNavigate } from 'react-router-dom';
 import mongoose from 'mongoose';
 import { PassportContext } from './PassportContext';
-import { NodeId } from '../../shared/all';
+import { INodeAll, NodeId } from '../../shared/all';
 
 const debug = {
   variables: false,
@@ -60,7 +60,9 @@ export const Talk = ({
   const navigate = useNavigate();
   const nodeId = getNodeIdObject(useParams().nodeId, id);
   if (debugNodeId(nodeId)) return <h1>Halted for NodeID debug</h1>;
-  const { nodes } = useNodes(selectNodes(nodeId).populateRelation('downstreams'));
+  const { nodes } = useNodes(selectNodes(nodeId));
+  const { nodes: downstreams } = useNodes(selectNodes(nodeId).populateRelation('downstreams'));
+  const { nodes: upstreams } = useNodes(selectNodes(nodeId).populateRelation('upstreams'));
   const node = nodes.length > 0 && nodes[0];
 
   const nodePickerCreateNodeData = (value) => ({
@@ -78,9 +80,6 @@ export const Talk = ({
   };
 
   if (nodeId && node) {
-    const upstreams = node.rel ? node.rel.upstreams || [] : [];
-    const downstreams = node.rel ? node.rel.downstreams || [] : [];
-
     if (debug.variables)
       console.info('Debug Talk.tsx', {
         as,
@@ -106,7 +105,7 @@ export const Talk = ({
             />
 
             {downstreams.map((_id) => (
-              <Talk key={_id} as={viewType.DOWNSTREAM} id={_id} depth={depth + 1} />
+              <Talk key={_id.toString()} as={viewType.DOWNSTREAM} id={_id.toString()} depth={depth + 1} />
             ))}
           </>
         );
@@ -122,7 +121,7 @@ export const Talk = ({
             ))}
 
             <View note={viewType.MASTER} node={node} />
-            </>
+          </>
         );
 
       default:

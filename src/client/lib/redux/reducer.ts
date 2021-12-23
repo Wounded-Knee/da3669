@@ -18,7 +18,6 @@ const objectifyNodeIds = (node) => {
     rel: Object.keys(node.rel).reduce(
       (rel, relationType) => ({
         ...rel,
-        [`string_${relationType}`]: node.rel[relationType],
         [relationType]: node.rel[relationType].map((relationId) => new ObjectId(relationId)),
       }),
       {},

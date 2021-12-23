@@ -107,27 +107,27 @@ export class NodeSelector extends SuperNodeSelector {
         }, []),
 
         // Include the original node, relations cleaned (just IDs)
-        ...node.reduce((nodes, thisNode) => {
-          return [
-            ...nodes,
-            {
-              ...thisNode,
-              rel: {
-                ...Object.keys(thisNode.rel).reduce((rel, relationType) => {
-                  return {
-                    ...rel,
-                    ...(thisNode.rel[relationType]
-                      ? thisNode.rel[relationType].reduce((rel, relation) => {
-                          // @ts-ignore
-                          return { ...rel, [relationType]: relation instanceof Object ? [relation._id] : relation };
-                        }, {})
-                      : {}),
-                  };
-                }, []),
-              },
-            },
-          ];
-        }, []),
+        // ...node.reduce((nodes, thisNode) => {
+        //   return [
+        //     ...nodes,
+        //     {
+        //       ...thisNode,
+        //       rel: {
+        //         ...Object.keys(thisNode.rel).reduce((rel, relationType) => {
+        //           return {
+        //             ...rel,
+        //             ...(thisNode.rel[relationType]
+        //               ? thisNode.rel[relationType].reduce((rel, relation) => {
+        //                   // @ts-ignore
+        //                   return { ...rel, [relationType]: relation instanceof Object ? [relation._id] : relation };
+        //                 }, {})
+        //               : {}),
+        //           };
+        //         }, []),
+        //       },
+        //     },
+        //   ];
+        // }, []),
       ];
 
       if (debug.getNodes) console.log('Nodes ', nodes, inspect(query, { depth: null }));
