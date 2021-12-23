@@ -13,14 +13,14 @@ import { PassportContext } from './PassportContext';
 import { NodeId } from '../../shared/all';
 
 const debug = {
-  variables: false,
+  variables: true,
   nodeId: false,
 };
 
 const {
   Types: { ObjectId },
 } = mongoose;
-const maxDepth = 10;
+const maxDepth = 3;
 const urlPath = `/talk/`;
 const nodeType = 'Message';
 const viewType = Object.freeze({
