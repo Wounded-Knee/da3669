@@ -1,9 +1,29 @@
 import { client } from '../../../shared/lib/redux/actionTypes';
 import { initialState } from '../../config';
+import mongoose, { Types, ObjectId as ObjectIdType } from 'mongoose';
+import { INodeAll } from '../../../shared/all';
 
 const debug = {
   actions: false,
   noop: false,
+};
+
+const { ObjectId } = Types;
+
+const objectifyNodeIds = (node) => {
+  return {
+    ...node,
+    _id: new ObjectId(node._id),
+    string_id: node._id,
+    rel: Object.keys(node.rel).reduce(
+      (rel, relationType) => ({
+        ...rel,
+        [`string_${relationType}`]: node.rel[relationType],
+        [relationType]: node.rel[relationType].map((relationId) => new ObjectId(relationId)),
+      }),
+      {},
+    ),
+  };
 };
 
 export const reducer = (state = initialState, { type, payload }) => {
@@ -11,6 +31,11 @@ export const reducer = (state = initialState, { type, payload }) => {
   if (!reduxInit && debug.actions) {
     console.log(type, payload);
   }
+
+  const getNodeById = (nodeId: ObjectIdType): INodeAll => {
+    return state.nodes.find(({ _id }) => _id.toString() === nodeId.toString());
+  };
+
   switch (type) {
     case client.UPDATE_NET_WORTH:
       return {
@@ -26,15 +51,17 @@ export const reducer = (state = initialState, { type, payload }) => {
 
     case client.STASH:
       if (payload === undefined) throw new Error(`${type}: Payload is undefined`);
-      const newNodes = (payload instanceof Array ? payload : [payload]).filter((newNode) => {
-        const oldNode = state.nodes.find(({ _id }) => _id === newNode._id);
-        return oldNode === undefined || newNode.updatedAt !== oldNode.updatedAt || oldNode.updatedAt === undefined;
-      });
+      const newNodes = (payload instanceof Array ? payload : [payload])
+        .map((node) => objectifyNodeIds(node))
+        .filter(({ _id, updatedAt }) => {
+          const oldNode = getNodeById(_id);
+          return oldNode === undefined || updatedAt !== oldNode.updatedAt || oldNode.updatedAt === undefined;
+        });
       if (newNodes.length) {
-        const nodeIds = newNodes.filter(({ _id }) => _id !== undefined).map(({ _id }) => _id);
+        const nodeIds = newNodes.filter(({ _id }) => _id !== undefined).map(({ _id }) => _id.toString());
         return {
           ...state,
-          nodes: [...state.nodes.filter(({ _id }) => nodeIds.indexOf(_id) === -1), ...newNodes],
+          nodes: [...state.nodes.filter(({ _id }) => nodeIds.indexOf(_id.toString()) === -1), ...newNodes],
         };
       } else {
         if (debug.noop) console.log('NOOP ', type, payload);

@@ -1,5 +1,6 @@
 import { relationTypes, RelationType } from './RelationType';
 import { NodeId } from '../all';
+import { Types, ObjectId } from 'mongoose';
 const debug = {
   addNodeIds: false,
 };
@@ -7,7 +8,7 @@ const debug = {
 const flatRelationTypes = relationTypes.flat(2).filter((relationType) => new RelationType(relationType).isPlural);
 
 export interface INodeSelectorCfg {
-  me: NodeId[];
+  me: Types.ObjectId[];
   myRelations: {
     /*
      * null: Populate
@@ -42,7 +43,10 @@ export class NodeSelector {
   }
 
   nodeIds(nodeIds: NodeId[]): NodeSelector {
-    this.cfg.me = [...this.cfg.me, ...nodeIds.filter((nodeId) => nodeId !== undefined)];
+    this.cfg.me = [
+      ...this.cfg.me,
+      ...nodeIds.filter((nodeId) => nodeId !== undefined).map((nodeId) => new Types.ObjectId(nodeId)),
+    ];
     return this;
   }
 

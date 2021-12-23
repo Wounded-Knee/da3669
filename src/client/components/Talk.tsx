@@ -13,14 +13,14 @@ import { PassportContext } from './PassportContext';
 import { NodeId } from '../../shared/all';
 
 const debug = {
-  variables: false,
+  variables: true,
   nodeId: false,
 };
 
 const {
   Types: { ObjectId },
 } = mongoose;
-const maxDepth = 10;
+const maxDepth = 3;
 const urlPath = `/talk/`;
 const nodeType = 'Message';
 const viewType = Object.freeze({
@@ -58,7 +58,7 @@ export const Talk = ({
 
   const userProfile = useContext(PassportContext);
   const navigate = useNavigate();
-  const nodeId = getNodeIdObject(id, useParams().nodeId);
+  const nodeId = getNodeIdObject(useParams().nodeId, id);
   if (debugNodeId(nodeId)) return <h1>Halted for NodeID debug</h1>;
   const { nodes } = useNodes(selectNodes(nodeId));
   const node = nodes.length > 0 && nodes[0];
@@ -84,16 +84,22 @@ export const Talk = ({
     if (debug.variables)
       console.info('Debug Talk.tsx', {
         as,
-        nodeId,
+        depth,
+        nodeId: nodeId.toString(),
+        node_id: node._id.toString(),
         node,
-        downstreams,
+        downstreams: downstreams.map((id) => id.toString()),
+        upstreams: upstreams.map((id) => id.toString()),
       });
 
     switch (as) {
       case viewType.MASTER:
+        console.log('Doing upstreams ', upstreams.map((id) => id.toString()));
         return (
           <>
-            <Talk key={nodeId} as={viewType.UPSTREAM} depth={depth + 1} id={nodeId} />
+            {upstreams.map((_id, index) => (
+              <Talk key={_id.toString()} as={viewType.UPSTREAM} depth={depth + 1} id={_id.toString()} />
+            ))}
 
             <NodePicker
               nodeGenerator={nodePickerCreateNodeData}
@@ -112,14 +118,13 @@ export const Talk = ({
         return <View note={viewType.DOWNSTREAM} node={node} />;
 
       case viewType.UPSTREAM:
+        if (upstreams.find((_id) => {
+          return _id.toString() === node._id.toString();
+        })) {
+          console.error(upstreams, node);
+        }
         return (
-          <>
-            {upstreams.map((_id, index) => (
-              <Talk key={_id} as={viewType.UPSTREAM} depth={depth + 1} id={_id} />
-            ))}
-
             <View note={viewType.UPSTREAM} node={node} />
-          </>
         );
 
       default:

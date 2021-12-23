@@ -16,6 +16,9 @@ export type NodeId = string;
 export interface INodeBase {
   _id: string;
   author: string;
+  updatedAt: Date;
+  createdAt: Date;
+  __v: number;
   rel: {
     [key: string]: NodeId[];
   };

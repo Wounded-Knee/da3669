@@ -133,7 +133,8 @@ class Users {
               const thisNodeSelector = <NodeSelector>selectNodes().deserialize(payload);
               this.subscribe(thisNodeSelector, userId);
               const gotNodes = await thisNodeSelector.getNodes();
-              if (debug[server.SUBSCRIBE]) console.log('Subscribe ', { payload, thisNodeSelector.serialize(), gotNodes });
+              if (debug[server.SUBSCRIBE])
+                console.log('Subscribe ', { payload, thisNodeSelector: thisNodeSelector.serialize(), gotNodes });
               this.orderFulfill(order, {
                 type: client.STASH,
                 payload: gotNodes,

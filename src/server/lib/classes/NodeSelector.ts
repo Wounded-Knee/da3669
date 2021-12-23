@@ -124,8 +124,8 @@ export class NodeSelector extends SuperNodeSelector {
             ),
           ];
         }, []);
-        const candidateNodeRelations = (node.rel[new RelationType(rel).literal.plural] || []).map((objectId) =>
-          objectId.toString(),
+        const candidateNodeRelations = ((node.rel && node.rel[new RelationType(rel).literal.plural]) || []).map(
+          (objectId) => objectId.toString(),
         );
 
         if (debug.filterMatchingNodes) {
@@ -135,10 +135,6 @@ export class NodeSelector extends SuperNodeSelector {
             node.rel[new RelationType(rel).literal.plural] || [],
           );
           console.log('Base Node IDs ', me);
-          console.log(
-            'Candidate Relations / Base ID Intersection ',
-            me.filter((myNodeId) => (node.rel[new RelationType(rel).literal.plural] || []).includes(myNodeId)),
-          );
         }
 
         return useThis || new RelationType(rel).isLiteral
