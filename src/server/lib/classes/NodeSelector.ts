@@ -119,7 +119,7 @@ export class NodeSelector extends SuperNodeSelector {
                     ...(thisNode.rel[relationType]
                       ? thisNode.rel[relationType].reduce((rel, relation) => {
                           // @ts-ignore
-                          return { ...rel, [relationType]: relation instanceof Object ? relation._id : relation };
+                          return { ...rel, [relationType]: relation instanceof Object ? [relation._id] : relation };
                         }, {})
                       : {}),
                   };
