@@ -13,7 +13,7 @@ import { PassportContext } from './PassportContext';
 import { NodeId } from '../../shared/all';
 
 const debug = {
-  variables: true,
+  variables: false,
   nodeId: false,
 };
 
