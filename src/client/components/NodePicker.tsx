@@ -56,7 +56,7 @@ export const NodePicker = ({
       onChange={onChange}
       value={chosenValue}
       options={options}
-      getOptionLabel={(option) => option.text || option}
+      getOptionLabel={(option) => option.text || JSON.stringify(option)}
       isOptionEqualToValue={({ text = '' }, value = '') =>
         value.toLowerCase ? value.toLowerCase() === text.toLowerCase() : false
       }

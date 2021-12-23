@@ -83,7 +83,53 @@ export class NodeSelector extends SuperNodeSelector {
   async getNodes(): Promise<INodeAll[]> {
     const query = this.query;
     try {
-      const nodes = await defaultModel.aggregate(query).exec();
+      const node: INodeAll[] = await defaultModel.aggregate(query).exec();
+
+      const nodes: INodeAll[] = [
+        // Extract embedded nodes
+        ...node.reduce((nodes, thisNode) => {
+          return [
+            ...nodes,
+            ...Object.keys(thisNode.rel).reduce((nodes, relationType) => {
+              return [
+                ...nodes,
+                ...(thisNode.rel[relationType]
+                  ? thisNode.rel[relationType].reduce((nodes, relation) => {
+                      // @ts-ignore
+                      console.log('Relation ', relation instanceof ObjectId);
+                      // @ts-ignore
+                      return [...nodes, ...(relation instanceof ObjectId ? [] : [relation])];
+                    }, [])
+                  : []),
+              ];
+            }, []),
+          ];
+        }, []),
+
+        // Include the original node, relations cleaned (just IDs)
+        ...node.reduce((nodes, thisNode) => {
+          return [
+            ...nodes,
+            {
+              ...thisNode,
+              rel: {
+                ...Object.keys(thisNode.rel).reduce((rel, relationType) => {
+                  return {
+                    ...rel,
+                    ...(thisNode.rel[relationType]
+                      ? thisNode.rel[relationType].reduce((rel, relation) => {
+                          // @ts-ignore
+                          return { ...rel, [relationType]: relation instanceof Object ? [relation._id] : relation };
+                        }, {})
+                      : {}),
+                  };
+                }, []),
+              },
+            },
+          ];
+        }, []),
+      ];
+
       if (debug.getNodes) console.log('Nodes ', nodes, inspect(query, { depth: null }));
       return nodes;
     } catch (e) {
@@ -97,11 +143,6 @@ export class NodeSelector extends SuperNodeSelector {
       cfg: { myRelations, me },
     } = this;
 
-    if (!defaultModel) {
-      console.error('DefaultModel Problem ', defaultModel);
-      return [];
-    }
-
     const myNodes = await Promise.all(
       me.map(async (myNodeId) => {
         try {
@@ -113,19 +154,38 @@ export class NodeSelector extends SuperNodeSelector {
         }
       }),
     );
-    if (debug.filterMatchingNodes) console.log('My Nodes ', myNodes);
+    if (debug.filterMatchingNodes)
+      console.log('My Nodes ', myNodes, 'Object.keys(myRelations)', Object.keys(myRelations));
 
     return nodeArray.filter((node) => {
       return Object.keys(myRelations).reduce((useThis: boolean, rel: string) => {
         if (myRelations[rel] === null) return useThis;
 
-        const myRealRelations = myNodes.reduce((relations, myNode) => {
-          return [...relations, ...(myNode.rel[new RelationType(rel).literal.plural] || [])];
+        // Combines all base node relations of [rel] type into one array
+        const combinedBaseNodeRelations = myNodes.reduce((relations, myNode) => {
+          return [
+            ...relations,
+            ...((myNode.rel && myNode.rel[new RelationType(rel).literal.plural]) || []).map((objectId) =>
+              objectId.toString(),
+            ),
+          ];
         }, []);
+        const candidateNodeRelations = ((node.rel && node.rel[new RelationType(rel).literal.plural]) || []).map(
+          (objectId) => objectId.toString(),
+        );
+
+        if (debug.filterMatchingNodes) {
+          console.log(`My Real Relations (${rel})`, combinedBaseNodeRelations);
+          console.log(
+            `Candidate Relations (${new RelationType(rel).literal.plural})`,
+            node.rel[new RelationType(rel).literal.plural] || [],
+          );
+          console.log('Base Node IDs ', me);
+        }
 
         return useThis || new RelationType(rel).isLiteral
-          ? myRealRelations.includes(node._id)
-          : !!me.filter((value) => (node.rel[new RelationType(rel).literal.plural] || []).includes(value)).length;
+          ? combinedBaseNodeRelations.includes(node._id)
+          : !!me.filter((myNodeId) => candidateNodeRelations.includes(myNodeId.toString())).length;
       }, false);
     });
   }

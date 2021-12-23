@@ -1,176 +1,78 @@
+// @ts-nocheck
 import { NodeSelector } from './NodeSelector';
 import mongoose from 'mongoose';
-import mockingoose from 'mockingoose';
+import { getModelByName } from '../nodes/all';
+import '../../config';
 const { ObjectId } = mongoose.Types;
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const util = require('util');
 
+const MessageModel = getModelByName('Message');
+let rootNode, messages;
+
 beforeAll(
-  () =>
-    new Promise((resolve, reject) => {
-      mongoose
-        .connect(
-          'mongodb+srv://DA3669-pw:wmX7v7AedZXBEBS@da3669.tgcx8.mongodb.net/development?retryWrites=true&w=majority',
-        )
-        .then(resolve)
-        .catch(reject);
-    }),
+  async () =>
+    await mongoose.connect(
+      process.env.MONGO_URL,
+      {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      },
+      (err) => {
+        if (err) {
+          console.error(err);
+          process.exit(1);
+        }
+      },
+    ),
 );
+
+afterAll(async (done) => {
+  // Closing the DB connection allows Jest to exit successfully.
+  await mongoose.connection.close();
+  done();
+});
 
 describe('Query Generation', () => {
   describe('Without base node', () => {
     describe('populateRelation()', () => {
       test('Single', () => {
         const ns = new NodeSelector().populateRelation('upstreams');
-        expect(JSON.stringify(ns.query)).toBe(
-          JSON.stringify([
-            {
-              $lookup: {
-                from: 'bases',
-                localField: 'rel.upstreams',
-                foreignField: '_id',
-                as: 'rel.upstreams',
-              },
-            },
-          ]),
-        );
+        expect(ns.query).toMatchSnapshot();
       });
 
       test('Multiple', () => {
         const ns = new NodeSelector().populateRelation('upstreams', 'authors');
-        expect(JSON.stringify(ns.query)).toBe(
-          JSON.stringify([
-            {
-              $lookup: {
-                from: 'bases',
-                localField: 'rel.upstreams',
-                foreignField: '_id',
-                as: 'rel.upstreams',
-              },
-            },
-            {
-              $lookup: {
-                from: 'bases',
-                localField: 'rel.authors',
-                foreignField: '_id',
-                as: 'rel.authors',
-              },
-            },
-          ]),
-        );
+        expect(ns.query).toMatchSnapshot();
       });
 
       test('All', () => {
         const ns = new NodeSelector().populateRelation();
-        expect(JSON.stringify(ns.query)).toBe(
-          JSON.stringify([
-            {
-              $lookup: {
-                from: 'bases',
-                localField: 'rel.upstreams',
-                foreignField: '_id',
-                as: 'rel.upstreams',
-              },
-            },
-            {
-              $lookup: {
-                from: 'bases',
-                localField: '_id',
-                foreignField: 'rel.upstreams',
-                as: 'rel.downstreams',
-              },
-            },
-            {
-              $lookup: {
-                from: 'bases',
-                localField: 'rel.children',
-                foreignField: '_id',
-                as: 'rel.children',
-              },
-            },
-            {
-              $lookup: {
-                from: 'bases',
-                localField: '_id',
-                foreignField: 'rel.children',
-                as: 'rel.parents',
-              },
-            },
-            {
-              $lookup: {
-                from: 'bases',
-                localField: 'rel.authors',
-                foreignField: '_id',
-                as: 'rel.authors',
-              },
-            },
-            {
-              $lookup: {
-                from: 'bases',
-                localField: '_id',
-                foreignField: 'rel.authors',
-                as: 'rel.works',
-              },
-            },
-          ]),
-        );
+        expect(ns.query).toMatchSnapshot();
       });
     });
 
     describe('hasRelation()', () => {
       test('Single', () => {
         const ns = new NodeSelector().hasRelation('upstreams');
-        expect(JSON.stringify(ns.query)).toBe(
-          JSON.stringify([
-            {
-              $match: { 'rel.upstreams': { $not: { $size: 0 } } },
-            },
-          ]),
-        );
+        expect(ns.query).toMatchSnapshot();
       });
 
       test('Multiple', () => {
         const ns = new NodeSelector().hasRelation('upstreams', 'authors');
-        expect(JSON.stringify(ns.query)).toBe(
-          JSON.stringify([
-            {
-              $match: {
-                'rel.upstreams': { $not: { $size: 0 } },
-                'rel.authors': { $not: { $size: 0 } },
-              },
-            },
-          ]),
-        );
+        expect(ns.query).toMatchSnapshot();
       });
 
       test('All', () => {
         const ns = new NodeSelector().hasRelation();
-        expect(JSON.stringify(ns.query)).toBe(
-          JSON.stringify([
-            {
-              $match: {
-                'rel.upstreams': { $not: { $size: 0 } },
-                'rel.children': { $not: { $size: 0 } },
-                'rel.authors': { $not: { $size: 0 } },
-              },
-            },
-          ]),
-        );
+        expect(ns.query).toMatchSnapshot();
       });
     });
 
     describe('lacksRelation()', () => {
       test('Single', () => {
         const ns = new NodeSelector().lacksRelation('upstreams');
-        expect(JSON.stringify(ns.query)).toBe(
-          JSON.stringify([
-            {
-              $match: {
-                'rel.upstreams': { $size: 0 },
-              },
-            },
-          ]),
-        );
+        expect(ns.query).toMatchSnapshot();
       });
     });
   });
@@ -178,179 +80,80 @@ describe('Query Generation', () => {
   describe('With base node', () => {
     describe('populateRelation()', () => {
       test('Single', () => {
-        const ns = new NodeSelector('xyzzy').populateRelation('upstreams');
-        expect(JSON.stringify(ns.query)).toBe(
-          JSON.stringify([
-            { $match: { _id: ['xyzzy'] } },
-            {
-              $lookup: {
-                from: 'bases',
-                localField: 'rel.upstreams',
-                foreignField: '_id',
-                as: 'rel.upstreams',
-              },
-            },
-          ]),
-        );
+        const ns = new NodeSelector('61be22843bb15b2d14696c25').populateRelation('upstreams');
+        expect(ns.query).toMatchSnapshot();
       });
 
       test('Multiple', () => {
-        const ns = new NodeSelector('xyzzy').populateRelation('upstreams', 'authors');
-        expect(JSON.stringify(ns.query)).toBe(
-          JSON.stringify([
-            { $match: { _id: ['xyzzy'] } },
-            {
-              $lookup: {
-                from: 'bases',
-                localField: 'rel.upstreams',
-                foreignField: '_id',
-                as: 'rel.upstreams',
-              },
-            },
-            {
-              $lookup: {
-                from: 'bases',
-                localField: 'rel.authors',
-                foreignField: '_id',
-                as: 'rel.authors',
-              },
-            },
-          ]),
-        );
+        const ns = new NodeSelector('61be22843bb15b2d14696c25').populateRelation('upstreams', 'authors');
+        expect(ns.query).toMatchSnapshot();
       });
 
       test('All', () => {
-        const ns = new NodeSelector('xyzzy').populateRelation();
-        expect(JSON.stringify(ns.query)).toBe(
-          JSON.stringify([
-            { $match: { _id: ['xyzzy'] } },
-            {
-              $lookup: {
-                from: 'bases',
-                localField: 'rel.upstreams',
-                foreignField: '_id',
-                as: 'rel.upstreams',
-              },
-            },
-            {
-              $lookup: {
-                from: 'bases',
-                localField: '_id',
-                foreignField: 'rel.upstreams',
-                as: 'rel.downstreams',
-              },
-            },
-            {
-              $lookup: {
-                from: 'bases',
-                localField: 'rel.children',
-                foreignField: '_id',
-                as: 'rel.children',
-              },
-            },
-            {
-              $lookup: {
-                from: 'bases',
-                localField: '_id',
-                foreignField: 'rel.children',
-                as: 'rel.parents',
-              },
-            },
-            {
-              $lookup: {
-                from: 'bases',
-                localField: 'rel.authors',
-                foreignField: '_id',
-                as: 'rel.authors',
-              },
-            },
-            {
-              $lookup: {
-                from: 'bases',
-                localField: '_id',
-                foreignField: 'rel.authors',
-                as: 'rel.works',
-              },
-            },
-          ]),
-        );
+        const ns = new NodeSelector('61be22843bb15b2d14696c25').populateRelation();
+        expect(ns.query).toMatchSnapshot();
       });
     });
 
     describe('hasRelation()', () => {
       test('Single', () => {
-        const ns = new NodeSelector('xyzzy').hasRelation('upstreams');
-        expect(JSON.stringify(ns.query)).toBe(
-          JSON.stringify([
-            {
-              $match: { _id: ['xyzzy'], 'rel.upstreams': { $not: { $size: 0 } } },
-            },
-          ]),
-        );
+        const ns = new NodeSelector('61be22843bb15b2d14696c25').hasRelation('upstreams');
+        expect(ns.query).toMatchSnapshot();
       });
 
       test('Multiple', () => {
-        const ns = new NodeSelector('xyzzy').hasRelation('upstreams', 'authors');
-        expect(JSON.stringify(ns.query)).toBe(
-          JSON.stringify([
-            {
-              $match: {
-                _id: ['xyzzy'],
-                'rel.upstreams': { $not: { $size: 0 } },
-                'rel.authors': { $not: { $size: 0 } },
-              },
-            },
-          ]),
-        );
+        const ns = new NodeSelector('61be22843bb15b2d14696c25').hasRelation('upstreams', 'authors');
+        expect(ns.query).toMatchSnapshot();
       });
 
       test('All', () => {
-        const ns = new NodeSelector('xyzzy').hasRelation();
-        expect(JSON.stringify(ns.query)).toBe(
-          JSON.stringify([
-            {
-              $match: {
-                _id: ['xyzzy'],
-                'rel.upstreams': { $not: { $size: 0 } },
-                'rel.children': { $not: { $size: 0 } },
-                'rel.authors': { $not: { $size: 0 } },
-              },
-            },
-          ]),
-        );
+        const ns = new NodeSelector('61be22843bb15b2d14696c25').hasRelation();
+        expect(ns.query).toMatchSnapshot();
       });
     });
 
     describe('lacksRelation()', () => {
       test('Single', () => {
-        const ns = new NodeSelector('xyzzy').lacksRelation('upstreams');
-        expect(JSON.stringify(ns.query)).toBe(
-          JSON.stringify([
-            {
-              $match: {
-                _id: ['xyzzy'],
-                'rel.upstreams': { $size: 0 },
-              },
-            },
-          ]),
-        );
+        const ns = new NodeSelector('61be22843bb15b2d14696c25').lacksRelation('upstreams');
+        expect(ns.query).toMatchSnapshot();
       });
     });
   });
 });
 
 describe('Node Matching', () => {
-  test('Matching nodes are filtered', async () => {
-    const ns = new NodeSelector('61be23e15d55c9e5d68a2492').lacksRelation('upstreams');
-    console.log(
-      await ns.filterMatchingNodes([
+  beforeAll(async () => {
+    rootNode = await new MessageModel({
+      text: 'Favorite warrior?',
+    }).save();
+    await Promise.all(
+      [
         {
-          _id: new ObjectId('61be23585d55c9e5d68a247d'),
-          text: 'Cookie',
-          author: 'plugh',
-          rel: {},
+          text: 'Sitting Bull',
+          rel: {
+            upstreams: [rootNode._id],
+          },
         },
-      ]),
+        {
+          text: 'Crazy Horse',
+          rel: {
+            upstreams: [rootNode._id],
+          },
+        },
+      ].map((data) => new MessageModel(data).save()),
     );
+    messages = await MessageModel.find({});
+  });
+
+  test('Setup worked OK', async () => {
+    expect(messages).toHaveLength(3);
+    expect(messages[1].rel.upstreams.includes(rootNode._id)).toBeTruthy;
+    expect(messages[2].rel.upstreams.includes(rootNode._id)).toBeTruthy;
+  });
+
+  test('Matching downstream nodes are filtered', async () => {
+    const ns = new NodeSelector(rootNode._id).hasRelation('downstreams');
+    const matchingNodes = await ns.filterMatchingNodes(messages);
+    expect(matchingNodes).toHaveLength(2);
   });
 });

@@ -58,9 +58,9 @@ export const Talk = ({
 
   const userProfile = useContext(PassportContext);
   const navigate = useNavigate();
-  const nodeId = getNodeIdObject(id, useParams().nodeId);
+  const nodeId = getNodeIdObject(useParams().nodeId, id);
   if (debugNodeId(nodeId)) return <h1>Halted for NodeID debug</h1>;
-  const { nodes } = useNodes(selectNodes(nodeId));
+  const { nodes } = useNodes(selectNodes(nodeId).populateRelation('downstreams'));
   const node = nodes.length > 0 && nodes[0];
 
   const nodePickerCreateNodeData = (value) => ({
@@ -84,16 +84,19 @@ export const Talk = ({
     if (debug.variables)
       console.info('Debug Talk.tsx', {
         as,
-        nodeId,
+        depth,
+        nodeId: nodeId.toString(),
+        node_id: node._id.toString(),
         node,
-        downstreams,
+        downstreams: downstreams.map((id) => id.toString()),
+        upstreams: upstreams.map((id) => id.toString()),
       });
 
     switch (as) {
       case viewType.MASTER:
         return (
           <>
-            <Talk key={nodeId} as={viewType.UPSTREAM} depth={depth + 1} id={nodeId} />
+            <Talk key={node._id.toString()} as={viewType.UPSTREAM} id={node._id.toString()} depth={depth+1} />
 
             <NodePicker
               nodeGenerator={nodePickerCreateNodeData}
@@ -115,18 +118,18 @@ export const Talk = ({
         return (
           <>
             {upstreams.map((_id, index) => (
-              <Talk key={_id} as={viewType.UPSTREAM} depth={depth + 1} id={_id} />
+              <Talk key={_id.toString()} as={viewType.UPSTREAM} depth={depth + 1} id={_id.toString()} />
             ))}
 
-            <View note={viewType.UPSTREAM} node={node} />
-          </>
+            <View note={viewType.MASTER} node={node} />
+            </>
         );
 
       default:
         return <div>Invalid view as {as}</div>;
     }
   } else if (nodeId) {
-    return <h1>Loading {nodeId.toString()}</h1>;
+    return <></>;
   } else {
     return (
       <>

@@ -107,37 +107,34 @@ class Users {
 
             case server.CREATE:
               Promise.all(
-                payload.map(
-                  (receivedNodeData): INodeAll => {
-                    const Model = getModelByName(receivedNodeData.kind);
-                    const nodeData = {
-                      ...receivedNodeData,
-                      rel: Object.keys(receivedNodeData.rel).reduce((rel, relName) => {
-                        return { ...rel, [relName]: receivedNodeData.rel[relName].map((_id) => new ObjectId(_id)) };
-                      }, {}),
-                      author: userId,
-                    };
-                    if (debug[server.CREATE]) console.log('Create -> DB ', nodeData);
-                    return new Model(nodeData).save();
-                  },
-                ),
+                payload.map((receivedNodeData): INodeAll => {
+                  const Model = getModelByName(receivedNodeData.kind);
+                  const nodeData = {
+                    ...receivedNodeData,
+                    rel: Object.keys(receivedNodeData.rel).reduce((rel, relName) => {
+                      return { ...rel, [relName]: receivedNodeData.rel[relName].map((_id) => new ObjectId(_id)) };
+                    }, {}),
+                    author: userId,
+                  };
+                  if (debug[server.CREATE]) console.log('Create -> DB ', nodeData);
+                  return new Model(nodeData).save();
+                }),
                 //@ts-ignore
-              ).then(
-                async (nodes: INodeAll[]): Promise<void> => {
-                  if (debug[server.CREATE]) console.log('Create <- DB ', nodes);
-                  this.orderFulfill(order, {
-                    type: client.STASH,
-                    payload: await this.broadcast(nodes),
-                  });
-                },
-              );
+              ).then(async (nodes: INodeAll[]): Promise<void> => {
+                if (debug[server.CREATE]) console.log('Create <- DB ', nodes);
+                this.orderFulfill(order, {
+                  type: client.STASH,
+                  payload: await this.broadcast(nodes),
+                });
+              });
               break;
 
             case server.SUBSCRIBE:
               const thisNodeSelector = <NodeSelector>selectNodes().deserialize(payload);
               this.subscribe(thisNodeSelector, userId);
               const gotNodes = await thisNodeSelector.getNodes();
-              if (debug[server.SUBSCRIBE]) console.log('Subscribe ', { payload, thisNodeSelector, gotNodes });
+              if (debug[server.SUBSCRIBE])
+                console.log('Subscribe ', { payload, thisNodeSelector: thisNodeSelector.serialize(), gotNodes });
               this.orderFulfill(order, {
                 type: client.STASH,
                 payload: gotNodes,
