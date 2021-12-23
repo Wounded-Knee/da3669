@@ -97,11 +97,6 @@ export class NodeSelector extends SuperNodeSelector {
       cfg: { myRelations, me },
     } = this;
 
-    if (!defaultModel) {
-      console.error('DefaultModel Problem ', defaultModel);
-      return [];
-    }
-
     const myNodes = await Promise.all(
       me.map(async (myNodeId) => {
         try {
@@ -113,19 +108,42 @@ export class NodeSelector extends SuperNodeSelector {
         }
       }),
     );
-    if (debug.filterMatchingNodes) console.log('My Nodes ', myNodes);
+    if (debug.filterMatchingNodes)
+      console.log('My Nodes ', myNodes, 'Object.keys(myRelations)', Object.keys(myRelations));
 
     return nodeArray.filter((node) => {
       return Object.keys(myRelations).reduce((useThis: boolean, rel: string) => {
         if (myRelations[rel] === null) return useThis;
 
-        const myRealRelations = myNodes.reduce((relations, myNode) => {
-          return [...relations, ...((myNode.rel && myNode.rel[new RelationType(rel).literal.plural]) || [])];
+        // Combines all base node relations of [rel] type into one array
+        const combinedBaseNodeRelations = myNodes.reduce((relations, myNode) => {
+          return [
+            ...relations,
+            ...((myNode.rel && myNode.rel[new RelationType(rel).literal.plural]) || []).map((objectId) =>
+              objectId.toString(),
+            ),
+          ];
         }, []);
+        const candidateNodeRelations = (node.rel[new RelationType(rel).literal.plural] || []).map((objectId) =>
+          objectId.toString(),
+        );
+
+        if (debug.filterMatchingNodes) {
+          console.log(`My Real Relations (${rel})`, combinedBaseNodeRelations);
+          console.log(
+            `Candidate Relations (${new RelationType(rel).literal.plural})`,
+            node.rel[new RelationType(rel).literal.plural] || [],
+          );
+          console.log('Base Node IDs ', me);
+          console.log(
+            'Candidate Relations / Base ID Intersection ',
+            me.filter((myNodeId) => (node.rel[new RelationType(rel).literal.plural] || []).includes(myNodeId)),
+          );
+        }
 
         return useThis || new RelationType(rel).isLiteral
-          ? myRealRelations.includes(node._id)
-          : !!me.filter((value) => (node.rel[new RelationType(rel).literal.plural] || []).includes(value)).length;
+          ? combinedBaseNodeRelations.includes(node._id)
+          : !!me.filter((myNodeId) => candidateNodeRelations.includes(myNodeId.toString())).length;
       }, false);
     });
   }

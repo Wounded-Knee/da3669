@@ -1,10 +1,14 @@
 // @ts-nocheck
 import { NodeSelector } from './NodeSelector';
 import mongoose from 'mongoose';
+import { getModelByName } from '../nodes/all';
 import '../../config';
 const { ObjectId } = mongoose.Types;
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const util = require('util');
+
+const MessageModel = getModelByName('Message');
+let rootNode, messages;
 
 beforeAll(
   async () =>
@@ -23,9 +27,9 @@ beforeAll(
     ),
 );
 
-afterAll((done) => {
+afterAll(async (done) => {
   // Closing the DB connection allows Jest to exit successfully.
-  mongoose.connection.close();
+  await mongoose.connection.close();
   done();
 });
 
@@ -118,20 +122,38 @@ describe('Query Generation', () => {
 });
 
 describe('Node Matching', () => {
-  test('Matching nodes are filtered', async () => {
-    expect.assertions(0);
-    const ns = new NodeSelector('61be23e15d55c9e5d68a2492').populateRelation('downstreams');
-    const matchingNodes = await ns.filterMatchingNodes([
-      {
-        _id: new ObjectId('61be23585d55c9e5d68a247d'),
-        text: 'Cookie',
-        author: 'plugh',
-        rel: {
-          upstreams: [new ObjectId('61be23e15d55c9e5d68a2492')],
+  beforeAll(async () => {
+    rootNode = await new MessageModel({
+      text: 'Favorite warrior?',
+    }).save();
+    await Promise.all(
+      [
+        {
+          text: 'Sitting Bull',
+          rel: {
+            upstreams: [rootNode._id],
+          },
         },
-      },
-    ]);
+        {
+          text: 'Crazy Horse',
+          rel: {
+            upstreams: [rootNode._id],
+          },
+        },
+      ].map((data) => new MessageModel(data).save()),
+    );
+    messages = await MessageModel.find({});
+  });
 
-    return matchingNodes;
+  test('Setup worked OK', async () => {
+    expect(messages).toHaveLength(3);
+    expect(messages[1].rel.upstreams.includes(rootNode._id)).toBeTruthy;
+    expect(messages[2].rel.upstreams.includes(rootNode._id)).toBeTruthy;
+  });
+
+  test('Matching downstream nodes are filtered', async () => {
+    const ns = new NodeSelector(rootNode._id).hasRelation('downstreams');
+    const matchingNodes = await ns.filterMatchingNodes(messages);
+    expect(matchingNodes).toHaveLength(2);
   });
 });
