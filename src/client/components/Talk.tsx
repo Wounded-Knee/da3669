@@ -20,7 +20,7 @@ const debug = {
 const {
   Types: { ObjectId },
 } = mongoose;
-const maxDepth = 3;
+const maxDepth = 10;
 const urlPath = `/talk/`;
 const nodeType = 'Message';
 const viewType = Object.freeze({
@@ -94,12 +94,9 @@ export const Talk = ({
 
     switch (as) {
       case viewType.MASTER:
-        console.log('Doing upstreams ', upstreams.map((id) => id.toString()));
         return (
           <>
-            {upstreams.map((_id, index) => (
-              <Talk key={_id.toString()} as={viewType.UPSTREAM} depth={depth + 1} id={_id.toString()} />
-            ))}
+            <Talk key={node._id.toString()} as={viewType.UPSTREAM} id={node._id.toString()} depth={depth+1} />
 
             <NodePicker
               nodeGenerator={nodePickerCreateNodeData}
@@ -118,20 +115,21 @@ export const Talk = ({
         return <View note={viewType.DOWNSTREAM} node={node} />;
 
       case viewType.UPSTREAM:
-        if (upstreams.find((_id) => {
-          return _id.toString() === node._id.toString();
-        })) {
-          console.error(upstreams, node);
-        }
         return (
-            <View note={viewType.UPSTREAM} node={node} />
+          <>
+            {upstreams.map((_id, index) => (
+              <Talk key={_id.toString()} as={viewType.UPSTREAM} depth={depth + 1} id={_id.toString()} />
+            ))}
+
+            <View note={viewType.MASTER} node={node} />
+            </>
         );
 
       default:
         return <div>Invalid view as {as}</div>;
     }
   } else if (nodeId) {
-    return <h1>Loading {nodeId.toString()}</h1>;
+    return <></>;
   } else {
     return (
       <>
