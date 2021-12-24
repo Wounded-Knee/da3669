@@ -1,8 +1,10 @@
 export const addHelper = (obj) => {
-  // @ts-ignore
-  window.d3 = {
+  if (typeof window !== 'undefined') {
     // @ts-ignore
-    ...window.d3,
-    ...obj,
-  };
+    window.d3 = {
+      // @ts-ignore
+      ...window.d3,
+      ...obj,
+    };
+  }
 };

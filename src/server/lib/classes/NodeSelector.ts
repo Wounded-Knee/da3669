@@ -80,56 +80,55 @@ export class NodeSelector extends SuperNodeSelector {
     ];
   }
 
+  extract(baseNodes: INodeAll[]): { baseNodes: INodeAll[]; extracts: INodeAll[] } {
+    return {
+      baseNodes: baseNodes.reduce((nodes, thisNode) => {
+        return [
+          ...nodes,
+          {
+            ...thisNode,
+            rel: {
+              ...Object.keys(thisNode.rel).reduce((rel, relationType) => {
+                return {
+                  ...rel,
+                  ...(thisNode.rel[relationType]
+                    ? thisNode.rel[relationType].reduce((rel, relation) => {
+                        // @ts-ignore
+                        return { ...rel, [relationType]: relation instanceof Object ? [relation._id] : relation };
+                      }, {})
+                    : {}),
+                };
+              }, []),
+            },
+          },
+        ];
+      }, []),
+      extracts: baseNodes.reduce((nodes, thisNode) => {
+        return [
+          ...nodes,
+          ...Object.keys(thisNode.rel).reduce((nodes, relationType) => {
+            return [
+              ...nodes,
+              ...(thisNode.rel[relationType]
+                ? thisNode.rel[relationType].reduce((nodes, relation) => {
+                    // @ts-ignore
+                    console.log('Relation ', relation instanceof ObjectId);
+                    // @ts-ignore
+                    return [...nodes, ...(relation instanceof ObjectId ? [] : [relation])];
+                  }, [])
+                : []),
+            ];
+          }, []),
+        ];
+      }, []),
+    };
+  }
+
   async getNodes(): Promise<INodeAll[]> {
     const query = this.query;
     try {
-      const node: INodeAll[] = await defaultModel.aggregate(query).exec();
-
-      const nodes: INodeAll[] = [
-        // Extract embedded nodes
-        ...node.reduce((nodes, thisNode) => {
-          return [
-            ...nodes,
-            ...Object.keys(thisNode.rel).reduce((nodes, relationType) => {
-              return [
-                ...nodes,
-                ...(thisNode.rel[relationType]
-                  ? thisNode.rel[relationType].reduce((nodes, relation) => {
-                      // @ts-ignore
-                      console.log('Relation ', relation instanceof ObjectId);
-                      // @ts-ignore
-                      return [...nodes, ...(relation instanceof ObjectId ? [] : [relation])];
-                    }, [])
-                  : []),
-              ];
-            }, []),
-          ];
-        }, []),
-
-        // Include the original node, relations cleaned (just IDs)
-        // ...node.reduce((nodes, thisNode) => {
-        //   return [
-        //     ...nodes,
-        //     {
-        //       ...thisNode,
-        //       rel: {
-        //         ...Object.keys(thisNode.rel).reduce((rel, relationType) => {
-        //           return {
-        //             ...rel,
-        //             ...(thisNode.rel[relationType]
-        //               ? thisNode.rel[relationType].reduce((rel, relation) => {
-        //                   // @ts-ignore
-        //                   return { ...rel, [relationType]: relation instanceof Object ? [relation._id] : relation };
-        //                 }, {})
-        //               : {}),
-        //           };
-        //         }, []),
-        //       },
-        //     },
-        //   ];
-        // }, []),
-      ];
-
+      const { baseNodes, extracts } = this.extract(await defaultModel.aggregate(query).exec());
+      const nodes = this.requiresRelations() ? extracts : baseNodes;
       if (debug.getNodes) console.log('Nodes ', nodes, inspect(query, { depth: null }));
       return nodes;
     } catch (e) {
@@ -138,22 +137,44 @@ export class NodeSelector extends SuperNodeSelector {
     }
   }
 
+  async getMyNodesAsync(): Promise<INodeAll[]> {
+    return await Promise.all(
+      this.cfg.me.map(async (myNodeId) => {
+        try {
+          const node = await defaultModel.findById(myNodeId).exec();
+          console.log('Map ', myNodeId, node);
+          return node;
+        } catch (e) {
+          console.error('Problem finding myNodes ', myNodeId, this.cfg.me, e);
+        }
+      }),
+    );
+  }
+
+  async getAllMyRelations(): Promise<{ [key: string]: mongoose.Types.ObjectId[] }> {
+    const myNodes = await this.getMyNodesAsync();
+    return myNodes.reduce((relations, myNode) => {
+      return {
+        ...relations,
+        ...Object.keys(this.cfg.myRelations).reduce((relations, relationType) => {
+          console.log(myNode, myNode.rel);
+          return {
+            ...relations,
+            [relationType]: ((myNode.rel && myNode.rel[new RelationType(relationType).literal.plural]) || []).map(
+              (objectId) => objectId.toString(),
+            ),
+          };
+        }, {}),
+      };
+    }, {});
+  }
+
   async filterMatchingNodes(nodeArray: INodeAll[]): Promise<INodeAll[]> {
     const {
       cfg: { myRelations, me },
     } = this;
 
-    const myNodes = await Promise.all(
-      me.map(async (myNodeId) => {
-        try {
-          const node = await defaultModel.findById(myNodeId).exec();
-          if (debug.filterMatchingNodes) console.log('Map ', myNodeId, node);
-          return node;
-        } catch (e) {
-          console.error('Problem finding myNodes ', myNodeId, me, e);
-        }
-      }),
-    );
+    const myNodes = await this.getMyNodesAsync();
     if (debug.filterMatchingNodes)
       console.log('My Nodes ', myNodes, 'Object.keys(myRelations)', Object.keys(myRelations));
 
@@ -162,17 +183,14 @@ export class NodeSelector extends SuperNodeSelector {
         if (myRelations[rel] === null) return useThis;
 
         // Combines all base node relations of [rel] type into one array
-        const combinedBaseNodeRelations = myNodes.reduce((relations, myNode) => {
-          return [
-            ...relations,
-            ...((myNode.rel && myNode.rel[new RelationType(rel).literal.plural]) || []).map((objectId) =>
-              objectId.toString(),
-            ),
-          ];
-        }, []);
+        const combinedBaseNodeRelations = (this.getAllMyRelations()[rel] || []).map((id) => id.toString());
         const candidateNodeRelations = ((node.rel && node.rel[new RelationType(rel).literal.plural]) || []).map(
           (objectId) => objectId.toString(),
         );
+        const baseNodeRelatesToThisNode = combinedBaseNodeRelations.includes(node._id);
+        const thisNodeRelatesToBaseNode = !!me.filter((baseNodeId) =>
+          candidateNodeRelations.includes(baseNodeId.toString()),
+        ).length;
 
         if (debug.filterMatchingNodes) {
           console.log(`My Real Relations (${rel})`, combinedBaseNodeRelations);
@@ -183,9 +201,7 @@ export class NodeSelector extends SuperNodeSelector {
           console.log('Base Node IDs ', me);
         }
 
-        return useThis || new RelationType(rel).isLiteral
-          ? combinedBaseNodeRelations.includes(node._id)
-          : !!me.filter((myNodeId) => candidateNodeRelations.includes(myNodeId.toString())).length;
+        return useThis || new RelationType(rel).isLiteral ? baseNodeRelatesToThisNode : thisNodeRelatesToBaseNode;
       }, false);
     });
   }

@@ -5,6 +5,10 @@ import { dispatch } from '../webSocket';
 import { NodeSelector } from './NodeSelector';
 import { store } from './redux/store';
 
+const debug = {
+  changes: true,
+};
+
 interface IUseNodesReturn {
   nodes: INodeAll[];
 }
@@ -13,13 +17,16 @@ export const useNodes = (nodeSelector: NodeSelector): IUseNodesReturn => {
   const [nodes, setNodes] = useState(nodeSelector.nodes);
 
   useEffect(() => {
-    console.log('UseNodes UseEffect ', nodeSelector.serialize());
     dispatch({
       type: server.SUBSCRIBE,
       payload: nodeSelector.serialize(),
     });
     const storeUnsubscribe = store.subscribe(() => {
-      console.log('Store Changed', nodeSelector.nodes, nodeSelector.serialize());
+      if (debug.changes)
+        console.log('Store Changed', {
+          Nodes: nodeSelector.nodes,
+          Selector: nodeSelector.debug(),
+        });
       setNodes(nodeSelector.nodes);
     });
 

@@ -1,5 +1,6 @@
 import mongoose, { Schema, model, Model } from 'mongoose';
 import { nodeTypes as nodeTypeNames } from '../../../shared/config';
+import { relationTypes } from '../../../shared/lib/RelationType';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const nodeDefinitions = nodeTypeNames.map((nodeTypeName) => require(`./${nodeTypeName}`).default);
@@ -39,12 +40,16 @@ export const getModelByName = (modelName: string): Model<any> => {
   if (extending) {
     const { options: superOptions } = getNodeDefinitionByName(extending);
     const superModel = getModelByName(extending);
+    const { relationTypes: superRelationTypes } = getNodeDefinitionByName(extending);
     return superModel.discriminator(
       modelName,
-      new Schema(addRelationTypesToSchemaPaths(schemaPaths, relationTypes), {
-        ...superOptions,
-        ...options,
-      }),
+      new Schema(
+        addRelationTypesToSchemaPaths(addRelationTypesToSchemaPaths(schemaPaths, relationTypes), superRelationTypes),
+        {
+          ...superOptions,
+          ...options,
+        },
+      ),
     );
   } else {
     return model(modelName, new Schema(addRelationTypesToSchemaPaths(schemaPaths, relationTypes), options));

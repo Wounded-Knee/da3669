@@ -13,14 +13,14 @@ import { PassportContext } from './PassportContext';
 import { INodeAll, NodeId } from '../../shared/all';
 
 const debug = {
-  variables: false,
+  variables: true,
   nodeId: false,
 };
 
 const {
   Types: { ObjectId },
 } = mongoose;
-const maxDepth = 10;
+const maxDepth = 2;
 const urlPath = `/talk/`;
 const nodeType = 'Message';
 const viewType = Object.freeze({
@@ -80,19 +80,20 @@ export const Talk = ({
   };
 
   if (nodeId && node) {
-    if (debug.variables)
-      console.info('Debug Talk.tsx', {
-        as,
-        depth,
-        nodeId: nodeId.toString(),
-        node_id: node._id.toString(),
-        node,
-        downstreams: downstreams.map((id) => id.toString()),
-        upstreams: upstreams.map((id) => id.toString()),
-      });
 
     switch (as) {
       case viewType.MASTER:
+        if (debug.variables)
+        console.info('Debug Talk.tsx', {
+          as,
+          depth,
+          nodeId: nodeId.toString(),
+          node_id: node._id.toString(),
+          node,
+          downstreams: downstreams.map((id) => id.toString()),
+          upstreams: upstreams.map((id) => id.toString()),
+        });
+
         return (
           <>
             <Talk key={node._id.toString()} as={viewType.UPSTREAM} id={node._id.toString()} depth={depth+1} />
@@ -114,6 +115,7 @@ export const Talk = ({
         return <View note={viewType.DOWNSTREAM} node={node} />;
 
       case viewType.UPSTREAM:
+        console.log('Dumping upstreams of ', nodes, ' as ', upstreams);
         return (
           <>
             {upstreams.map((_id, index) => (
@@ -128,7 +130,7 @@ export const Talk = ({
         return <div>Invalid view as {as}</div>;
     }
   } else if (nodeId) {
-    return <></>;
+    return <>Loading</>;
   } else {
     return (
       <>

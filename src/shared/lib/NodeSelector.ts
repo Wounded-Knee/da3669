@@ -1,5 +1,5 @@
 import { relationTypes, RelationType } from './RelationType';
-import { NodeId } from '../all';
+import { NodeId, INodeAll } from '../all';
 import { Types, ObjectId } from 'mongoose';
 const debug = {
   addNodeIds: false,
@@ -27,6 +27,33 @@ export class NodeSelector {
 
   constructor(...nodeIds: NodeId[]) {
     return this.nodeIds(nodeIds);
+  }
+
+  debug() {
+    return {
+      me: this.cfg.me.map((id) => id.toString()),
+      ...Object.keys(this.cfg.myRelations).reduce(
+        (myRelations, relationType) => ({
+          ...myRelations,
+          [relationType]: (() => {
+            switch (this.cfg.myRelations[relationType]) {
+              case null:
+                return 'Populate';
+                break;
+
+              case false:
+                return 'Lacks Relation';
+                break;
+
+              case true:
+                return 'Has Relation';
+                break;
+            }
+          })(),
+        }),
+        {},
+      ),
+    };
   }
 
   serialize(): INodeSelectorCfg {
@@ -62,6 +89,10 @@ export class NodeSelector {
     return this.addRelations(true, relationTypes);
   }
 
+  requiresRelations(): boolean {
+    return !!Object.keys(this.cfg.myRelations).length;
+  }
+
   addRelations(bool: boolean | null, relationTypes: string[]): NodeSelector {
     const theseRelationTypes = relationTypes.length ? relationTypes : flatRelationTypes;
     theseRelationTypes.forEach((relationType) => {
@@ -76,5 +107,19 @@ export class NodeSelector {
     } else {
       return JSON.stringify(foreignSelector) === JSON.stringify(this.serialize());
     }
+  }
+
+  // Server stub
+  async getMyNodesAsync(): Promise<INodeAll[]> {
+    throw new Error('Override Failed');
+  }
+
+  // Client stub
+  getMyNodes(): INodeAll[] {
+    throw new Error('Override Failed');
+  }
+
+  get nodes() {
+    return undefined;
   }
 }

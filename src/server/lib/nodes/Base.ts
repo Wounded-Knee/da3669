@@ -13,6 +13,10 @@ export default <INodeTypeDefinition>{
       ['child', 'children'],
       ['parent', 'parents'],
     ],
+    [
+      ['author', 'authors'],
+      ['work', 'works'],
+    ],
   ],
   options: { discriminatorKey: 'kind', timestamps: true },
   schemaPaths: {},
