@@ -8,6 +8,12 @@ import { Slider } from '@mui/material';
 export const Index = () => {
   const [depth, setDepth] = useState(0);
   const [coolState, setCoolState] = useState({});
+  const [path, setPath] = useState([0, 0, 1]);
+
+  const addPath = (index) => {
+    console.log(index);
+    setPath([...path, index]);
+  };
 
   return (
     <div
@@ -33,12 +39,15 @@ export const Index = () => {
         step={1}
         marks
         min={0}
-        max={2}
+        max={3}
       />
 
+      {path.join('/')}
       <h1>{coolState.title}</h1>
 
       <ContextStacker
+        addPath={addPath}
+        path={path}
         text='Hello.'
         depthLimit={depth}
         ancestorProps={{
@@ -46,26 +55,27 @@ export const Index = () => {
         }}
         callback={setCoolState}
         color='cyan'
-        child={
+      >
+        <ContextStacker
+          text='Hey look I can change the background.'
+          color='yellow'
+          changeAncestorProps={(props) => ({
+            ...props,
+            background: 'https://i.pinimg.com/originals/66/f8/59/66f859fc32c72e5f8401cc03e09ebc18.png',
+          })}
+        >
           <ContextStacker
-            text='Hey look I can change the background.'
-            color='yellow'
-            changeAncestorProps={(props) => ({
-              ...props,
-              background: 'https://i.pinimg.com/originals/66/f8/59/66f859fc32c72e5f8401cc03e09ebc18.png',
-            })}
-            child={
-              <ContextStacker
-                text='I would rather talk about trees.'
-                mutation={{
-                  title: 'Tree Chat',
-                  background: 'http://wallpaperose.com/wp-content/uploads/2013/07/Natural-Leaves-Widescreen.jpg',
-                }}
-              />
-            }
-          />
-        }
-      />
+            text='I would rather talk about trees.'
+            mutation={{
+              title: 'Tree Chat',
+              background: 'http://wallpaperose.com/wp-content/uploads/2013/07/Natural-Leaves-Widescreen.jpg',
+            }}
+          >
+            <ContextStacker text='Okay. Lets talk about trees, then.' />
+            <ContextStacker text='No. Trees are stupid.' />
+          </ContextStacker>
+        </ContextStacker>
+      </ContextStacker>
     </div>
   );
 };
