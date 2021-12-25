@@ -15,7 +15,7 @@ export const ContextStacker = (props) => {
   } = props;
   const [nav, ...forwardPath] = path;
   const children = tmpChildren ? (tmpChildren instanceof Array ? tmpChildren : [tmpChildren]) : [];
-  const { addPath, depthLimit, depth = 0, text, color, callback } = props;
+  const { setDepth, addPath, depthLimit, depth = 0, text, color, callback } = props;
   const descendantProps = {
     ...(changeAncestorProps(ancestorProps) || {}),
     ...mutation,
@@ -33,7 +33,7 @@ export const ContextStacker = (props) => {
   return (
     <>
       <p
-        onClick={onClick}
+        onClick={() => setDepth(depth)}
         style={{ color }}
         css={css`
           text-shadow: 1px 1px 2px black;
@@ -41,8 +41,7 @@ export const ContextStacker = (props) => {
       >
         {depth}: {text}
       </p>
-      {!finalDescendant &&
-        child &&
+      {child &&
         React.cloneElement(child, {
           ...forwardProps,
           ...child.props,
@@ -51,7 +50,7 @@ export const ContextStacker = (props) => {
           depth: depth + 1,
         })}
 
-      {depthReached &&
+      {!child &&
         children.length &&
         children.map((child, index) => (
           <button key={index} onClick={() => addPath(index)}>

@@ -8,11 +8,15 @@ import { Slider } from '@mui/material';
 export const Index = () => {
   const [depth, setDepth] = useState(0);
   const [coolState, setCoolState] = useState({});
-  const [path, setPath] = useState([0, 0, 1]);
+  const [path, setPath] = useState([]);
 
   const addPath = (index) => {
     console.log(index);
     setPath([...path, index]);
+  };
+
+  const setDepthOk = (depth) => {
+    setPath(path.slice(0, depth));
   };
 
   return (
@@ -25,6 +29,7 @@ export const Index = () => {
         overflow: hidden;
         padding: 2em;
         background-image: url('${coolState.background}');
+        background-size: cover;
         transition: background-image 2s ease-in-out;
       `}
     >
@@ -47,7 +52,8 @@ export const Index = () => {
 
       <ContextStacker
         addPath={addPath}
-        path={path}
+        setDepth={setDepthOk}
+        path={path.slice(0, depth)}
         text='Hello.'
         depthLimit={depth}
         ancestorProps={{
@@ -56,6 +62,15 @@ export const Index = () => {
         callback={setCoolState}
         color='cyan'
       >
+        <ContextStacker text='Blah blah blah' />
+        <ContextStacker
+          text='Who wants to talk spaceships?'
+          mutation={{
+            title: 'Spaceship Talk!',
+            background: 'https://blogs.esa.int/alexander-gerst/files/2014/03/10729802334_f51e9b69d8_o.jpg',
+          }}
+        />
+        <ContextStacker text='Britta, are you here?' />
         <ContextStacker
           text='Hey look I can change the background.'
           color='yellow'
