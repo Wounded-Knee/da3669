@@ -39,7 +39,7 @@ export const ContextStacker = (props) => {
           text-shadow: 1px 1px 2px black;
         `}
       >
-        {depth}: {text}
+        {text}
       </p>
       {child &&
         React.cloneElement(child, {
@@ -51,7 +51,7 @@ export const ContextStacker = (props) => {
         })}
 
       {!child &&
-        children.length &&
+        children.length > 0 &&
         children.map((child, index) => (
           <button key={index} onClick={() => addPath(index)}>
             {child.props.text}
