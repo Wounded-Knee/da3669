@@ -128,6 +128,7 @@ export class NodeSelector extends SuperNodeSelector {
     const query = this.query;
     try {
       const { baseNodes, extracts } = this.extract(await defaultModel.aggregate(query).exec());
+      // @ts-ignore
       const nodes = this.requiresRelations() ? extracts : baseNodes;
       if (debug.getNodes) console.log('Nodes ', nodes, inspect(query, { depth: null }));
       return nodes;
