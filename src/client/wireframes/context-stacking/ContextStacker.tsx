@@ -5,9 +5,12 @@ import { css, jsx } from '@emotion/react';
 import { useOnMount } from '../../lib/useOnMount';
 
 export const ContextStacker = (props) => {
-  const { child, ancestorProps, changeAncestorProps = (props) => props, ...forwardProps } = props;
+  const { child, ancestorProps, mutation, changeAncestorProps = (props) => props, ...forwardProps } = props;
   const { depthLimit, depth = 0, text, color, callback } = props;
-  const descendantProps = changeAncestorProps(ancestorProps) || {};
+  const descendantProps = {
+    ...(changeAncestorProps(ancestorProps) || {}),
+    ...mutation,
+  };
   const finalDescendant = !child || depth >= depthLimit;
 
   useEffect(() => {

@@ -57,11 +57,10 @@ export const Index = () => {
             child={
               <ContextStacker
                 text='I would rather talk about trees.'
-                changeAncestorProps={(props) => ({
-                  ...props,
+                mutation={{
                   title: 'Tree Chat',
                   background: 'http://wallpaperose.com/wp-content/uploads/2013/07/Natural-Leaves-Widescreen.jpg',
-                })}
+                }}
               />
             }
           />
