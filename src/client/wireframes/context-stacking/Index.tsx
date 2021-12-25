@@ -39,6 +39,7 @@ export const Index = () => {
         padding: 2em;
         background-image: url('${coolState.background}');
         background-size: cover;
+        background-position: center;
         transition: background-image 2s ease-in-out;
       `}
     >
@@ -71,6 +72,7 @@ export const Index = () => {
         callback={setCoolState}
       >
         <ContextStacker text='Blah blah blah, but, in cyan' color='cyan' />
+        <ContextStacker text='I like camping.' mutation={{ background: 'http://jpkramer.com/fire2.gif' }} />
         <ContextStacker
           text='Who wants to talk spaceships?'
           mutation={{

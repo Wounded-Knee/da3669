@@ -30,6 +30,13 @@ export const ContextStacker = (props) => {
     }
   }, [child]);
 
+  useEffect(() => {
+    // // Buggy auto-continue
+    // if (children.length === 1 && !nav) {
+    //   addPath(0);
+    // }
+  });
+
   return (
     <>
       <p
@@ -37,6 +44,7 @@ export const ContextStacker = (props) => {
         style={{ color }}
         css={css`
           text-shadow: 1px 1px 2px black;
+          cursor: pointer;
         `}
       >
         {text}
