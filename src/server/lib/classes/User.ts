@@ -189,7 +189,7 @@ class Users {
     let broadcastCount = 0;
     let socketCount = 0;
     this.subscriptions.forEach(async ({ selector: selectorCfg, userId }) => {
-      const candidateNodes = this.stringifyNodeIds(nodes);
+      const candidateNodes = nodes;
       // @ts-ignore
       const matchingNodes = await selectNodes().deserialize(selectorCfg).filterMatchingNodes(candidateNodes);
       if (matchingNodes.length) {
@@ -328,12 +328,12 @@ class Users {
     );
   }
 
-  stringifyNodeIds(nodeArray: INodeAll[]): INodeAll[] {
-    return nodeArray.map((node) => ({
-      ...node,
-      _id: node._id.toString(),
-    }));
-  }
+  // stringifyNodeIds(nodeArray: INodeAll[]): INodeAll[] {
+  //   return nodeArray.map((node) => ({
+  //     ...node,
+  //     _id: node._id.toString(),
+  //   }));
+  // }
 
   // @ts-ignore
   modelsToNodes(modelArray: Model[]): INodeAll[] {

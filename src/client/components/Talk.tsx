@@ -10,17 +10,17 @@ import { Link } from './Branded';
 import { useNavigate } from 'react-router-dom';
 import mongoose from 'mongoose';
 import { PassportContext } from './PassportContext';
-import { NodeId } from '../../shared/all';
+import { INodeAll, NodeId } from '../../shared/all';
 
 const debug = {
-  variables: false,
+  variables: true,
   nodeId: false,
 };
 
 const {
   Types: { ObjectId },
 } = mongoose;
-const maxDepth = 10;
+const maxDepth = 2;
 const urlPath = `/talk/`;
 const nodeType = 'Message';
 const viewType = Object.freeze({
@@ -60,7 +60,9 @@ export const Talk = ({
   const navigate = useNavigate();
   const nodeId = getNodeIdObject(useParams().nodeId, id);
   if (debugNodeId(nodeId)) return <h1>Halted for NodeID debug</h1>;
-  const { nodes } = useNodes(selectNodes(nodeId).populateRelation('downstreams'));
+  const { nodes } = useNodes(selectNodes(nodeId));
+  const { nodes: downstreams } = useNodes(selectNodes(nodeId).populateRelation('downstreams'));
+  const { nodes: upstreams } = useNodes(selectNodes(nodeId).populateRelation('upstreams'));
   const node = nodes.length > 0 && nodes[0];
 
   const nodePickerCreateNodeData = (value) => ({
@@ -78,22 +80,20 @@ export const Talk = ({
   };
 
   if (nodeId && node) {
-    const upstreams = node.rel ? node.rel.upstreams || [] : [];
-    const downstreams = node.rel ? node.rel.downstreams || [] : [];
-
-    if (debug.variables)
-      console.info('Debug Talk.tsx', {
-        as,
-        depth,
-        nodeId: nodeId.toString(),
-        node_id: node._id.toString(),
-        node,
-        downstreams: downstreams.map((id) => id.toString()),
-        upstreams: upstreams.map((id) => id.toString()),
-      });
 
     switch (as) {
       case viewType.MASTER:
+        if (debug.variables)
+        console.info('Debug Talk.tsx', {
+          as,
+          depth,
+          nodeId: nodeId.toString(),
+          node_id: node._id.toString(),
+          node,
+          downstreams: downstreams.map((id) => id.toString()),
+          upstreams: upstreams.map((id) => id.toString()),
+        });
+
         return (
           <>
             <Talk key={node._id.toString()} as={viewType.UPSTREAM} id={node._id.toString()} depth={depth+1} />
@@ -106,7 +106,7 @@ export const Talk = ({
             />
 
             {downstreams.map((_id) => (
-              <Talk key={_id} as={viewType.DOWNSTREAM} id={_id} depth={depth + 1} />
+              <Talk key={_id.toString()} as={viewType.DOWNSTREAM} id={_id.toString()} depth={depth + 1} />
             ))}
           </>
         );
@@ -115,6 +115,7 @@ export const Talk = ({
         return <View note={viewType.DOWNSTREAM} node={node} />;
 
       case viewType.UPSTREAM:
+        console.log('Dumping upstreams of ', nodes, ' as ', upstreams);
         return (
           <>
             {upstreams.map((_id, index) => (
@@ -122,14 +123,14 @@ export const Talk = ({
             ))}
 
             <View note={viewType.MASTER} node={node} />
-            </>
+          </>
         );
 
       default:
         return <div>Invalid view as {as}</div>;
     }
   } else if (nodeId) {
-    return <></>;
+    return <>Loading</>;
   } else {
     return (
       <>

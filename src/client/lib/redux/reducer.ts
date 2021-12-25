@@ -6,6 +6,7 @@ import { INodeAll } from '../../../shared/all';
 const debug = {
   actions: false,
   noop: false,
+  [client.STASH]: false,
 };
 
 const { ObjectId } = Types;
@@ -15,14 +16,15 @@ const objectifyNodeIds = (node) => {
     ...node,
     _id: new ObjectId(node._id),
     string_id: node._id,
-    rel: Object.keys(node.rel).reduce(
-      (rel, relationType) => ({
-        ...rel,
-        [`string_${relationType}`]: node.rel[relationType],
-        [relationType]: node.rel[relationType].map((relationId) => new ObjectId(relationId)),
-      }),
-      {},
-    ),
+    rel: node.rel
+      ? Object.keys(node.rel).reduce(
+          (rel, relationType) => ({
+            ...rel,
+            [relationType]: node.rel[relationType].map((relationId) => new ObjectId(relationId)),
+          }),
+          {},
+        )
+      : {},
   };
 };
 
@@ -58,6 +60,7 @@ export const reducer = (state = initialState, { type, payload }) => {
           return oldNode === undefined || updatedAt !== oldNode.updatedAt || oldNode.updatedAt === undefined;
         });
       if (newNodes.length) {
+        if (debug[client.STASH]) console.log(client.STASH, payload);
         const nodeIds = newNodes.filter(({ _id }) => _id !== undefined).map(({ _id }) => _id.toString());
         return {
           ...state,

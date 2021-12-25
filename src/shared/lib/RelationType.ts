@@ -1,5 +1,3 @@
-import { INodeBase, INodeAll } from '../all';
-
 type RelationTypeSelector = string;
 type RelationTypeSingular = RelationTypeSelector;
 type RelationTypePlural = RelationTypeSelector;
@@ -83,7 +81,10 @@ export class RelationType {
     };
   }
 
-  getCursorPosition(selector: RelationTypeSelector = this.currentSelector, group = this.getGroup()): number {
+  getCursorPosition(
+    selector: RelationTypeSelector = this.currentSelector,
+    group: RelationTypeGroup = this.getGroup(),
+  ): number {
     // @ts-ignore
     return group.flat(1).indexOf(selector);
   }

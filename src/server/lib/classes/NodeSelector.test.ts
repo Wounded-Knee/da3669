@@ -10,22 +10,45 @@ const util = require('util');
 const MessageModel = getModelByName('Message');
 let rootNode, messages;
 
-beforeAll(
-  async () =>
-    await mongoose.connect(
-      process.env.MONGO_URL,
+beforeAll(async () => {
+  await mongoose.connect(
+    process.env.MONGO_URL,
+    {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    },
+    (err) => {
+      if (err) {
+        console.error(err);
+        process.exit(1);
+      }
+    },
+  );
+
+  rootNode = await new MessageModel({
+    text: 'Favorite warrior?',
+    rel: {
+      authors: [new ObjectId()],
+    },
+  }).save();
+  await Promise.all(
+    [
       {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
+        text: 'Sitting Bull',
+        rel: {
+          upstreams: [rootNode._id],
+        },
       },
-      (err) => {
-        if (err) {
-          console.error(err);
-          process.exit(1);
-        }
+      {
+        text: 'Crazy Horse',
+        rel: {
+          upstreams: [rootNode._id],
+        },
       },
-    ),
-);
+    ].map((data) => new MessageModel(data).save()),
+  );
+  messages = await MessageModel.find({});
+});
 
 afterAll(async (done) => {
   // Closing the DB connection allows Jest to exit successfully.
@@ -122,29 +145,6 @@ describe('Query Generation', () => {
 });
 
 describe('Node Matching', () => {
-  beforeAll(async () => {
-    rootNode = await new MessageModel({
-      text: 'Favorite warrior?',
-    }).save();
-    await Promise.all(
-      [
-        {
-          text: 'Sitting Bull',
-          rel: {
-            upstreams: [rootNode._id],
-          },
-        },
-        {
-          text: 'Crazy Horse',
-          rel: {
-            upstreams: [rootNode._id],
-          },
-        },
-      ].map((data) => new MessageModel(data).save()),
-    );
-    messages = await MessageModel.find({});
-  });
-
   test('Setup worked OK', async () => {
     expect(messages).toHaveLength(3);
     expect(messages[1].rel.upstreams.includes(rootNode._id)).toBeTruthy;
@@ -155,5 +155,12 @@ describe('Node Matching', () => {
     const ns = new NodeSelector(rootNode._id).hasRelation('downstreams');
     const matchingNodes = await ns.filterMatchingNodes(messages);
     expect(matchingNodes).toHaveLength(2);
+  });
+});
+
+describe('NodeSelector Methods', () => {
+  test('allMyRelations()', async () => {
+    const ns = new NodeSelector(rootNode._id).populateRelation('downstreams');
+    console.log(await ns.getAllMyRelations());
   });
 });

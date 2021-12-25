@@ -1,13 +1,32 @@
 /** @jsxFrag React.Fragment */
 /** @jsx jsx */
 import { css, jsx } from '@emotion/react';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ContextStacker } from './ContextStacker';
-import { Slider } from '@mui/material';
+import { BottomNavigation, BottomNavigationAction, Paper, Slider } from '@mui/material';
+import {
+  LocalPolice as ModerateIcon,
+  Favorite as FavoriteIcon,
+  LocationOn as LocationOnIcon,
+} from '@mui/icons-material';
 
 export const Index = () => {
-  const [depth, setDepth] = useState(0);
+  const [depth, setDepth] = useState(10);
   const [coolState, setCoolState] = useState({});
+  const [path, setPath] = useState([]);
+
+  const addPath = (index) => {
+    console.log(index);
+    setPath([...path, index]);
+  };
+
+  const setDepthOk = (depth) => {
+    setPath(path.slice(0, depth));
+  };
+
+  useEffect(() => {
+    setDepth(path.length);
+  }, [path.length]);
 
   return (
     <div
@@ -19,12 +38,14 @@ export const Index = () => {
         overflow: hidden;
         padding: 2em;
         background-image: url('${coolState.background}');
+        background-size: cover;
         transition: background-image 2s ease-in-out;
       `}
     >
       <Slider
         aria-label='Depth'
-        defaultValue={0}
+        value={path.length}
+        defaultValue={path.length}
         getAriaValueText={() => depth}
         onChange={(event, val) => {
           setDepth(val);
@@ -33,40 +54,59 @@ export const Index = () => {
         step={1}
         marks
         min={0}
-        max={2}
+        max={path.length}
       />
 
       <h1>{coolState.title}</h1>
 
       <ContextStacker
+        addPath={addPath}
+        setDepth={setDepthOk}
+        path={path.slice(0, depth)}
         text='Hello.'
         depthLimit={depth}
         ancestorProps={{
           title: 'Welcome!',
         }}
         callback={setCoolState}
-        color='cyan'
-        child={
+      >
+        <ContextStacker text='Blah blah blah, but, in cyan' color='cyan' />
+        <ContextStacker
+          text='Who wants to talk spaceships?'
+          mutation={{
+            title: 'Spaceship Talk!',
+            background: 'https://blogs.esa.int/alexander-gerst/files/2014/03/10729802334_f51e9b69d8_o.jpg',
+          }}
+        />
+        <ContextStacker text='Britta, are you here?' />
+        <ContextStacker
+          text='Hey look I can change the background.'
+          color='yellow'
+          changeAncestorProps={(props) => ({
+            ...props,
+            background: 'https://i.pinimg.com/originals/66/f8/59/66f859fc32c72e5f8401cc03e09ebc18.png',
+          })}
+        >
           <ContextStacker
-            text='Hey look I can change the background.'
-            color='yellow'
-            changeAncestorProps={(props) => ({
-              ...props,
-              background: 'https://i.pinimg.com/originals/66/f8/59/66f859fc32c72e5f8401cc03e09ebc18.png',
-            })}
-            child={
-              <ContextStacker
-                text='I would rather talk about trees.'
-                changeAncestorProps={(props) => ({
-                  ...props,
-                  title: 'Tree Chat',
-                  background: 'http://wallpaperose.com/wp-content/uploads/2013/07/Natural-Leaves-Widescreen.jpg',
-                })}
-              />
-            }
-          />
-        }
-      />
+            text='I would rather talk about trees.'
+            mutation={{
+              title: 'Tree Chat',
+              background: 'http://wallpaperose.com/wp-content/uploads/2013/07/Natural-Leaves-Widescreen.jpg',
+            }}
+          >
+            <ContextStacker text='Okay. Lets talk about trees, then.' />
+            <ContextStacker text='No. Trees are stupid.' />
+          </ContextStacker>
+        </ContextStacker>
+      </ContextStacker>
+
+      <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
+        <BottomNavigation showLabels>
+          <BottomNavigationAction label='Moderate' icon={<ModerateIcon />} />
+          <BottomNavigationAction label='Favorites' icon={<FavoriteIcon />} />
+          <BottomNavigationAction label='Nearby' icon={<LocationOnIcon />} />
+        </BottomNavigation>
+      </Paper>
     </div>
   );
 };

@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongoose';
 export type ArrayLengthMutationKeys = 'splice' | 'push' | 'pop' | 'shift' | 'unshift' | number;
 export type ArrayItems<T extends Array<any>> = T extends Array<infer TItems> ? TItems : never;
 export type FixedLengthArray<T extends any[]> = Pick<T, Exclude<keyof T, ArrayLengthMutationKeys>> & {
@@ -14,13 +15,13 @@ export type PromiseId = string;
 export type NodeId = string;
 
 export interface INodeBase {
-  _id: string;
+  _id: ObjectId;
   author: string;
   updatedAt: Date;
   createdAt: Date;
   __v: number;
   rel: {
-    [key: string]: NodeId[];
+    [key: string]: ObjectId[];
   };
 }
 export interface INodeAll extends INodeBase {
