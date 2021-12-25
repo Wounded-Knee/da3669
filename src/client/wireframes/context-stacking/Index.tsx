@@ -1,12 +1,17 @@
 /** @jsxFrag React.Fragment */
 /** @jsx jsx */
 import { css, jsx } from '@emotion/react';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ContextStacker } from './ContextStacker';
-import { Slider } from '@mui/material';
+import { BottomNavigation, BottomNavigationAction, Paper, Slider } from '@mui/material';
+import {
+  LocalPolice as ModerateIcon,
+  Favorite as FavoriteIcon,
+  LocationOn as LocationOnIcon,
+} from '@mui/icons-material';
 
 export const Index = () => {
-  const [depth, setDepth] = useState(0);
+  const [depth, setDepth] = useState(10);
   const [coolState, setCoolState] = useState({});
   const [path, setPath] = useState([]);
 
@@ -18,6 +23,10 @@ export const Index = () => {
   const setDepthOk = (depth) => {
     setPath(path.slice(0, depth));
   };
+
+  useEffect(() => {
+    setDepth(path.length);
+  }, [path.length]);
 
   return (
     <div
@@ -35,7 +44,8 @@ export const Index = () => {
     >
       <Slider
         aria-label='Depth'
-        defaultValue={0}
+        value={path.length}
+        defaultValue={path.length}
         getAriaValueText={() => depth}
         onChange={(event, val) => {
           setDepth(val);
@@ -44,10 +54,9 @@ export const Index = () => {
         step={1}
         marks
         min={0}
-        max={3}
+        max={path.length}
       />
 
-      {path.join('/')}
       <h1>{coolState.title}</h1>
 
       <ContextStacker
@@ -60,9 +69,8 @@ export const Index = () => {
           title: 'Welcome!',
         }}
         callback={setCoolState}
-        color='cyan'
       >
-        <ContextStacker text='Blah blah blah' />
+        <ContextStacker text='Blah blah blah, but, in cyan' color='cyan' />
         <ContextStacker
           text='Who wants to talk spaceships?'
           mutation={{
@@ -91,6 +99,14 @@ export const Index = () => {
           </ContextStacker>
         </ContextStacker>
       </ContextStacker>
+
+      <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
+        <BottomNavigation showLabels>
+          <BottomNavigationAction label='Moderate' icon={<ModerateIcon />} />
+          <BottomNavigationAction label='Favorites' icon={<FavoriteIcon />} />
+          <BottomNavigationAction label='Nearby' icon={<LocationOnIcon />} />
+        </BottomNavigation>
+      </Paper>
     </div>
   );
 };

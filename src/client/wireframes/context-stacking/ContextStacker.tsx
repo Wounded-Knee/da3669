@@ -25,10 +25,10 @@ export const ContextStacker = (props) => {
   const child = children[nav];
 
   useEffect(() => {
-    if (finalDescendant) {
+    if (!child) {
       callback(descendantProps);
     }
-  }, [finalDescendant]);
+  }, [child]);
 
   return (
     <>
