@@ -3,7 +3,8 @@ import Passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import cookieParser from 'cookie-parser';
 import { cookieName } from './config';
-import { UserManager } from './lib/classes/User';
+import { getUserById, userCreateOrFetchByProfile } from './lib/classes/userManager';
+import { getSessionById, createSession } from './lib/classes/sessionManager';
 
 const debug = {
   auth: false,
@@ -12,7 +13,7 @@ const debug = {
 // Authentication
 // @ts-ignore
 Passport.serializeUser((user, done) => done(null, user._id));
-Passport.deserializeUser(async (_id: string, done) => done(null, await UserManager.userFetchById(_id)));
+Passport.deserializeUser(async (_id: string, done) => done(null, await getUserById(_id)));
 Passport.use(
   new GoogleStrategy(
     {
@@ -22,7 +23,7 @@ Passport.use(
     },
     async function (token, tokenSecret, profile, done) {
       // @ts-ignore
-      done(null, await UserManager.userCreateOrFetchByProfile(profile));
+      done(null, await userCreateOrFetchByProfile(profile));
     },
   ),
 );
@@ -44,8 +45,8 @@ export const setupPassport = (express) => {
       } else {
         console.log('Browser SID: ', req.cookies[cookieName]);
         if (user) {
-          if (!UserManager.sessionFetchById(req.cookies[cookieName])) {
-            const session = UserManager.sessionCreate(user._id.toString());
+          if (!getSessionById(req.cookies[cookieName])) {
+            const session = createSession(user._id.toString());
             console.log('Created a new session', session);
             const twoDays = 24 * 60 * 60 * 1000 * 2;
             res.cookie(cookieName, session.sessionId, {
