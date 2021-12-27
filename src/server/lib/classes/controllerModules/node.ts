@@ -36,6 +36,7 @@ export const actionCreateNode = async (context, next) => {
           //@ts-ignore
         ).then(async (nodes: INodeAll[]): Promise<void> => {
           if (debug[server.CREATE]) console.log('Create <- DB ', nodes);
+          context.nodes.created = [...context.nodes.created, ...nodes];
           context.actions.push({
             type: client.STASH,
             payload: await nodes,

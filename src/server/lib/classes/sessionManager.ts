@@ -29,6 +29,8 @@ export const getSessionById = (sessionId: SessionId): ISession => {
   return sessions.find(({ sessionId: thisSessionId }) => thisSessionId === sessionId);
 };
 
+export const getSessions = () => sessions;
+
 export const associateWebSocket = (sessionId: SessionId, ws: WebSocket): void => {
   sessions = sessions.map((session) => {
     return session.sessionId === sessionId
