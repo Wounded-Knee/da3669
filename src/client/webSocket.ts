@@ -21,18 +21,20 @@ export const ws = new WebsocketBuilder(WS_URL)
   .withBuffer(new LRUBuffer(1000))
   .onMessage((instance, { data }) => {
     const packet = JSON.parse(data);
-    const { action, promiseId: packetPromiseId } = packet;
-    if (action) {
-      if (debug.action) console.log('🔧', action.type, action.payload);
-      const promiseObj = promises.find(({ promiseId }) => promiseId === packetPromiseId);
+    const { actions, promiseId: packetPromiseId } = packet;
+    const promiseObj = promises.find(({ promiseId }) => promiseId === packetPromiseId);
+    if (actions) {
+      actions.forEach((action) => {
+        if (debug.action) console.log('🔧', action.type, action.payload);
 
-      if (action.type === 'ERROR') {
-        if (debug.errors) console.error(action);
-        if (promiseObj) promiseObj.reject(action);
-      } else {
-        if (promiseObj) promiseObj.resolve(action);
-        store.dispatch(action);
-      }
+        if (action.type === 'ERROR') {
+          if (debug.errors) console.error(action);
+          if (promiseObj) promiseObj.reject(action);
+        } else {
+          if (promiseObj) promiseObj.resolve(action);
+          store.dispatch(action);
+        }
+      });
     } else {
       console.error('⚠️ Non-Action Message Received: ', packet);
     }

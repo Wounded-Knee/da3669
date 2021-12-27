@@ -31,6 +31,10 @@ export const Index = () => {
     callback: setCoolState,
     children: [
       {
+        text: 'Hitler did something wrong.',
+        mutation: { background: 'http://totallyhistory.com/wp-content/uploads/2013/10/Adolf-Hitler.jpg' },
+      },
+      {
         text: 'Blah blah blah, but, in cyan',
         color: 'cyan',
       },

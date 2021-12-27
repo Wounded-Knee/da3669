@@ -21,15 +21,18 @@ export const Header: React.FunctionComponent = () => {
       ${!userProfile._id && 'background-image: none;'}
       border-top: 2px solid ${theme.palette.secondary.dark};
       box-shadow: -1px 22px 7px -19px rgba(0, 0, 0, 0.75) inset;
+      box-shadow: 0 0 5px black;
       text-shadow: black 1px 1px 3px;
       font-weight: bold;
       z-index: 10000;
+      border-radius: 0 0 0.5em 0.5em;
     `,
     title: css`
       letter-spacing: ${headerText.length > 4 ? '0.5em' : 'inherit'};
       text-align: right;
     `,
     buttons: css`
+      cursor: pointer;
       color: #fff;
     `,
     toolbar: css`
