@@ -1,6 +1,8 @@
+import { WebSocket } from 'uWebSockets.js';
+
 let sockets = [];
 
-export const welcome = (ws) => {
+export const welcome = (ws: WebSocket): boolean => {
   sockets.push({
     socket: ws,
     dates: {
@@ -10,18 +12,7 @@ export const welcome = (ws) => {
   return true;
 };
 
-export const dismiss = (ws) => {
+export const dismiss = (ws: WebSocket): boolean => {
   sockets = sockets.filter(({ socket }) => socket !== ws);
   return true;
-};
-
-export const associateWithSession = (ws, sessionId) => {
-  sockets = sockets.map((socket) => {
-    return socket.socket === ws
-      ? {
-          ...socket,
-          sessionId,
-        }
-      : socket;
-  });
 };

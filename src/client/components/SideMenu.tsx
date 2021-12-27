@@ -63,13 +63,14 @@ export const SideMenu: React.FunctionComponent = () => {
       <Drawer
         variant='temporary'
         open={mobileOpen}
+        anchor='top'
         onClose={handleDrawerToggle}
         ModalProps={{
           keepMounted: true, // Better open performance on mobile.
         }}
         sx={{
           display: { xs: 'block', sm: 'none' },
-          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: '100%' },
         }}
       >
         {drawerContents}

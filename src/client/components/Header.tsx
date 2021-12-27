@@ -24,12 +24,14 @@ export const Header: React.FunctionComponent = () => {
       text-shadow: black 1px 1px 3px;
       font-weight: bold;
       z-index: 10000;
+      border-radius: 0 0 0.5em 0.5em;
     `,
     title: css`
       letter-spacing: ${headerText.length > 4 ? '0.5em' : 'inherit'};
       text-align: right;
     `,
     buttons: css`
+      cursor: pointer;
       color: #fff;
     `,
     toolbar: css`
