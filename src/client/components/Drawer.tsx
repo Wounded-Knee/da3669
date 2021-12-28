@@ -10,12 +10,7 @@ const drawerWidth = 350;
 export const Drawer: React.FunctionComponent = ({ children, drawerName }) => {
   const drawerState = useSelector((state) => state.ui.drawers[drawerName]);
   return (
-    <MuiDrawer
-      anchor='right'
-      variant='persistent'
-      open={drawerState}
-      onClose={() => core.uiSetDrawer(drawerName, false)}
-    >
+    <MuiDrawer anchor='right' variant='persistent' open={drawerState}>
       <div
         css={css`
           minheight: 50px;
