@@ -5,7 +5,7 @@ import {
   lacksRelation as lacksRelationQuery,
   hasRelation as hasRelationQuery,
   relationsOf as relationsOfQuery,
-  runProfile,
+  getQueryByProfile,
 } from './selectorQueries';
 import { client } from './redux/actionTypes';
 import { inspect } from 'util';
@@ -142,9 +142,24 @@ describe('Local store selections', () => {
     expect(nodes[0].text).toBe(foolsCrow.text);
   });
 
-  test('Can run a profile', () => {
-    const profile = ['id', foolsCrow._id];
-    const [node] = queryStore(runProfile(profile));
-    expect(node.text).toBe(foolsCrow.text);
+  describe('Query Profiles', () => {
+    test('Can run a profile', () => {
+      const profile = ['id', foolsCrow._id];
+      const [node] = queryStore(getQueryByProfile(profile));
+      expect(node.text).toBe(foolsCrow.text);
+    });
+
+    test('Rejects invalid profiles', () => {
+      [
+        ['id', undefined],
+        ['invalidMethodName', '123'],
+        ['hasRelation', undefined],
+      ].forEach((profile) => {
+        const query = getQueryByProfile(profile);
+        const nodes = queryStore(query);
+        expect(query).toBeFalsy();
+        expect(nodes).toHaveLength(0);
+      });
+    });
   });
 });

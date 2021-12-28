@@ -1,9 +1,10 @@
-import { Types } from 'mongoose';
-const { ObjectId } = Types;
+import mongoose from 'mongoose';
+import { IMongoQuery, RelationType, NodeId, SelectorProfile } from '../all';
+const { ObjectId } = mongoose.Types;
 
-export const id = (id) => ({ _id: new ObjectId(id) });
+export const id = (id: NodeId): IMongoQuery => ({ _id: new ObjectId(id) });
 
-export const lacksRelation = (relationType) => ({
+export const lacksRelation = (relationType: RelationType): IMongoQuery => ({
   $or: [
     { rel: { $exists: false } },
     { [`rel.${relationType}`]: { $exists: false } },
@@ -11,7 +12,7 @@ export const lacksRelation = (relationType) => ({
   ],
 });
 
-export const hasRelation = (relationType) => ({
+export const hasRelation = (relationType: RelationType): IMongoQuery => ({
   $nor: [
     { rel: { $exists: false } },
     { [`rel.${relationType}`]: { $exists: false } },
@@ -19,29 +20,66 @@ export const hasRelation = (relationType) => ({
   ],
 });
 
-export const relationsOf = (id, ...relationTypes) => ({
+export const relationsOf = (id: NodeId, ...relationTypes: RelationType[]): IMongoQuery => ({
   $or: relationTypes.map((relationType) => ({
     [`rel.${relationType}`]: { $in: [new ObjectId(id)] },
   })),
 });
 
-export const runProfile = (profile) => {
+interface IValidationObject {
+  id?: NodeId[];
+  relationType?: RelationType[];
+}
+export const getQueryByProfile = (profile: SelectorProfile): IMongoQuery | boolean => {
   const [methodName, ...args] = profile;
+  const validate = (validationObject: IValidationObject): boolean => {
+    return Object.keys(validationObject).reduce((verdict: boolean, key) => {
+      return (
+        verdict &&
+        validationObject[key].reduce(
+          (verdict: boolean, val) =>
+            verdict &&
+            {
+              relationType: (val) => typeof val === 'string',
+              id: (val) => mongoose.Types.ObjectId.isValid(val),
+            }[key](val),
+        )
+      );
+    }, true);
+  };
   switch (methodName) {
     case 'relationsOf':
-      // @ts-ignore
-      return relationsOf(...args);
+      const [relativeId, ...relationTypes] = args;
+      return validate({
+        id: [relativeId],
+        relationType: relationTypes,
+      })
+        ? // @ts-ignore
+          relationsOf(...args)
+        : false;
 
     case 'hasRelation':
-      // @ts-ignore
-      return hasRelation(...args);
+      return validate({
+        relationType: args,
+      })
+        ? // @ts-ignore
+          hasRelation(...args)
+        : false;
 
     case 'lacksRelation':
-      // @ts-ignore
-      return lacksRelation(...args);
+      return validate({
+        relationType: args,
+      })
+        ? // @ts-ignore
+          lacksRelation(...args)
+        : false;
 
     case 'id':
-      // @ts-ignore
-      return id(...args);
+      return validate({
+        id: args,
+      })
+        ? // @ts-ignore
+          id(...args)
+        : false;
   }
 };

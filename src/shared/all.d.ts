@@ -7,11 +7,17 @@ export type FixedLengthArray<T extends any[]> = Pick<T, Exclude<keyof T, ArrayLe
 
 export type action = { type: string; payload: any };
 export type dispatch = (action) => any;
+export type SelectorProfile = any[];
+export type RelationType = string;
 
 export type UserId = string;
 export type SessionId = string;
 export type PromiseId = string;
 export type NodeId = string;
+
+export interface IMongoQuery {
+  [key: any]: any;
+}
 
 export interface INodeBase {
   _id: ObjectId;
@@ -37,8 +43,8 @@ export interface ISession {
 // [singular, plural]
 export interface IRelationTuple {
   length: 2;
-  0: string;
-  1: string;
+  0: RelationType;
+  1: RelationType;
 }
 // [literal, virtual]
 export interface IRelationType {

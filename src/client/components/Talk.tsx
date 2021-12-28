@@ -5,7 +5,7 @@ import { css, jsx } from '@emotion/react';
 import { useNodes } from '../lib/useNodes';
 import { useParams } from 'react-router';
 import { NodePicker } from './NodePicker';
-import { selectNodes } from '../lib/redux/selectors';
+import { selectNodesByProfile } from '../lib/redux/selectors';
 import { Link } from './Branded';
 import { useNavigate } from 'react-router-dom';
 import mongoose from 'mongoose';
@@ -60,9 +60,9 @@ export const Talk = ({
   const navigate = useNavigate();
   const nodeId = getNodeIdObject(useParams().nodeId, id);
   if (debugNodeId(nodeId)) return <h1>Halted for NodeID debug</h1>;
-  const { nodes } = useNodes(selectNodes(nodeId));
-  const { nodes: downstreams } = useNodes(selectNodes(nodeId).populateRelation('downstreams'));
-  const { nodes: upstreams } = useNodes(selectNodes(nodeId).populateRelation('upstreams'));
+  const { nodes } = useNodes(['id', nodeId]);
+  const { nodes: downstreams } = useNodes(['relationsOf', nodeId, 'downstreams']);
+  const { nodes: upstreams } = useNodes(['relationsOf', nodeId, 'upstreams']);
   const node = nodes.length > 0 && nodes[0];
 
   const nodePickerCreateNodeData = (value) => ({
@@ -80,23 +80,22 @@ export const Talk = ({
   };
 
   if (nodeId && node) {
-
     switch (as) {
       case viewType.MASTER:
         if (debug.variables)
-        console.info('Debug Talk.tsx', {
-          as,
-          depth,
-          nodeId: nodeId.toString(),
-          node_id: node._id.toString(),
-          node,
-          downstreams: downstreams.map((id) => id.toString()),
-          upstreams: upstreams.map((id) => id.toString()),
-        });
+          console.info('Debug Talk.tsx', {
+            as,
+            depth,
+            nodeId: nodeId.toString(),
+            node_id: node._id.toString(),
+            node,
+            downstreams: downstreams.map((id) => id.toString()),
+            upstreams: upstreams.map((id) => id.toString()),
+          });
 
         return (
           <>
-            <Talk key={node._id.toString()} as={viewType.UPSTREAM} id={node._id.toString()} depth={depth+1} />
+            <Talk key={node._id.toString()} as={viewType.UPSTREAM} id={node._id.toString()} depth={depth + 1} />
 
             <NodePicker
               nodeGenerator={nodePickerCreateNodeData}

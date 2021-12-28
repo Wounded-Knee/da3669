@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { INodeAll } from '../../shared/all';
+import { INodeAll, SelectorProfile } from '../../shared/all';
 import { server } from '../../shared/lib/redux/actionTypes';
 import { dispatch } from '../webSocket';
 import { store } from './redux/store';
+import { selectNodesByProfile } from './redux/selectors';
 
 const debug = {
   changes: true,
@@ -12,31 +13,33 @@ interface IUseNodesReturn {
   nodes: INodeAll[];
 }
 
-export const useNodes = (nodeSelector: NodeSelector): IUseNodesReturn => {
-  const [nodes, setNodes] = useState(nodeSelector.nodes);
+export const useNodes = (selectorProfile: SelectorProfile): IUseNodesReturn => {
+  const [nodes, setNodes] = useState(selectNodesByProfile(selectorProfile));
 
   useEffect(() => {
-    dispatch({
-      type: server.SUBSCRIBE,
-      payload: nodeSelector.serialize(),
-    });
-    const storeUnsubscribe = store.subscribe(() => {
-      if (debug.changes)
-        console.log('Store Changed', {
-          Nodes: nodeSelector.nodes,
-          Selector: nodeSelector.debug(),
-        });
-      setNodes(nodeSelector.nodes);
-    });
-
-    return () => {
-      storeUnsubscribe();
+    if (selectorProfile.length) {
       dispatch({
-        type: server.UNSUBSCRIBE,
-        payload: nodeSelector.serialize(),
+        type: server.SUBSCRIBE,
+        payload: selectorProfile,
       });
-    };
-  }, [JSON.stringify(nodeSelector.serialize())]);
+      const storeUnsubscribe = store.subscribe(() => {
+        if (debug.changes)
+          console.log('Store Changed', {
+            Nodes: selectNodesByProfile(selectorProfile),
+            selectorProfile,
+          });
+        setNodes(selectNodesByProfile(selectorProfile));
+      });
+
+      return () => {
+        storeUnsubscribe();
+        dispatch({
+          type: server.UNSUBSCRIBE,
+          payload: selectorProfile,
+        });
+      };
+    }
+  }, [selectorProfile.join('/')]);
 
   return {
     nodes,

@@ -1,6 +1,10 @@
 import { server } from '../../../../shared/lib/redux/actionTypes';
 import { addSubscription, ISubscription, removeSubscription } from '../sessionManager';
 
+const debug = {
+  [server.SUBSCRIBE]: true,
+};
+
 export const subscriptions = async (context, next): Promise<void> => {
   const {
     session,
@@ -14,6 +18,7 @@ export const subscriptions = async (context, next): Promise<void> => {
   if (session) {
     const { sessionId } = session;
     if (type === server.SUBSCRIBE) {
+      if (debug[server.SUBSCRIBE]) console.log(type, payload);
       addSubscription(sessionId, <ISubscription>payload);
     } else if (type === server.UNSUBSCRIBE) {
       removeSubscription(sessionId, <ISubscription>payload);

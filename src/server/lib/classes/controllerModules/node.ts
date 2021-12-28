@@ -1,10 +1,44 @@
-import { server, client } from '../../../../shared/lib/redux/actionTypes';
-import { getModelByName } from '../../nodes/all';
 import { Types } from 'mongoose';
+import { server, client } from '../../../../shared/lib/redux/actionTypes';
+import { defaultModel, getModelByName } from '../../nodes/all';
 import { INodeAll } from '../../../../shared/all';
+import { getQueryByProfile } from '../../../../shared/lib/selectorQueries';
 
 const debug = {
   [server.CREATE]: true,
+};
+
+export const actionSelectNodes = async (context, next) => {
+  if (context.session) {
+    const {
+      session: { userId },
+      message: {
+        decoded: {
+          action: { type, payload },
+        },
+      },
+    } = context;
+
+    if (type === server.SUBSCRIBE) {
+      if (userId) {
+        const query = getQueryByProfile(payload);
+        if (query) {
+          const nodes = await defaultModel.find();
+          context.nodes.retrieved = [...context.nodes.retrieved, ...nodes];
+          context.actions.push({
+            type: client.STASH,
+            payload: nodes,
+          });
+        } else {
+          context.actions.push({
+            type: client.ERROR,
+            payload: 'Invalid selector profile.',
+          });
+        }
+      }
+    }
+  }
+  await next();
 };
 
 export const actionCreateNode = async (context, next) => {
