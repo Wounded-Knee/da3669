@@ -60,7 +60,7 @@ export const BrandScreen: React.FunctionComponent = ({
           }
         `}
       >
-        D<sup>3</sup>
+        ꁕ<sup>𑑓</sup>
       </Grid>
       <Grid
         item

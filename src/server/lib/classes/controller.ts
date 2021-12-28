@@ -5,7 +5,7 @@ import { decoder } from './controllerModules/decoder';
 import { getSession } from './controllerModules/session';
 import { actionGetUser } from './controllerModules/user';
 import { responseBundler } from './controllerModules/responseBundler';
-import { actionCreateNode } from './controllerModules/node';
+import { actionCreateNode, actionSelectNodes } from './controllerModules/node';
 import { subscriptions } from './controllerModules/subscription';
 import { broadcast } from './controllerModules/broadcast';
 
@@ -13,9 +13,16 @@ type Event = string;
 type Payload = any;
 
 const composer = new Composer();
-[decoder, getSession, actionGetUser, actionCreateNode, subscriptions, broadcast, responseBundler].forEach((mw) =>
-  composer.use(mw),
-);
+[
+  decoder,
+  getSession,
+  actionGetUser,
+  actionCreateNode,
+  actionSelectNodes,
+  subscriptions,
+  broadcast,
+  responseBundler,
+].forEach((mw) => composer.use(mw));
 const middleware = composer.compose();
 
 export const eventType = Object.freeze({

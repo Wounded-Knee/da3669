@@ -5,7 +5,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { sessionId } from './components/PassportContext';
 import { addHelper } from './lib/debug';
 import { server } from '../shared/lib/redux/actionTypes';
-import { NodeSelector } from './lib/NodeSelector';
 
 const WS_URL = `ws://${WS_SERVER_HOST}:${WS_SERVER_PORT}`;
 
@@ -49,9 +48,6 @@ export const sendJSON = (data) => {
   if (debug.send) {
     let payload;
     switch (data.action.type) {
-      case server.SUBSCRIBE:
-        payload = new NodeSelector().deserialize(data.action.payload).debug();
-        break;
       default:
         payload = data.action.payload;
         break;

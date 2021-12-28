@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { WebSocket } from 'uWebSockets.js';
 import { NodeSelector, selectNodes } from './NodeSelector';
 import { INodeAll, PromiseId, SessionId, UserId } from '../../../shared/all';
