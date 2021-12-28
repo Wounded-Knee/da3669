@@ -17,149 +17,129 @@ const MessageModel = getModelByName('Message');
 const queryDb = async (query) => await MessageModel.find(query);
 const queryStore = (query) => store.getState().nodes.filter(sift(query));
 
+let wakanTanka, sittingBull, crazyHorse, blackElk, foolsCrow, messages;
+beforeAll(async () => {
+  // @ts-ignore
+  await mongoose.connect(process.env.MONGO_URL, {}, (err) => {
+    if (err) {
+      console.error(err);
+      process.exit(1);
+    }
+  });
+
+  wakanTanka = await new MessageModel({
+    text: 'Wakan Tanka',
+  }).save();
+  sittingBull = await new MessageModel({
+    text: 'Sitting Bull',
+    rel: {
+      authors: [wakanTanka._id],
+    },
+  }).save();
+  crazyHorse = await new MessageModel({
+    text: 'Crazy Horse',
+    rel: {
+      authors: [wakanTanka._id],
+    },
+  }).save();
+  blackElk = await new MessageModel({
+    text: 'Black Elk',
+    rel: {
+      authors: [wakanTanka._id],
+      upstreams: [crazyHorse._id],
+    },
+  }).save();
+  foolsCrow = await new MessageModel({
+    text: 'Fools Crow',
+    rel: {
+      authors: [wakanTanka._id],
+      upstreams: [blackElk._id],
+    },
+  }).save();
+  messages = await MessageModel.find({}).lean();
+  store.dispatch({
+    type: client.STASH,
+    payload: messages,
+  });
+});
+
+afterAll(async (done) => {
+  // Closing the DB connection allows Jest to exit successfully.
+  await mongoose.connection.close();
+  done();
+});
+
 describe('Mongo Database Selections', () => {
-  let baseNode, messages;
-  beforeAll(async () => {
-    // @ts-ignore
-    await mongoose.connect(process.env.MONGO_URL, {}, (err) => {
-      if (err) {
-        console.error(err);
-        process.exit(1);
-      }
-    });
-
-    baseNode = await new MessageModel({
-      text: 'Favorite warrior?',
-      rel: {
-        authors: [new ObjectId()],
-      },
-    }).save();
-    await Promise.all(
-      [
-        {
-          text: 'Sitting Bull',
-          rel: {
-            upstreams: [baseNode._id],
-          },
-        },
-        {
-          text: 'Crazy Horse',
-          rel: {
-            upstreams: [baseNode._id],
-          },
-        },
-      ].map((data) => new MessageModel(data).save()),
-    );
-    messages = await MessageModel.find({});
-  });
-
-  afterAll(async (done) => {
-    // Closing the DB connection allows Jest to exit successfully.
-    await mongoose.connection.close();
-    done();
-  });
-
   test('Setup worked OK', async () => {
-    expect(messages).toHaveLength(3);
-    expect(messages[1].rel.upstreams.includes(baseNode._id)).toBeTruthy;
-    expect(messages[2].rel.upstreams.includes(baseNode._id)).toBeTruthy;
+    const nodes = store.getState().nodes;
+    const nodesAreMongoDocs = nodes.reduce((verdict, { $__ }) => verdict && !$__, true);
+    expect(nodes).toHaveLength(5);
+    expect(nodesAreMongoDocs).toBeTruthy();
+
+    expect(messages).toHaveLength(5);
+    expect(messages[1].rel.authors.includes(wakanTanka._id)).toBeTruthy;
+    expect(messages[2].rel.authors.includes(wakanTanka._id)).toBeTruthy;
   });
 
   test('Can get by ID', async () => {
-    const [node] = await queryDb(idQuery(baseNode._id));
-    expect(node.text).toBe('Favorite warrior?');
+    const [dbNode] = await queryDb(idQuery(wakanTanka._id));
+    expect(dbNode.text).toBe(wakanTanka.text);
+
+    const [storeNode] = queryStore(idQuery(wakanTanka._id));
+    console.log(storeNode);
+    expect(storeNode.text).toBe(wakanTanka.text);
   });
 
   test('Can get by lacked relation', async () => {
-    const [node] = await queryDb(lacksRelationQuery('upstreams'));
-    expect(node.text).toBe(baseNode.text);
+    const nodes = await queryDb(lacksRelationQuery('upstreams'));
+    expect(nodes).toHaveLength(3);
+    expect(nodes[0].text).toBe(wakanTanka.text);
+
+    const [storeNode] = queryStore(lacksRelationQuery('upstreams'));
+    expect(storeNode.text).toBe(wakanTanka.text);
   });
 
   test('Can get by has relation', async () => {
     const q = hasRelationQuery('upstreams');
-    const [node] = await queryDb(q);
-    // console.log(inspect(node, { depth: null }), inspect(q, { depth: null }));
-    expect(node.text).toBe(messages[1].text);
+    const nodes = await queryDb(q);
+    expect(nodes).toHaveLength(2);
+    expect(nodes[0].text).toBe(blackElk.text);
+    expect(nodes[1].text).toBe(foolsCrow.text);
+
+    const storeNodes = queryStore(q);
+    expect(storeNodes).toHaveLength(2);
+    expect(storeNodes[0].text).toBe(blackElk.text);
+    expect(storeNodes[1].text).toBe(foolsCrow.text);
   });
 
   test('Can get relations of a given node', async () => {
-    const q = relationsOfQuery(baseNode._id, 'upstreams', 'authors');
+    // Wakan Tanka has no upstreams and no authors
+    const q = relationsOfQuery(wakanTanka._id, 'upstreams', 'authors');
     const nodes = await queryDb(q);
-    expect(nodes).toHaveLength(2);
+    expect(nodes).toHaveLength(0);
+
+    const storeNodes = queryStore(q);
+    expect(storeNodes).toHaveLength(0);
   });
 });
 
-describe('Local store selections', () => {
-  let blackElk, foolsCrow, wakanTanka;
-  beforeAll(() => {
-    const createMessage = (text, rel = {}) => ({
-      _id: new mongoose.Types.ObjectId(),
-      kind: 'Message',
-      text,
-      rel,
-    });
-
-    wakanTanka = createMessage('Wakan Tanka');
-    blackElk = createMessage('Black Elk', { authors: [wakanTanka._id] });
-    foolsCrow = createMessage('Fools Crow', {
-      upstreams: [blackElk._id],
-      authors: [wakanTanka._id],
-    });
-
-    store.dispatch({
-      type: client.STASH,
-      payload: [blackElk, foolsCrow, wakanTanka],
-    });
-  });
-
-  test('Setup succeeded', () => {
-    const nodes = store.getState().nodes;
-    expect(nodes).toHaveLength(3);
-    expect(nodes[0].text).toBe(blackElk.text);
-  });
-
-  test('Can get by ID', () => {
-    const [node] = queryStore(idQuery(blackElk._id));
-    expect(node.text).toBe(blackElk.text);
-  });
-
-  test('Can get by lacked relation', () => {
-    const [node] = queryStore(lacksRelationQuery('upstreams'));
-    expect(node.text).toBe(blackElk.text);
-  });
-
-  test('Can get by has relation', () => {
-    const q = hasRelationQuery('upstreams');
-    // console.log(inspect(q, { depth: null }));
-    const [node] = queryStore(q);
+describe('Query Profiles', () => {
+  test('Can run a profile', () => {
+    const profile = ['id', foolsCrow._id];
+    const [node] = queryStore(getQueryByProfile(profile));
     expect(node.text).toBe(foolsCrow.text);
   });
 
-  test('Can get relations of a given node', () => {
-    const q = relationsOfQuery(blackElk._id, 'upstreams', 'authors');
-    const nodes = queryStore(q);
-    expect(nodes).toHaveLength(1);
-    expect(nodes[0].text).toBe(foolsCrow.text);
-  });
-
-  describe('Query Profiles', () => {
-    test('Can run a profile', () => {
-      const profile = ['id', foolsCrow._id];
-      const [node] = queryStore(getQueryByProfile(profile));
-      expect(node.text).toBe(foolsCrow.text);
-    });
-
-    test('Rejects invalid profiles', () => {
-      [
-        ['id', undefined],
-        ['invalidMethodName', '123'],
-        ['hasRelation', undefined],
-      ].forEach((profile) => {
-        const query = getQueryByProfile(profile);
-        const nodes = queryStore(query);
-        expect(query).toBeFalsy();
-        expect(nodes).toHaveLength(0);
-      });
+  test('Rejects invalid profiles', () => {
+    [
+      ['id', undefined],
+      ['invalidMethodName', '123'],
+      ['hasRelation', undefined],
+    ].forEach((profile) => {
+      const query = getQueryByProfile(profile);
+      const nodes = queryStore(query);
+      expect(query).toBeFalsy();
+      expect(nodes).toHaveLength(0);
     });
   });
 });
