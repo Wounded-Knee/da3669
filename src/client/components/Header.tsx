@@ -13,7 +13,6 @@ import { PassportContext } from './PassportContext';
 import { useTheme } from '@mui/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { client } from '../../shared/lib/redux/actionTypes';
-import { getDrawerState } from '../lib/redux/selectors';
 
 const headerTextArray = headerText.split('');
 export const Header: React.FunctionComponent = () => {

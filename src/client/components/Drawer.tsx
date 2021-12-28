@@ -3,22 +3,17 @@
 import React from 'react';
 import { css, jsx } from '@emotion/react';
 import { Drawer as MuiDrawer } from '@mui/material';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 const drawerWidth = 350;
 
-const mapStateToProps = (state) => {
-  return {
-    drawers: state.ui.drawers,
-  };
-};
-
-export const Drawer: React.FunctionComponent = connect(mapStateToProps)(({ children, drawerName, drawers }) => {
+export const Drawer: React.FunctionComponent = ({ children, drawerName }) => {
+  const drawerState = useSelector((state) => state.ui.drawers[drawerName]);
   return (
     <MuiDrawer
       anchor='right'
       variant='persistent'
-      open={drawers[drawerName]}
+      open={drawerState}
       onClose={() => core.uiSetDrawer(drawerName, false)}
     >
       <div
@@ -30,4 +25,4 @@ export const Drawer: React.FunctionComponent = connect(mapStateToProps)(({ child
       {children}
     </MuiDrawer>
   );
-});
+};
