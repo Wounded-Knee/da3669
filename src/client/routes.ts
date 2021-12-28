@@ -11,14 +11,10 @@ import {
 } from '@mui/icons-material';
 
 // Components
-import { Chat } from './wireframes/chat/Chat';
-import { Office } from './components/Office';
-import { Bank } from './components/Banksy';
 import { Index as ContextStacker } from './wireframes/context-stacking/Index';
 import { Loading } from './components/Loading';
 import { Talk } from './components/Talk';
 import { KungFury } from './components/KungFury';
-import { Directory } from './components/Directory';
 
 export const routes = [
   {
@@ -27,13 +23,6 @@ export const routes = [
     icon: PanicIcon,
     text: "Don't Panic",
     component: Loading,
-  },
-  {
-    route: '/directory',
-    path: '/directory',
-    icon: DirectoryIcon,
-    text: 'Directory',
-    component: Directory,
   },
   {
     route: '/context',
@@ -71,13 +60,6 @@ export const routes = [
   //   text: 'Judgement',
   //   component: Office,
   // },
-  {
-    route: '/bank',
-    path: '/bank',
-    icon: SavingsIcon,
-    text: 'Bank',
-    component: Bank,
-  },
   {
     path: '/google',
     express: true,

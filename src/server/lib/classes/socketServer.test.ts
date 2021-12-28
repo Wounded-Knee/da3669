@@ -49,5 +49,4 @@ const msg = <IMessage>{
 test('', async () => {
   const context = { message: msg, response: {} };
   await middleware(context, noopNext);
-  console.log(context);
 });

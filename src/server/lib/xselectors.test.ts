@@ -17,7 +17,6 @@ const query = async (query) => await MessageModel.find(query);
 
 beforeAll(async () => {
   // @ts-ignore
-  console.log('mongourl ', process.env.MONGO_URL);
   await mongoose.connect(process.env.MONGO_URL, {}, (err) => {
     if (err) {
       console.error(err);

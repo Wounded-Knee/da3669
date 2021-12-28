@@ -1,7 +1,6 @@
 import React from 'react';
 import { List, ListItemText, ListItem, ListItemIcon } from '@mui/material';
 import StorageIcon from '@mui/icons-material/Storage';
-import { JSON } from './JSON';
 import { Drawer } from './Drawer';
 
 export const DataView: React.FunctionComponent = () => {
@@ -15,8 +14,6 @@ export const DataView: React.FunctionComponent = () => {
           <ListItemText primary='D³ata Inspector' secondary={`? entities`} />
         </ListItem>
       </List>
-
-      <JSON data={''} />
     </Drawer>
   );
 };

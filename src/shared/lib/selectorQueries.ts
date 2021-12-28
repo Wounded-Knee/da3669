@@ -1,5 +1,4 @@
-import { Types, ObjectId } from 'mongoose';
-
+import { Types } from 'mongoose';
 const { ObjectId } = Types;
 
 export const id = (id) => ({ _id: new ObjectId(id) });
