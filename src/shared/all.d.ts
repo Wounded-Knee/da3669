@@ -5,7 +5,6 @@ export type FixedLengthArray<T extends any[]> = Pick<T, Exclude<keyof T, ArrayLe
   [Symbol.iterator]: () => IterableIterator<ArrayItems<T>>;
 };
 
-// D3
 export type action = { type: string; payload: any };
 export type dispatch = (action) => any;
 
@@ -24,6 +23,7 @@ export interface INodeBase {
     [key: string]: ObjectId[];
   };
 }
+
 export interface INodeAll extends INodeBase {
   text: string;
 }
@@ -32,14 +32,6 @@ export interface ISession {
   id: SessionId;
   userId: UserId;
   date: Date;
-}
-
-export interface INodeSelectorSerialized {
-  ids: NodeId[];
-  self: boolean;
-  rel: boolean | string[];
-  without: boolean | string[];
-  pop: boolean;
 }
 
 // [singular, plural]

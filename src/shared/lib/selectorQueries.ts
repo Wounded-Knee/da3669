@@ -1,5 +1,4 @@
 import { Types, ObjectId } from 'mongoose';
-import { Query } from 'sift';
 
 const { ObjectId } = Types;
 
@@ -26,3 +25,24 @@ export const relationsOf = (id, ...relationTypes) => ({
     [`rel.${relationType}`]: { $in: [new ObjectId(id)] },
   })),
 });
+
+export const runProfile = (profile) => {
+  const [methodName, ...args] = profile;
+  switch (methodName) {
+    case 'relationsOf':
+      // @ts-ignore
+      return relationsOf(...args);
+
+    case 'hasRelation':
+      // @ts-ignore
+      return hasRelation(...args);
+
+    case 'lacksRelation':
+      // @ts-ignore
+      return lacksRelation(...args);
+
+    case 'id':
+      // @ts-ignore
+      return id(...args);
+  }
+};

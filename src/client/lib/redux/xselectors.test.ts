@@ -6,6 +6,7 @@ import {
   lacksRelation as lacksRelationQuery,
   hasRelation as hasRelationQuery,
   relationsOf as relationsOfQuery,
+  runProfile,
 } from '../../../shared/lib/selectorQueries';
 import { client } from '../../../shared/lib/redux/actionTypes';
 import { inspect } from 'util';
@@ -60,4 +61,10 @@ test('Can get relations of a given node', () => {
   const q = relationsOfQuery(baseNode._id, 'upstreams', 'authors');
   const nodes = query(q);
   expect(nodes[0].text).toBe(downstreamNode.text);
+});
+
+test('Can run a profile', () => {
+  const profile = ['id', downstreamNode._id];
+  const [node] = query(runProfile(profile));
+  expect(node.text).toBe(downstreamNode.text);
 });
