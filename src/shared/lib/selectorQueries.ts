@@ -30,7 +30,10 @@ export const relationsOf = (id: NodeId, ...relationTypes: RelationType[]): IMong
     const baseNode = nodes.find(({ _id }) => _id.equals(id));
     let relations = [];
     relationTypes.forEach((relationType) => {
-      relations = [...relations, ...baseNode.rel[relationType].map((idObject) => idObject.toString())];
+      relations = [
+        ...relations,
+        ...((baseNode && baseNode.rel && baseNode.rel[relationType]) || []).map((idObject) => idObject.toString()),
+      ];
     });
     const rv = nodes.filter((node) => relations.includes(node._id.toString()));
     console.log('derp', rv);
