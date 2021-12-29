@@ -20,7 +20,9 @@ export const hasRelation = (relationType: RelationType): IMongoQuery => ({
   ],
 });
 
-export const relationsOf = (id: NodeId, ...relationTypes: RelationType[]): IMongoQuery => ({
+export const relationsOf = (id: NodeId, ...relationTypes: RelationType[]): IMongoQuery => ({});
+
+export const asRelation = (id: NodeId, ...relationTypes: RelationType[]): IMongoQuery => ({
   $or: relationTypes.map((relationType) => ({
     [`rel.${relationType}`]: { $in: [new ObjectId(id)] },
   })),

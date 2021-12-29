@@ -28,22 +28,22 @@ beforeAll(async () => {
   });
 
   wakanTanka = await new MessageModel({
-    text: 'Wakan Tanka',
+    text: 'Wakȟáŋ Tȟáŋka',
   }).save();
   sittingBull = await new MessageModel({
-    text: 'Sitting Bull',
+    text: 'Tȟatȟáŋka Íyotake',
     rel: {
       authors: [wakanTanka._id],
     },
   }).save();
   crazyHorse = await new MessageModel({
-    text: 'Crazy Horse',
+    text: 'Tȟašúŋke Witkó',
     rel: {
       authors: [wakanTanka._id],
     },
   }).save();
   blackElk = await new MessageModel({
-    text: 'Black Elk',
+    text: 'Heȟáka Sápa',
     rel: {
       authors: [wakanTanka._id],
       upstreams: [crazyHorse._id],
