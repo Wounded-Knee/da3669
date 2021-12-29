@@ -1,47 +1,23 @@
+/** @jsxFrag React.Fragment */
+/** @jsx jsx */
 import React from 'react';
+import { css, jsx } from '@emotion/react';
 import { Drawer as MuiDrawer } from '@mui/material';
-import { makeStyles } from '@mui/styles';
-import { createStyles, Theme } from '@mui/material';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 const drawerWidth = 350;
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    drawerPaper: {
-      width: drawerWidth,
-    },
-    closeButton: {
-      textAlign: 'right',
-    },
-    toolbar: {
-      minHeight: 50,
-    },
-  }),
-);
-
-const mapStateToProps = (state) => {
-  return {
-    drawers: state.ui.drawers,
-  };
-};
-
-export const Drawer: React.FunctionComponent = connect(mapStateToProps)(({ children, drawerName, drawers }) => {
-  const classes = useStyles({});
-
+export const Drawer: React.FunctionComponent = ({ children, drawerName }) => {
+  const drawerState = useSelector((state) => state.ui.drawers[drawerName]);
   return (
-    <MuiDrawer
-      anchor='right'
-      variant='persistent'
-      open={drawers[drawerName]}
-      onClose={() => core.uiSetDrawer(drawerName, false)}
-      classes={{
-        paper: classes.drawerPaper,
-      }}
-    >
-      <div className={classes.toolbar}></div>
+    <MuiDrawer anchor='right' variant='persistent' open={drawerState}>
+      <div
+        css={css`
+          minheight: 50px;
+        `}
+      ></div>
 
       {children}
     </MuiDrawer>
   );
-});
+};

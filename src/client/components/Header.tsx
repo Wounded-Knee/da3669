@@ -2,11 +2,16 @@
 import React, { useContext } from 'react';
 import { css, jsx } from '@emotion/react';
 import { AppBar, Toolbar, Typography, Grid, Button } from '@mui/material';
-import { Menu as MenuIcon, Storage as StorageIcon, Info as InfoIcon } from '@mui/icons-material';
+import {
+  Menu as MenuClosedIcon,
+  MenuOpen as MenuOpenIcon,
+  Storage as StorageIcon,
+  Info as InfoIcon,
+} from '@mui/icons-material';
 import { headerText, appName, clownTitle } from '../config';
 import { PassportContext } from './PassportContext';
 import { useTheme } from '@mui/styles';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { client } from '../../shared/lib/redux/actionTypes';
 
 const headerTextArray = headerText.split('');
@@ -39,6 +44,8 @@ export const Header: React.FunctionComponent = () => {
       min-height: 50px !important;
     `,
   };
+
+  const MenuIcon = useSelector((state) => state.ui.drawers['sideMenu']) ? MenuOpenIcon : MenuClosedIcon;
 
   return (
     <AppBar position='fixed' css={styles.appBar}>

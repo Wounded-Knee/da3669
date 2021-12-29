@@ -20,7 +20,7 @@ const debug = {
 const {
   Types: { ObjectId },
 } = mongoose;
-const maxDepth = 2;
+const maxDepth = 4;
 const urlPath = `/talk/`;
 const nodeType = 'Message';
 const viewType = Object.freeze({
