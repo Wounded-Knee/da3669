@@ -12,5 +12,5 @@ export const addHelper = (obj) => {
 };
 
 export const inspectSelectorProfile = (selectorProfile: SelectorProfile) => {
-  return selectorProfile.map((item) => item.toString());
+  return selectorProfile.map((item) => item && item.toString());
 };
