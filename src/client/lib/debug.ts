@@ -1,3 +1,5 @@
+import { SelectorProfile } from '../../shared/all';
+
 export const addHelper = (obj) => {
   if (typeof window !== 'undefined') {
     // @ts-ignore
@@ -7,4 +9,8 @@ export const addHelper = (obj) => {
       ...obj,
     };
   }
+};
+
+export const inspectSelectorProfile = (selectorProfile: SelectorProfile) => {
+  return selectorProfile.map((item) => item.toString());
 };

@@ -4,6 +4,7 @@ import { server } from '../../shared/lib/redux/actionTypes';
 import { dispatch } from '../webSocket';
 import { store } from './redux/store';
 import { selectNodesByProfile } from './redux/selectors';
+import { inspectSelectorProfile } from './debug';
 
 const debug = {
   changes: true,
@@ -26,7 +27,7 @@ export const useNodes = (selectorProfile: SelectorProfile): IUseNodesReturn => {
         if (debug.changes)
           console.log('Store Changed', {
             Nodes: selectNodesByProfile(selectorProfile),
-            selectorProfile,
+            Profile: inspectSelectorProfile(selectorProfile),
           });
         setNodes(selectNodesByProfile(selectorProfile));
       });

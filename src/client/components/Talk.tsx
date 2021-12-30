@@ -61,8 +61,10 @@ export const Talk = ({
   const nodeId = getNodeIdObject(useParams().nodeId, id);
   if (debugNodeId(nodeId)) return <h1>Halted for NodeID debug</h1>;
   const { nodes } = useNodes(['id', nodeId]);
-  const { nodes: downstreams } = useNodes(['relationsOf', nodeId, 'downstreams']);
-  const { nodes: upstreams } = useNodes(['relationsOf', nodeId, 'upstreams']);
+  const downstreams = [],
+    upstreams = [];
+  // const { nodes: downstreams } = useNodes(['relationsOf', nodeId, 'downstreams']);
+  // const { nodes: upstreams } = useNodes(['relationsOf', nodeId, 'upstreams']);
   const node = nodes.length > 0 && nodes[0];
 
   const nodePickerCreateNodeData = (value) => ({
@@ -83,7 +85,7 @@ export const Talk = ({
     switch (as) {
       case viewType.MASTER:
         if (debug.variables)
-          console.info('Debug Talk.tsx', {
+          console.info('Debug Talk.tsx - ViewType Master', {
             as,
             depth,
             nodeId: nodeId.toString(),
@@ -114,7 +116,7 @@ export const Talk = ({
         return <View note={viewType.DOWNSTREAM} node={node} />;
 
       case viewType.UPSTREAM:
-        console.log('Dumping upstreams of ', nodes, ' as ', upstreams);
+        if (upstreams.length) console.log(`Dumping ${upstreams.length} upstreams of `, nodes, ' as ', upstreams);
         return (
           <>
             {upstreams.map((_id, index) => (
@@ -139,7 +141,7 @@ export const Talk = ({
             <View node={node} />
           </div>
         ))}*/}
-
+        !nodeId && !node
         <NodePicker label='Speak' nodeGenerator={nodePickerCreateNodeData} onPick={([node]) => navigateToNode(node)} />
       </>
     );

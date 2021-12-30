@@ -173,4 +173,19 @@ describe('Query Profiles', () => {
       expect(query).toBeFalsy();
     });
   });
+
+  test('getOperationByProfile', () => {
+    [
+      ['id', crazyHorse._id],
+      ['relationsOf', blackElk._id, 'upstreams'],
+      ['relationsOf', blackElk._id, 'authors'],
+    ].forEach((profile) => {
+      const operation = getOperationByProfile(profile);
+      expect(typeof operation).not.toBe('boolean');
+      if (typeof operation !== 'boolean') {
+        const nodes = queryStore(operation);
+        expect(nodes).toHaveLength(1);
+      }
+    });
+  });
 });

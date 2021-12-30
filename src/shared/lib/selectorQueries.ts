@@ -28,16 +28,18 @@ export const hasRelation = (relationType: RelationType): IMongoOperation => ({
 export const relationsOf = (id: NodeId, ...relationTypes: RelationType[]): IMongoOperation => ({
   client: (nodes) => {
     const baseNode = nodes.find(({ _id }) => _id.equals(id));
-    let relations = [];
-    relationTypes.forEach((relationType) => {
-      relations = [
-        ...relations,
-        ...((baseNode && baseNode.rel && baseNode.rel[relationType]) || []).map((idObject) => idObject.toString()),
-      ];
-    });
-    const rv = nodes.filter((node) => relations.includes(node._id.toString()));
-    console.log('derp', rv);
-    return rv;
+    if (baseNode && baseNode.rel) {
+      let relations = [];
+      relationTypes.forEach((relationType) => {
+        const idStrings = (baseNode.rel[relationType] || []).map((idObject) => idObject.toString());
+        relations = [...relations, ...idStrings];
+      });
+      if (relations.length) console.log('Relations ', relationTypes, relations);
+      const rv = nodes.filter((node) => relations.includes(node._id.toString()));
+      return rv;
+    } else {
+      return [];
+    }
   },
   aggregate: [
     {
