@@ -19,7 +19,7 @@ const composer = new Composer();
   actionGetUser,
   actionCreateNode,
   actionSelectNodes,
-  subscriptions,
+  // subscriptions,
   broadcast,
   responseBundler,
 ].forEach((mw) => composer.use(mw));

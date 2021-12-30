@@ -91,7 +91,7 @@ afterAll(async (done) => {
   done();
 });
 
-describe('Mongo Database Selections', () => {
+describe('DB/Store Selections', () => {
   test('Setup worked OK', async () => {
     const nodes = store.getState().nodes;
     const nodesAreMongoDocs = nodes.reduce((verdict, { $__ }) => verdict && !$__, true);
