@@ -4,16 +4,13 @@ import { server } from '../../shared/lib/redux/actionTypes';
 import { dispatch } from '../webSocket';
 import { store } from './redux/store';
 import { selectNodesByProfile } from './redux/selectors';
+import { inspectSelectorProfile } from './debug';
 
 const debug = {
   changes: true,
 };
 
-interface IUseNodesReturn {
-  nodes: INodeAll[];
-}
-
-export const useNodes = (selectorProfile: SelectorProfile): IUseNodesReturn => {
+export const useNodes = (selectorProfile: SelectorProfile): INodeAll[] => {
   const [nodes, setNodes] = useState(selectNodesByProfile(selectorProfile));
 
   useEffect(() => {
@@ -26,7 +23,7 @@ export const useNodes = (selectorProfile: SelectorProfile): IUseNodesReturn => {
         if (debug.changes)
           console.log('Store Changed', {
             Nodes: selectNodesByProfile(selectorProfile),
-            selectorProfile,
+            Profile: inspectSelectorProfile(selectorProfile),
           });
         setNodes(selectNodesByProfile(selectorProfile));
       });
@@ -41,7 +38,5 @@ export const useNodes = (selectorProfile: SelectorProfile): IUseNodesReturn => {
     }
   }, [selectorProfile.join('/')]);
 
-  return {
-    nodes,
-  };
+  return nodes;
 };

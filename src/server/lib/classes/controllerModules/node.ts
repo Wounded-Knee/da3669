@@ -2,7 +2,7 @@ import { Types } from 'mongoose';
 import { server, client } from '../../../../shared/lib/redux/actionTypes';
 import { defaultModel, getModelByName } from '../../nodes/all';
 import { INodeAll } from '../../../../shared/all';
-import { getQueryByProfile } from '../../../../shared/lib/selectorQueries';
+import { getOperationByProfile } from '../../../../shared/lib/selectorQueries';
 
 const debug = {
   [server.CREATE]: true,
@@ -21,9 +21,11 @@ export const actionSelectNodes = async (context, next) => {
 
     if (type === server.SUBSCRIBE) {
       if (userId) {
-        const query = getQueryByProfile(payload);
-        if (query) {
-          const nodes = await defaultModel.find();
+        const operation = getOperationByProfile(payload);
+        if (typeof operation !== 'boolean') {
+          const nodes = operation.find
+            ? await defaultModel.find(operation.find)
+            : await defaultModel.aggregate(operation.aggregate);
           context.nodes.retrieved = [...context.nodes.retrieved, ...nodes];
           context.actions.push({
             type: client.STASH,

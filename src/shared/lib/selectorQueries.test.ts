@@ -1,21 +1,43 @@
-import sift from 'sift';
+import { sift } from './sift.aggregate';
 import mongoose from 'mongoose';
 import {
   id as idQuery,
   lacksRelation as lacksRelationQuery,
   hasRelation as hasRelationQuery,
   relationsOf as relationsOfQuery,
-  getQueryByProfile,
+  getOperationByProfile,
 } from './selectorQueries';
 import { client } from './redux/actionTypes';
 import { inspect } from 'util';
 import { store } from '../../client/lib/redux/store';
 import { getModelByName } from '../../server/lib/nodes/all';
+import { IMongoOperation } from '../all';
 
 const { ObjectId } = mongoose.Types;
 const MessageModel = getModelByName('Message');
-const queryDb = async (query) => await MessageModel.find(query);
-const queryStore = (query) => store.getState().nodes.filter(sift(query));
+const queryDb = async (operation: IMongoOperation) => {
+  if (typeof operation !== 'boolean') {
+    if (operation.find) {
+      return await MessageModel.find(operation.find);
+    } else if (operation.aggregate) {
+      // @ts-ignore
+      const result = await MessageModel.aggregate(operation.aggregate);
+      return result[0].relatives;
+    }
+  }
+};
+const queryStore = (operation: IMongoOperation) => {
+  if (typeof operation !== 'boolean') {
+    if (operation.client) {
+      return operation.client(store.getState().nodes);
+    } else if (operation.find) {
+      return store.getState().nodes.filter(sift(operation.find));
+    } else if (operation.aggregate) {
+      // @ts-ignore
+      return store.getState().nodes.filter(sift.aggregate(operation.aggregate));
+    }
+  }
+};
 
 let wakanTanka, sittingBull, crazyHorse, blackElk, foolsCrow, messages;
 beforeAll(async () => {
@@ -69,7 +91,7 @@ afterAll(async (done) => {
   done();
 });
 
-describe('Mongo Database Selections', () => {
+describe('DB/Store Selections', () => {
   test('Setup worked OK', async () => {
     const nodes = store.getState().nodes;
     const nodesAreMongoDocs = nodes.reduce((verdict, { $__ }) => verdict && !$__, true);
@@ -120,13 +142,24 @@ describe('Mongo Database Selections', () => {
 
     const storeNodes = queryStore(q);
     expect(storeNodes).toHaveLength(0);
+
+    // Black Elk has one upstream; Crazy Horse.
+    const q2 = relationsOfQuery(blackElk._id, 'upstreams');
+    const nodes2 = await queryDb(q2);
+    expect(nodes2).toHaveLength(1);
+    expect(nodes2[0].text).toBe(crazyHorse.text);
+
+    const storeNodes2 = queryStore(q2);
+    expect(storeNodes2).toHaveLength(1);
+    expect(storeNodes2[0].text).toBe(crazyHorse.text);
   });
 });
 
 describe('Query Profiles', () => {
   test('Can run a profile', () => {
     const profile = ['id', foolsCrow._id];
-    const [node] = queryStore(getQueryByProfile(profile));
+    const query = getOperationByProfile(profile);
+    const [node] = typeof query !== 'boolean' && queryStore(query);
     expect(node.text).toBe(foolsCrow.text);
   });
 
@@ -136,10 +169,23 @@ describe('Query Profiles', () => {
       ['invalidMethodName', '123'],
       ['hasRelation', undefined],
     ].forEach((profile) => {
-      const query = getQueryByProfile(profile);
-      const nodes = queryStore(query);
+      const query = getOperationByProfile(profile);
       expect(query).toBeFalsy();
-      expect(nodes).toHaveLength(0);
+    });
+  });
+
+  test('getOperationByProfile', () => {
+    [
+      ['id', crazyHorse._id],
+      ['relationsOf', blackElk._id, 'upstreams'],
+      ['relationsOf', blackElk._id, 'authors'],
+    ].forEach((profile) => {
+      const operation = getOperationByProfile(profile);
+      expect(typeof operation).not.toBe('boolean');
+      if (typeof operation !== 'boolean') {
+        const nodes = queryStore(operation);
+        expect(nodes).toHaveLength(1);
+      }
     });
   });
 });

@@ -1,4 +1,5 @@
 import { ObjectId } from 'mongoose';
+import { PipelineStage } from 'mongoose';
 export type ArrayLengthMutationKeys = 'splice' | 'push' | 'pop' | 'shift' | 'unshift' | number;
 export type ArrayItems<T extends Array<any>> = T extends Array<infer TItems> ? TItems : never;
 export type FixedLengthArray<T extends any[]> = Pick<T, Exclude<keyof T, ArrayLengthMutationKeys>> & {
@@ -17,6 +18,12 @@ export type NodeId = string;
 
 export interface IMongoQuery {
   [key: any]: any;
+}
+
+export interface IMongoOperation {
+  client?: any;
+  find?: IMongoQuery;
+  aggregate?: PipelineStage[];
 }
 
 export interface INodeBase {

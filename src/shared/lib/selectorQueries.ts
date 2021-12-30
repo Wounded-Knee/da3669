@@ -1,38 +1,96 @@
 import mongoose from 'mongoose';
-import { IMongoQuery, RelationType, NodeId, SelectorProfile } from '../all';
+import { IMongoOperation, RelationType, NodeId, SelectorProfile } from '../all';
 const { ObjectId } = mongoose.Types;
 
-export const id = (id: NodeId): IMongoQuery => ({ _id: new ObjectId(id) });
+export const id = (id: NodeId): IMongoOperation => ({ find: { _id: new ObjectId(id) } });
 
-export const lacksRelation = (relationType: RelationType): IMongoQuery => ({
-  $or: [
-    { rel: { $exists: false } },
-    { [`rel.${relationType}`]: { $exists: false } },
-    { [`rel.${relationType}`]: { $size: 0 } },
+export const lacksRelation = (relationType: RelationType): IMongoOperation => ({
+  find: {
+    $or: [
+      { rel: { $exists: false } },
+      { [`rel.${relationType}`]: { $exists: false } },
+      { [`rel.${relationType}`]: { $size: 0 } },
+    ],
+  },
+});
+
+export const hasRelation = (relationType: RelationType): IMongoOperation => ({
+  find: {
+    $nor: [
+      { rel: { $exists: false } },
+      { [`rel.${relationType}`]: { $exists: false } },
+      { [`rel.${relationType}`]: { $size: 0 } },
+    ],
+  },
+});
+
+// For now, this DB aggregation only supports the first relationType given in the array...
+export const relationsOf = (id: NodeId, ...relationTypes: RelationType[]): IMongoOperation => ({
+  client: (nodes) => {
+    const baseNode = nodes.find(({ _id }) => _id.equals(id));
+    if (baseNode && baseNode.rel) {
+      let relations = [];
+      relationTypes.forEach((relationType) => {
+        const idStrings = (baseNode.rel[relationType] || []).map((idObject) => idObject.toString());
+        relations = [...relations, ...idStrings];
+      });
+      if (relations.length) console.log('Relations ', relationTypes, relations);
+      const rv = nodes.filter((node) => relations.includes(node._id.toString()));
+      return rv;
+    } else {
+      return [];
+    }
+  },
+  aggregate: [
+    {
+      $match: {
+        _id: new ObjectId(id),
+      },
+    },
+    {
+      $project: {
+        [`rel.${relationTypes[0]}`]: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'bases',
+        let: {
+          relativeIds: `$rel.${relationTypes[0]}`,
+        },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $in: ['$_id', '$$relativeIds'],
+              },
+            },
+          },
+        ],
+        as: 'relatives',
+      },
+    },
+    {
+      $project: {
+        relatives: true,
+      },
+    },
   ],
 });
 
-export const hasRelation = (relationType: RelationType): IMongoQuery => ({
-  $nor: [
-    { rel: { $exists: false } },
-    { [`rel.${relationType}`]: { $exists: false } },
-    { [`rel.${relationType}`]: { $size: 0 } },
-  ],
-});
-
-export const relationsOf = (id: NodeId, ...relationTypes: RelationType[]): IMongoQuery => ({});
-
-export const asRelation = (id: NodeId, ...relationTypes: RelationType[]): IMongoQuery => ({
-  $or: relationTypes.map((relationType) => ({
-    [`rel.${relationType}`]: { $in: [new ObjectId(id)] },
-  })),
+export const asRelation = (id: NodeId, ...relationTypes: RelationType[]): IMongoOperation => ({
+  find: {
+    $or: relationTypes.map((relationType) => ({
+      [`rel.${relationType}`]: { $in: [new ObjectId(id)] },
+    })),
+  },
 });
 
 interface IValidationObject {
   id?: NodeId[];
   relationType?: RelationType[];
 }
-export const getQueryByProfile = (profile: SelectorProfile): IMongoQuery | boolean => {
+export const getOperationByProfile = (profile: SelectorProfile): IMongoOperation | boolean => {
   const [methodName, ...args] = profile;
   const validate = (validationObject: IValidationObject): boolean => {
     return Object.keys(validationObject).reduce((verdict: boolean, key) => {
