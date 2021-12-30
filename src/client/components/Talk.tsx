@@ -59,7 +59,7 @@ export const Talk = (): JSX.Element => {
       />
     </>
   ) : (
-    <div>What Node ID?</div>
+    <Directory />
   );
 };
 
@@ -69,12 +69,9 @@ const getAuthorId = (node) => {
 const DisplayNode = ({ id, note = '?' }) => {
   const nodeId = getNodeIdObject(id);
   const [node] = useNodes(['id', nodeId]);
-  const [user] = useNodes(['id', getAuthorId(node)]);
 
   if (node) {
     const {
-      text,
-      _id,
       rel: { upstreams, downstreams },
     } = node;
     return (
@@ -83,16 +80,7 @@ const DisplayNode = ({ id, note = '?' }) => {
           <DisplayNode key={index} id={upstreamId} />
         ))}
 
-        <div
-          css={css`
-            color: #666;
-          `}
-        >
-          {user && `${user.name}: `}
-          <Link to={`${urlPath}${_id}/`} title={note}>
-            {text}
-          </Link>
-        </div>
+        <DirectDisplayNode node={node} />
 
         {downstreams.map((downstreamId, index) => (
           <DisplayNode key={index} id={downstreamId} />
@@ -111,4 +99,35 @@ const DisplayNode = ({ id, note = '?' }) => {
       </div>
     );
   }
+};
+
+const DirectDisplayNode = ({ node }) => {
+  const { text, _id } = node;
+  const [user] = useNodes(['id', getAuthorId(node)]);
+
+  return node ? (
+    <div
+      css={css`
+        color: #666;
+      `}
+    >
+      {user && `${user.name}: `}
+      <Link to={`${urlPath}${_id}/`}>{text}</Link>
+    </div>
+  ) : (
+    <div>?</div>
+  );
+};
+
+const Directory = () => {
+  const topLevelNodes = useNodes(['lacksRelation', 'upstreams']);
+  return topLevelNodes ? (
+    <>
+      {topLevelNodes.map((node, index) => (
+        <DirectDisplayNode key={index} node={node} />
+      ))}
+    </>
+  ) : (
+    <div>...</div>
+  );
 };
