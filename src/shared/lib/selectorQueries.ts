@@ -4,6 +4,12 @@ const { ObjectId } = mongoose.Types;
 
 export const id = (id: NodeId): IMongoOperation => ({ find: { _id: new ObjectId(id) } });
 
+export const ids = (...ids: NodeId[]): IMongoOperation => ({
+  find: {
+    $or: ids.map((id) => ({ _id: new ObjectId(id) })),
+  },
+});
+
 export const lacksRelation = (relationType: RelationType): IMongoOperation => ({
   find: {
     $or: [
@@ -78,13 +84,16 @@ export const relationsOf = (id: NodeId, ...relationTypes: RelationType[]): IMong
   ],
 });
 
-export const asRelation = (id: NodeId, ...relationTypes: RelationType[]): IMongoOperation => ({
-  find: {
-    $or: relationTypes.map((relationType) => ({
-      [`rel.${relationType}`]: { $in: [new ObjectId(id)] },
-    })),
-  },
-});
+export const asRelation = (id: NodeId, ...relationTypes: RelationType[]): IMongoOperation => {
+  const rv = {
+    find: {
+      $or: relationTypes.map((relationType) => ({
+        [`rel.${relationType}`]: { $in: [new ObjectId(id)] },
+      })),
+    },
+  };
+  return rv;
+};
 
 interface IValidationObject {
   id?: NodeId[];
@@ -101,8 +110,9 @@ export const getOperationByProfile = (profile: SelectorProfile): IMongoOperation
             verdict &&
             {
               relationType: (val) => typeof val === 'string',
-              id: (val) => mongoose.Types.ObjectId.isValid(val),
+              id: (val) => mongoose.Types.ObjectId.isValid(val) && typeof val === 'string',
             }[key](val),
+          true,
         )
       );
     }, true);
@@ -126,6 +136,16 @@ export const getOperationByProfile = (profile: SelectorProfile): IMongoOperation
           hasRelation(...args)
         : false;
 
+    case 'asRelation':
+      const [asRelationId, ...asRelationTypes] = args;
+      return validate({
+        id: [asRelationId],
+        relationType: asRelationTypes,
+      })
+        ? // @ts-ignore
+          asRelation(asRelationId, ...asRelationTypes)
+        : false;
+
     case 'lacksRelation':
       return validate({
         relationType: args,
@@ -140,6 +160,14 @@ export const getOperationByProfile = (profile: SelectorProfile): IMongoOperation
       })
         ? // @ts-ignore
           id(...args)
+        : false;
+
+    case 'ids':
+      return validate({
+        id: args,
+      })
+        ? // @ts-ignore
+          ids(...args)
         : false;
   }
 };

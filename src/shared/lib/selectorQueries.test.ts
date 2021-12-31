@@ -2,6 +2,7 @@ import { sift } from './sift.aggregate';
 import mongoose from 'mongoose';
 import {
   id as idQuery,
+  ids as idsQuery,
   lacksRelation as lacksRelationQuery,
   hasRelation as hasRelationQuery,
   relationsOf as relationsOfQuery,
@@ -108,8 +109,15 @@ describe('DB/Store Selections', () => {
     expect(dbNode.text).toBe(wakanTanka.text);
 
     const [storeNode] = queryStore(idQuery(wakanTanka._id));
-    console.log(storeNode);
     expect(storeNode.text).toBe(wakanTanka.text);
+  });
+
+  test('Can get by IDs', async () => {
+    const dbNodes = await queryDb(idsQuery(crazyHorse._id, sittingBull._id));
+    expect(dbNodes).toHaveLength(2);
+
+    const storeNodes = queryStore(idsQuery(crazyHorse._id, sittingBull._id));
+    expect(storeNodes).toHaveLength(2);
   });
 
   test('Can get by lacked relation', async () => {
@@ -171,6 +179,13 @@ describe('Query Profiles', () => {
     ].forEach((profile) => {
       const query = getOperationByProfile(profile);
       expect(query).toBeFalsy();
+    });
+  });
+
+  test('Allows valid profiles', () => {
+    [['id', '61c271466ca1f2ccd97fd13d']].forEach((profile) => {
+      const query = getOperationByProfile(profile);
+      expect(query).toBeTruthy();
     });
   });
 

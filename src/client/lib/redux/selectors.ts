@@ -7,7 +7,7 @@ import { SelectorProfile, INodeAll } from '../../../shared/all';
 export const getDrawerState = (drawerName: string): boolean => store.getState().ui.drawers[drawerName];
 export const selectNodesByProfile = (profile: SelectorProfile): INodeAll[] => {
   const operation = getOperationByProfile(profile);
-  if (typeof operation !== 'boolean') {
+  if (typeof operation !== 'boolean' && operation) {
     if (operation.client) {
       const selection = operation.client(store.getState().nodes);
       console.log('selectNodesByProfile()', inspectSelectorProfile(profile), selection);

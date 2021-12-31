@@ -9,6 +9,10 @@ import { actionCreateNode, actionSelectNodes } from './controllerModules/node';
 import { subscriptions } from './controllerModules/subscription';
 import { broadcast } from './controllerModules/broadcast';
 
+const debug = {
+  eventType: false,
+  context: false,
+};
 type Event = string;
 type Payload = any;
 
@@ -32,7 +36,7 @@ export const eventType = Object.freeze({
 });
 
 export const processEvent = async (type: Event, payload: Payload): Promise<any> => {
-  console.log(type);
+  if (debug.eventType) console.log(type);
   switch (type) {
     case eventType.OPEN:
       return welcome(payload);
@@ -59,7 +63,7 @@ export const processEvent = async (type: Event, payload: Payload): Promise<any> 
         response: {},
       };
       await middleware(context, noopNext);
-      console.log('Context ', inspect(context, { depth: null }));
+      if (debug.context) console.log('Context ', inspect(context, { depth: null }));
       return context.response;
   }
   return false;

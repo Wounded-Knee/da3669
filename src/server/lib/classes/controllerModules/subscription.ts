@@ -2,7 +2,7 @@ import { server } from '../../../../shared/lib/redux/actionTypes';
 import { addSubscription, ISubscription, removeSubscription } from '../sessionManager';
 
 const debug = {
-  [server.SUBSCRIBE]: true,
+  [server.SUBSCRIBE]: false,
 };
 
 export const subscriptions = async (context, next): Promise<void> => {

@@ -50,7 +50,7 @@ export const Talk = (): JSX.Element => {
 
   return nodeId ? (
     <>
-      <DisplayNode id={nodeId} />
+      <DisplayNode id={nodeId} note='Master' />
 
       <NodePicker
         nodeGenerator={nodePickerCreateNodeData}
@@ -68,23 +68,15 @@ const getAuthorId = (node) => {
 };
 const DisplayNode = ({ id, note = '?' }) => {
   const nodeId = getNodeIdObject(id);
-  const [node] = useNodes(['id', nodeId]);
+  const [node] = useNodes(['id', nodeId], 'DisplayNode');
 
   if (node) {
     const {
-      rel: { upstreams, downstreams },
+      rel: { upstreams },
     } = node;
     return (
       <>
-        {upstreams.map((upstreamId, index) => (
-          <DisplayNode key={index} id={upstreamId} />
-        ))}
-
-        <DirectDisplayNode node={node} />
-
-        {downstreams.map((downstreamId, index) => (
-          <DisplayNode key={index} id={downstreamId} />
-        ))}
+        <DirectDisplayNode node={node} note={note} />
       </>
     );
   } else {
@@ -95,18 +87,55 @@ const DisplayNode = ({ id, note = '?' }) => {
           color: #444;
         `}
       >
-        {nodeId.toString()}
+        {nodeId && nodeId.toString()}
       </div>
     );
   }
 };
 
-const DirectDisplayNode = ({ node }) => {
+const Upstreams = ({ nodeIds }) => {
+  const upstreams = useNodes(['ids', ...nodeIds], 'Upstreams');
+
+  return (
+    <>
+      {upstreams.map((node, index) => {
+        return (
+          <React.Fragment key={index}>
+            <Upstreams nodeIds={node.rel.upstreams} />
+            <DirectDisplayNode node={node} />
+          </React.Fragment>
+        );
+      })}
+    </>
+  );
+};
+
+const Downstreams = ({ parentId }) => {
+  const downstreams = useNodes(['asRelation', parentId, 'upstreams'], 'Downstreams');
+  return <DisplayNodes nodes={downstreams} note='Downstream' />;
+};
+
+const DisplayNodes = ({ nodes, note = '?' }) => {
+  return nodes ? (
+    <>
+      {nodes.map((node) => (
+        <>
+          <DirectDisplayNode node={node} note={note} />
+        </>
+      ))}
+    </>
+  ) : (
+    <div>...</div>
+  );
+};
+
+const DirectDisplayNode = ({ node, note = '' }) => {
   const { text, _id } = node;
   const [user] = useNodes(['id', getAuthorId(node)]);
 
   return node ? (
     <div
+      title={note}
       css={css`
         color: #666;
       `}
@@ -124,7 +153,7 @@ const Directory = () => {
   return topLevelNodes ? (
     <>
       {topLevelNodes.map((node, index) => (
-        <DirectDisplayNode key={index} node={node} />
+        <DirectDisplayNode key={index} node={node} note='Directory' />
       ))}
     </>
   ) : (
