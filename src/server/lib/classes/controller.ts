@@ -1,13 +1,14 @@
 import { welcome, dismiss } from './socketManager';
 import { Composer, noopNext } from 'middleware-io';
 import { inspect } from 'util';
-import { decoder } from './controllerModules/decoder';
-import { getSession } from './controllerModules/session';
-import { actionGetUser } from './controllerModules/user';
-import { responseBundler } from './controllerModules/responseBundler';
-import { actionCreateNode, actionSelectNodes } from './controllerModules/node';
-import { subscriptions } from './controllerModules/subscription';
-import { broadcast } from './controllerModules/broadcast';
+import { decoder } from '../controllerModules/decoder';
+import { getSession } from '../controllerModules/session';
+import { actionGetUser } from '../controllerModules/user';
+import { responseBundler } from '../controllerModules/responseBundler';
+import { actionCreateNode, actionSelectNodes } from '../controllerModules/node';
+import { subscriptions } from '../controllerModules/subscription';
+import Broadcast from '../controllerModules/broadcast';
+import Profanity from '../controllerModules/Profanity';
 
 type Event = string;
 type Payload = any;
@@ -19,8 +20,9 @@ const composer = new Composer();
   actionGetUser,
   actionCreateNode,
   actionSelectNodes,
+  Profanity.controllerMiddleware,
   // subscriptions,
-  broadcast,
+  Broadcast.controllerMiddleware,
   responseBundler,
 ].forEach((mw) => composer.use(mw));
 const middleware = composer.compose();

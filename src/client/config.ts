@@ -14,6 +14,7 @@ export const initialState = {
       netWorth: 0,
     },
     drawers: {
+      experience: false,
       info: false,
       data: false,
       sideMenu: false,

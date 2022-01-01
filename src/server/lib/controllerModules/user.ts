@@ -1,5 +1,5 @@
-import { server, client } from '../../../../shared/lib/redux/actionTypes';
-import { getUserById } from '../userManager';
+import { server, client } from '../../../shared/lib/redux/actionTypes';
+import { getUserById } from '../classes/userManager';
 
 export const actionGetUser = async (context, next) => {
   const {
