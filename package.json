@@ -94,6 +94,7 @@
     "redux-devtools-extension": "^2.13.9",
     "redux-thunk": "^2.4.0",
     "sift": "^15.1.0",
+    "simple-timecode": "^0.1.2",
     "styled-components": "^5.2.1",
     "tslib": "^2.1.0",
     "uuid": "^8.3.2",
