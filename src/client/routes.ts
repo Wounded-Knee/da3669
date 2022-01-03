@@ -15,6 +15,7 @@ import { Index as ContextStacker } from './wireframes/context-stacking/Index';
 import { Loading } from './components/Loading';
 import { Talk } from './components/Talk';
 import { KungFury } from './components/KungFury';
+import { Directory } from './components/Directory';
 
 export const routes = [
   {
@@ -41,6 +42,13 @@ export const routes = [
     icon: TalkIcon,
     text: 'Talk',
     component: Talk,
+  },
+  {
+    route: '/directory',
+    path: '/directory',
+    icon: DirectoryIcon,
+    text: 'Directory',
+    component: Directory,
   },
   // {
   //   path: '/nodemanager/:nodeId',

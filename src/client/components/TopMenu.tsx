@@ -30,18 +30,18 @@ class NavLinkMui extends React.Component<any> {
 
 const drawerWidth = 240;
 
-export const SideMenu: React.FunctionComponent = () => {
+export const TopMenu: React.FunctionComponent = () => {
   const styles = {
     toolbar: css`
       height: 50px;
     `,
   };
 
-  const mobileOpen = useSelector(() => getDrawerState('sideMenu'));
+  const mobileOpen = useSelector(() => getDrawerState('topMenu'));
   const dispatch = useDispatch();
 
   const handleDrawerToggle = () => {
-    dispatch({ type: client.DRAWER, payload: ['sideMenu'] });
+    dispatch({ type: client.DRAWER, payload: ['topMenu'] });
   };
 
   const drawerContents = (
@@ -53,7 +53,7 @@ export const SideMenu: React.FunctionComponent = () => {
             Icon && (
               <ListItem
                 key={index}
-                onClick={() => dispatch({ type: client.DRAWER, payload: ['sideMenu', false] })}
+                onClick={() => dispatch({ type: client.DRAWER, payload: ['topMenu', false] })}
                 button
                 component={express ? MuiLink : NavLink}
                 {...{ [express ? 'href' : 'to']: route }}

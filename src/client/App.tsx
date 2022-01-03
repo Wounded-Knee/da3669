@@ -14,7 +14,7 @@ import { Box } from '@mui/material';
 
 // Components
 import { Header } from './components/Header';
-import { SideMenu } from './components/SideMenu';
+import { TopMenu } from './components/TopMenu';
 import { DataView } from './components/DataView';
 import { InfoView } from './components/InfoView';
 import { PassportContext } from './components/PassportContext';
@@ -35,7 +35,7 @@ export const App: FC = () => {
         <Header />
         {userProfile._id && (
           <>
-            <SideMenu />
+            <TopMenu />
             <DataView />
             <InfoView />
           </>

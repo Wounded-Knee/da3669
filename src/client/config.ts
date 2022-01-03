@@ -19,7 +19,7 @@ export const initialState = {
       experience: false,
       info: false,
       data: false,
-      sideMenu: false,
+      topMenu: false,
       ...localState.ui.drawers,
     },
   },

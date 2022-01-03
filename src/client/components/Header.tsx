@@ -9,7 +9,7 @@ import {
   Info as InfoIcon,
   AssuredWorkload as ExperienceIcon,
 } from '@mui/icons-material';
-import { headerText, appName, clownTitle } from '../config';
+import { headerText, appName } from '../config';
 import { PassportContext } from './PassportContext';
 import { useTheme } from '@mui/styles';
 import { useDispatch, useSelector } from 'react-redux';
@@ -50,7 +50,7 @@ export const Header: React.FunctionComponent = () => {
     `,
   };
 
-  const MenuIcon = useSelector((state) => state.ui.drawers['sideMenu']) ? MenuOpenIcon : MenuClosedIcon;
+  const MenuIcon = useSelector((state) => state.ui.drawers['topMenu']) ? MenuOpenIcon : MenuClosedIcon;
 
   return (
     <AppBar position='fixed' css={styles.appBar}>
@@ -59,7 +59,7 @@ export const Header: React.FunctionComponent = () => {
           <Grid container alignItems='center'>
             <Grid item xs={2}>
               <MenuIcon
-                onClick={() => dispatch({ type: client.DRAWER, payload: ['sideMenu'] })}
+                onClick={() => dispatch({ type: client.DRAWER, payload: ['topMenu'] })}
                 sx={{
                   display: { xs: 'block', sm: 'none' },
                 }}
