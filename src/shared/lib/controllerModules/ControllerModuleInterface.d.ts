@@ -3,5 +3,7 @@ export interface IControllerModuleShared {
 }
 
 export interface IControllerModuleServer {
-  controllerMiddleware: (context: any, next: any) => promise<void>;
+  middleware: {
+    [key: string]: (context: any, next: any) => promise<void>;
+  };
 }

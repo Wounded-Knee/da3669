@@ -3,27 +3,29 @@ import { getSessions } from '../classes/sessionManager';
 import { IControllerModuleServer } from '../../../shared/lib/controllerModules/ControllerModuleInterface';
 
 export default <IControllerModuleServer>{
-  controllerMiddleware: async (context, next) => {
-    const {
-      nodes: { created, updated },
-    } = context;
-    const nodes = [...created, ...updated];
+  middleware: {
+    default: async (context, next) => {
+      const {
+        nodes: { created, updated },
+      } = context;
+      const nodes = [...created, ...updated];
 
-    if (nodes.length) {
-      getSessions().forEach(({ webSocket }) => {
-        webSocket.send(
-          JSON.stringify({
-            actions: [
-              {
-                type: client.STASH,
-                payload: nodes,
-              },
-            ],
-          }),
-        );
-      });
-    }
+      if (nodes.length) {
+        getSessions().forEach(({ webSocket }) => {
+          webSocket.send(
+            JSON.stringify({
+              actions: [
+                {
+                  type: client.STASH,
+                  payload: nodes,
+                },
+              ],
+            }),
+          );
+        });
+      }
 
-    await next();
+      await next();
+    },
   },
 };

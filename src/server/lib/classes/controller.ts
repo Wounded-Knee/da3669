@@ -20,9 +20,9 @@ const composer = new Composer();
   actionGetUser,
   actionCreateNode,
   actionSelectNodes,
-  Profanity.controllerMiddleware,
+  Profanity.middleware.filter,
   // subscriptions,
-  Broadcast.controllerMiddleware,
+  Broadcast.middleware.default,
   responseBundler,
 ].forEach((mw) => composer.use(mw));
 const middleware = composer.compose();

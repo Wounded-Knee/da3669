@@ -18,4 +18,6 @@ export const client = Object.freeze({
   NOOP: 'NOOP',
   SESSION_EXPIRED: 'SESSION_EXPIRED',
   UPDATE_NET_WORTH: 'UPDATE_NET_WORTH',
+  SELECT_NODE: 'SELECT_NODE',
+  SET_USER: 'SET_USER',
 });
