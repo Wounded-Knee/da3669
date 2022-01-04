@@ -1,8 +1,8 @@
 import { Types } from 'mongoose';
-import { server, client } from '../../../../shared/lib/redux/actionTypes';
-import { defaultModel, getModelByName } from '../../nodes/all';
-import { INodeAll } from '../../../../shared/all';
-import { getOperationByProfile } from '../../../../shared/lib/selectorQueries';
+import { server, client } from '../../../shared/lib/redux/actionTypes';
+import { defaultModel, getModelByName } from '../nodes/all';
+import { INodeAll } from '../../../shared/all';
+import { getOperationByProfile } from '../../../shared/lib/selectorQueries';
 
 const debug = {
   [server.SUBSCRIBE]: true,

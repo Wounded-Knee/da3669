@@ -10,10 +10,13 @@ export const initialState = {
   nodes: [],
   ui: {
     ...localState.ui,
+    selectedNodeId: undefined,
     user: {
       netWorth: 0,
+      experienceCfg: {},
     },
     drawers: {
+      experience: false,
       info: false,
       data: false,
       sideMenu: false,

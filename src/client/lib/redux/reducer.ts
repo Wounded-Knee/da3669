@@ -39,6 +39,27 @@ export const reducer = (state = initialState, { type, payload }) => {
   };
 
   switch (type) {
+    case client.SET_USER:
+      return {
+        ...state,
+        ui: {
+          ...state.ui,
+          user: {
+            ...state.ui.user,
+            ...payload,
+          },
+        },
+      };
+
+    case client.SELECT_NODE:
+      return {
+        ...state,
+        ui: {
+          ...state.ui,
+          selectedNodeId: payload,
+        },
+      };
+
     case client.UPDATE_NET_WORTH:
       return {
         ...state,

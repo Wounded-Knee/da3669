@@ -2,12 +2,24 @@
 /** @jsx jsx */
 import React from 'react';
 import { css, jsx } from '@emotion/react';
-import { Divider, Drawer, List, ListItem, ListItemIcon, ListItemText, Link as MuiLink } from '@mui/material';
+import {
+  Divider,
+  Drawer,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Link as MuiLink,
+  Typography,
+  Paper,
+  Switch,
+} from '@mui/material';
 import { NavLink } from 'react-router-dom';
 import { routes } from '../routes';
 import { useSelector, useDispatch } from 'react-redux';
 import { getDrawerState } from '../lib/redux/selectors';
 import { client } from '../../shared/lib/redux/actionTypes';
+import { Experience } from './Experience';
 
 class NavLinkMui extends React.Component<any> {
   render() {
@@ -55,6 +67,7 @@ export const SideMenu: React.FunctionComponent = () => {
         )}
       </List>
       <Divider />
+      <Experience />
     </>
   );
 

@@ -18,7 +18,7 @@
     "incremental": true,
     "composite": true
   },
-  "include": ["**/*.ts"],
+  "include": ["**/*.ts", "../shared/lib/controllerModules/ControllerModuleInterface.d.ts"],
   "exclude": ["**/*.test.ts"],
   "references": [{ "path": "../shared" }]
 }

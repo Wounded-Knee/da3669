@@ -7,6 +7,7 @@ import {
   MenuOpen as MenuOpenIcon,
   Storage as StorageIcon,
   Info as InfoIcon,
+  AssuredWorkload as ExperienceIcon,
 } from '@mui/icons-material';
 import { headerText, appName, clownTitle } from '../config';
 import { PassportContext } from './PassportContext';
@@ -56,7 +57,7 @@ export const Header: React.FunctionComponent = () => {
       <Toolbar css={styles.toolbar}>
         {userProfile._id && (
           <Grid container alignItems='center'>
-            <Grid item xs={1}>
+            <Grid item xs={2}>
               <MenuIcon
                 onClick={() => dispatch({ type: client.DRAWER, payload: ['sideMenu'] })}
                 sx={{
@@ -65,7 +66,16 @@ export const Header: React.FunctionComponent = () => {
                 css={styles.buttons}
               />
             </Grid>
-            <Grid item xs={11}>
+            <Grid item xs={2}>
+              <ExperienceIcon
+                onClick={() => dispatch({ type: client.DRAWER, payload: ['experience'] })}
+                sx={{
+                  display: { xs: 'block', sm: 'none' },
+                }}
+                css={styles.buttons}
+              />
+            </Grid>
+            <Grid item xs={8}>
               <Typography variant='h5' noWrap css={styles.title}>
                 {!userProfile._id && appName}
                 {userProfile.name}{' '}

@@ -1,5 +1,5 @@
-import { server } from '../../../../shared/lib/redux/actionTypes';
-import { addSubscription, ISubscription, removeSubscription } from '../sessionManager';
+import { server } from '../../../shared/lib/redux/actionTypes';
+import { addSubscription, ISubscription, removeSubscription } from '../classes/sessionManager';
 
 const debug = {
   [server.SUBSCRIBE]: false,

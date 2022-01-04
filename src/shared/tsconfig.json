@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ES2019",
     "moduleResolution": "node",
-    "module": "commonjs",      
+    "module": "commonjs",
     "esModuleInterop": true,
     "declaration": true,
     "sourceMap": true,
@@ -13,6 +13,6 @@
     "lib": ["ES2019"],
     "composite": true
   },
-  "include": ["./**/*.ts"],
+  "include": ["./**/*.ts", "lib/controllerModules/*.tsx"],
   "exclude": ["./**/*.test.ts"],
 }
