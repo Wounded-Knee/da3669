@@ -9,6 +9,8 @@ const getNodeDefinitionByName = (nodeTypeName) => nodeDefinitions.find(({ name }
 
 const { name: defaultNodeDefinitionName } = nodeDefinitions.find((definition) => definition && definition.default);
 
+// Fix this. Not all relation types belong in the DB. This is confusing me.
+// Fix this, and then add in virtual paths someplace else.
 const addRelationTypesToSchemaPaths = (schemaPaths, relationTypes) => ({
   ...schemaPaths,
   rel: {

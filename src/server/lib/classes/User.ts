@@ -15,10 +15,10 @@ const debug = {
   orders: false,
   createUser: false,
   findUser: false,
-  [server.SUBSCRIBE]: true,
+  [server.SUBSCRIBE]: false,
   [server.UNSUBSCRIBE]: false,
   [server.SUBSCRIBE_BY_SELECTOR]: false,
-  [server.CREATE]: true,
+  [server.CREATE]: false,
 };
 
 interface ISocket {

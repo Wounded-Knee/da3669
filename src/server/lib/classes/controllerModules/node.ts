@@ -5,7 +5,8 @@ import { INodeAll } from '../../../../shared/all';
 import { getOperationByProfile } from '../../../../shared/lib/selectorQueries';
 
 const debug = {
-  [server.CREATE]: true,
+  [server.SUBSCRIBE]: true,
+  [server.CREATE]: false,
 };
 
 export const actionSelectNodes = async (context, next) => {
@@ -26,6 +27,7 @@ export const actionSelectNodes = async (context, next) => {
           const nodes = operation.find
             ? await defaultModel.find(operation.find)
             : await defaultModel.aggregate(operation.aggregate);
+          if (debug[server.SUBSCRIBE]) console.log(nodes, operation.find);
           context.nodes.retrieved = [...context.nodes.retrieved, ...nodes];
           context.actions.push({
             type: client.STASH,
