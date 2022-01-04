@@ -9,6 +9,7 @@ import { Link } from './Branded';
 import { useNavigate } from 'react-router-dom';
 import mongoose from 'mongoose';
 import { PassportContext } from './PassportContext';
+import { Box } from '@mui/material';
 
 const debug = {
   variables: true,
@@ -49,7 +50,29 @@ export const Talk = (): JSX.Element => {
   });
 
   return nodeId ? (
-    <>
+    <Box
+      css={css`
+        flex-grow: 1;
+        height: 100vh;
+        padding: 3em;
+        min-height: 100vh;
+        display: flex;
+        flex-wrap: nowrap;
+        flex-direction: column;
+        justify-content: start;
+        align-items: auto;
+        align-content: start;
+
+        &:before {
+          display: block;
+          content: ' ';
+          flex: 999 999 auto;
+        }
+      `}
+      sx={{
+        padding: { xs: '1em', sm: '3em' },
+      }}
+    >
       <DisplayNode id={nodeId} note='Master' />
 
       <NodePicker
@@ -57,7 +80,7 @@ export const Talk = (): JSX.Element => {
         label='Reply'
         onPick={([{ _id }]) => navigate(`${urlPath}${_id}/`)}
       />
-    </>
+    </Box>
   ) : (
     <Directory />
   );

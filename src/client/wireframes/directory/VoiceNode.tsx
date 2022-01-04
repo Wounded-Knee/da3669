@@ -1,21 +1,22 @@
 /** @jsxFrag React.Fragment */
 /** @jsx jsx */
-import React, { useContext } from 'react';
+import React, { useState } from 'react';
 import { css, jsx } from '@emotion/react';
-import { useNodes } from '../../lib/useNodes';
-import { useParams } from 'react-router';
-import { NodePicker } from '../../components/NodePicker';
-import { Link } from '../../components/Branded';
-import { useNavigate } from 'react-router-dom';
-import mongoose from 'mongoose';
-import { PassportContext } from '../../components/PassportContext';
-import { PlayCircle as PlayCircleIcon, StopCircle as StopCircleIcon } from '@mui/icons-material';
+import {
+  PlayCircle as PlayCircleIcon,
+  StopCircle as StopCircleIcon,
+  PauseCircle as PauseCircleIcon,
+} from '@mui/icons-material';
 import { TimeCode } from './TimeCode';
 import { ReplyCount } from './ReplyCount';
 import { LiveCount } from './LiveCount';
+import { IconButton } from '@mui/material';
 
 const getPct = (length, timeCode) => (1 / (length / timeCode)) * 100;
 export const VoiceNode = ({ src, length, spliceNodes, replyCount, liveListeners }) => {
+  const [playing, setPlaying] = useState(false);
+  const [time, setTime] = useState(0);
+
   return (
     <div>
       {(spliceNodes || []).map((timeCode, index) => (
@@ -41,8 +42,10 @@ export const VoiceNode = ({ src, length, spliceNodes, replyCount, liveListeners 
           height: 66px;
         `}
       />
-      <PlayCircleIcon />
-      <StopCircleIcon />
+      <IconButton aria-label='Play' onClick={() => setPlaying(!playing)}>
+        {playing ? <PauseCircleIcon /> : <PlayCircleIcon />}
+      </IconButton>
+
       <TimeCode length={length} />
       <ReplyCount count={replyCount} />
       <LiveCount count={liveListeners} />

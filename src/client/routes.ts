@@ -8,6 +8,7 @@ import {
   Savings as SavingsIcon,
   Forum as TalkIcon,
   ListAlt as DirectoryIcon,
+  PlayCircle as PlayerIcon,
 } from '@mui/icons-material';
 
 // Components
@@ -16,11 +17,19 @@ import { Loading } from './components/Loading';
 import { Talk } from './components/Talk';
 import { KungFury } from './components/KungFury';
 import { Directory } from './wireframes/directory/Directory';
+import { Player } from './wireframes/directory/Player';
 
 export const routes = [
   {
     route: '/panic',
     path: '/panic',
+    icon: PlayerIcon,
+    text: 'Player',
+    component: Player,
+  },
+  {
+    route: '/player',
+    path: '/player',
     icon: PanicIcon,
     text: "Don't Panic",
     component: Loading,

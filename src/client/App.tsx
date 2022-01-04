@@ -42,20 +42,17 @@ export const App: FC = () => {
         )}
         <Box
           css={css`
-            flex-grow: 1;
-            height: 100vh;
-            background: #333;
-            box-shadow: inset 0 0 100px black;
-            padding: 3em;
-            min-height: 100vh;
             display: flex;
             flex-wrap: nowrap;
-            flex-direction: column;
+            flex-direction: column-reverse;
             justify-content: start;
-            align-items: auto;
-            align-content: start;
+            align-items: stretch;
+            align-content: start
 
-            &:before {
+            background: #333;
+            box-shadow: inset 0 0 100px black;
+
+            &:after {
               display: block;
               content: ' ';
               flex: 999 999 auto;
@@ -63,6 +60,7 @@ export const App: FC = () => {
           `}
           sx={{
             padding: { xs: '1em', sm: '3em' },
+            marginTop: '47px', // Header
           }}
         >
           {userProfile._id ? (
