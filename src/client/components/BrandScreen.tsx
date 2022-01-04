@@ -4,7 +4,6 @@ import React, { ReactNode } from 'react';
 import { css, jsx } from '@emotion/react';
 import { Grid } from '@mui/material';
 
-const size = 170;
 export const BrandScreen: React.FunctionComponent = ({
   speed = 1.5,
   children,
@@ -17,52 +16,55 @@ export const BrandScreen: React.FunctionComponent = ({
       <Grid
         item
         css={css`
-          font-size: 60vw;
+          font-size: 30vw;
           font-weight: bold;
-          background: radial-gradient(
-            circle,
-            rgba(0, 0, 0, 1) 13%,
-            rgba(255, 255, 0, 1) 14%,
-            rgba(255, 0, 0, 1) 36%,
-            rgba(255, 255, 255, 1) 37%
+          background: linear-gradient(
+            327deg,
+            #ff0000,
+            #ffaa00,
+            #ffff00,
+            #00ff00,
+            #00ffaa,
+            #0000ff,
+            #aa00ff,
+            #ff00aa,
+            #ff0000,
+            #ffaa00,
+            #ffff00,
+            #ffaa00,
+            #ff0000,
+            #ff00aa,
+            #aa00ff,
+            #0000ff,
+            #00ffaa,
+            #00ff00,
+            #ffff00,
+            #ffaa00,
+            #ff0000
           );
-          background-position: center center;
+          background-size: 500% 500%;
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
 
-          -webkit-animation: RainbowFuckery ${speed}s infinite;
-          -moz-animation: RainbowFuckery ${speed}s infinite;
-          animation: RainbowFuckery ${speed}s infinite;
+          -webkit-animation: RainbowFuckery ${speed}s linear infinite;
+          -moz-animation: RainbowFuckery ${speed}s linear infinite;
+          animation: RainbowFuckery ${speed}s linear infinite;
 
           @keyframes RainbowFuckery {
-            // scale down and scale up faster in irregular intervals to get the throbbing effect
             0% {
-              background-size: ${size * 0.6}% ${size * 0.6}%;
-            }
-            5% {
-              background-size: ${size * 0.9}% ${size * 0.9}%;
-            }
-            10% {
-              background-size: ${size * 0.6}% ${size * 0.6}%;
-            }
-            15% {
-              background-size: ${size * 1}% ${size * 1}%;
-            }
-            50% {
-              background-size: ${size * 0.6}% ${size * 0.6}%;
+              background-position: 0% 0%;
             }
             100% {
-              background-size: ${size * 0.6}% ${size * 0.6}%;
+              background-position: 100% 100%;
             }
           }
         `}
       >
-        ⊕
+        D<sup>3</sup>
       </Grid>
       <Grid
         item
         css={css`
-          margin-top: -2em;
           font-size: 2em;
           color: #fff;
 
