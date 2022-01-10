@@ -9,6 +9,7 @@ import {
   Forum as TalkIcon,
   ListAlt as DirectoryIcon,
   PlayCircle as PlayerIcon,
+  BlurOn as CollectiveSoulIcon,
 } from '@mui/icons-material';
 
 // Components
@@ -18,6 +19,7 @@ import { Talk } from './components/Talk';
 import { KungFury } from './components/KungFury';
 import { Directory } from './wireframes/directory/Directory';
 import { Player } from './wireframes/directory/Player';
+import { Groups } from './wireframes/collective-soul/groups';
 
 export const routes = [
   {
@@ -33,6 +35,17 @@ export const routes = [
     icon: PanicIcon,
     text: "Don't Panic",
     component: Loading,
+  },
+  {
+    path: '/collective-soul/:group',
+    component: Groups,
+  },
+  {
+    route: '/collective-soul',
+    path: '/collective-soul',
+    icon: CollectiveSoulIcon,
+    text: 'Collective Soul',
+    component: Groups,
   },
   {
     route: '/context',

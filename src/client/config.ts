@@ -1,5 +1,6 @@
 import { headerText, appName, WS_SERVER_HOST, WS_SERVER_PORT, cookieName } from '../shared/config';
 import { get } from './lib/LocalStorage';
+import { state as collectiveSoul } from './wireframes/collective-soul/uistate';
 
 const localState = get(appName) || { ui: { drawers: {} } };
 
@@ -15,6 +16,7 @@ export const initialState = {
       netWorth: 0,
       experienceCfg: {},
     },
+    collectiveSoul,
     drawers: {
       experience: false,
       info: false,
