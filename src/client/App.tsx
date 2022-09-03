@@ -30,7 +30,7 @@ export const App: FC = () => {
   const userProfile = useContext(PassportContext);
   return (
     <BrowserRouter>
-      <Box sx={{ display: 'flex' }}>
+      <Box sx={{ display: 'flex', position: 'relative', height: '100vh' }}>
         <CssBaseline />
         <Header />
         {userProfile._id && (
@@ -42,6 +42,11 @@ export const App: FC = () => {
         )}
         <Box
           css={css`
+            position: absolute;
+            top: 52px; /* Header */
+            bottom: 0;
+            right: 0;
+
             display: flex;
             flex-wrap: nowrap;
             flex-direction: column-reverse;
@@ -59,8 +64,11 @@ export const App: FC = () => {
             }
           `}
           sx={{
-            padding: { xs: '1em', sm: '3em' },
-            marginTop: '47px', // Header
+            left: { xs: '0', sm: '240px' },
+            /*
+             padding: { xs: '1em', sm: '3em' },
+             marginTop: '52px', // Header
+          */
           }}
         >
           {userProfile._id ? (

@@ -53,9 +53,6 @@ export const Talk = (): JSX.Element => {
     <Box
       css={css`
         flex-grow: 1;
-        height: 100vh;
-        padding: 3em;
-        min-height: 100vh;
         display: flex;
         flex-wrap: nowrap;
         flex-direction: column;
@@ -70,7 +67,7 @@ export const Talk = (): JSX.Element => {
         }
       `}
       sx={{
-        padding: { xs: '1em', sm: '3em' },
+        padding: { xs: '1em', sm: '2em' },
       }}
     >
       <DisplayNode id={nodeId} note='Master' />

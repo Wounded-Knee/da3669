@@ -100,8 +100,6 @@ export const Directory = () => {
     <div
       css={css`
         flex-grow: 1;
-        height: 100%;
-        margin: -1em -3em;
         overflow: hidden;
         padding: 2em;
       `}

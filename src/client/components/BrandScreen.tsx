@@ -6,9 +6,15 @@ import { Grid } from '@mui/material';
 
 export const BrandScreen: React.FunctionComponent = ({
   speed = 1.5,
+  brand = (
+    <>
+      D<sup>3</sup>
+    </>
+  ),
   children,
 }: {
   speed: number;
+  brand: React.ReactElement;
   children: ReactNode;
 }) => {
   return (
@@ -60,7 +66,7 @@ export const BrandScreen: React.FunctionComponent = ({
           }
         `}
       >
-        D<sup>3</sup>
+        {brand}
       </Grid>
       <Grid
         item

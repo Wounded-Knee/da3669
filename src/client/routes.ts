@@ -14,27 +14,27 @@ import {
 
 // Components
 import { Index as ContextStacker } from './wireframes/context-stacking/Index';
-import { Loading } from './components/Loading';
+import { Panic } from './components/Panic';
 import { Talk } from './components/Talk';
 import { KungFury } from './components/KungFury';
 import { Directory } from './wireframes/directory/Directory';
-import { Player } from './wireframes/directory/Player';
+import { Editor } from './wireframes/node-editor/Editor';
 import { Groups } from './wireframes/collective-soul/groups';
 
 export const routes = [
   {
     route: '/panic',
     path: '/panic',
-    icon: PlayerIcon,
-    text: 'Player',
-    component: Player,
-  },
-  {
-    route: '/player',
-    path: '/player',
     icon: PanicIcon,
     text: "Don't Panic",
-    component: Loading,
+    component: Panic,
+  },
+  {
+    route: '/editor',
+    path: '/editor',
+    icon: PlayerIcon,
+    text: 'Node Editor',
+    component: Editor,
   },
   {
     path: '/collective-soul/:group',
